@@ -28,13 +28,30 @@ export const Route = createFileRoute("/api/public/proactive")({
         const { data: workspaces, error } = await supabaseAdmin.from("workspaces").select("id");
         if (error) return new Response(error.message, { status: 500 });
 
-        const { refreshProposals } = await import("@/lib/proactive.server");
-        const report: { workspaceId: string; added: number; closed: number; note?: string }[] = [];
+        const [{ refreshProposals }, { runLearningCycle }] = await Promise.all([
+          import("@/lib/proactive.server"),
+          import("@/lib/learning.server"),
+        ]);
+        const report: {
+          workspaceId: string;
+          added: number;
+          closed: number;
+          learning?: Awaited<ReturnType<typeof runLearningCycle>>;
+          note?: string;
+        }[] = [];
 
         for (const row of workspaces ?? []) {
           try {
-            const result = await refreshProposals(supabaseAdmin, row.id);
-            report.push({ workspaceId: row.id, added: result.added, closed: result.closed });
+            const [result, learning] = await Promise.all([
+              refreshProposals(supabaseAdmin, row.id),
+              runLearningCycle(supabaseAdmin, row.id),
+            ]);
+            report.push({
+              workspaceId: row.id,
+              added: result.added,
+              closed: result.closed,
+              learning,
+            });
           } catch (e) {
             report.push({
               workspaceId: row.id,

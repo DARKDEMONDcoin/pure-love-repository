@@ -92,6 +92,15 @@ export async function publishQueuedPost(admin: Admin, id: string): Promise<Queue
 
     if (post.task_id) {
       await admin.from("tasks").update({ status: "done" }).eq("id", post.task_id);
+      const { recordTaskFeedback, buildLearningCandidates } = await import("./learning.server");
+      await recordTaskFeedback(admin, {
+        workspaceId: post.workspace_id,
+        taskId: post.task_id,
+        employeeId: post.employee_id,
+        kind: "published",
+        metrics: { provider: post.provider, published: true },
+      });
+      await buildLearningCandidates(admin, post.workspace_id, post.employee_id);
     }
 
     return { id: post.id, provider: post.provider, status: "published" };

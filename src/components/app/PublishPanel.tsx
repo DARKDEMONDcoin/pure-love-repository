@@ -364,6 +364,23 @@ export function PublishPanel({
       }
     }
 
+    if (taskId && ok.length) {
+      try {
+        await saveFeedback({
+          data: {
+            workspaceId,
+            taskId,
+            employeeId,
+            kind: mode === "now" ? "published" : "approved",
+            reason: mode === "now" ? "نُشر المخرج بنجاح" : "اعتمد المالك المخرج وجدوله للنشر",
+            metrics: { successfulTargets: ok.length, failedTargets: failed.length, mode },
+          },
+        });
+      } catch (error) {
+        console.warn("[learning] publish feedback skipped:", error);
+      }
+    }
+
     const head = ok.length
       ? mode === "later"
         ? `تمت الجدولة ⏱ ${ok.join("، ")}`

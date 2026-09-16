@@ -18,6 +18,10 @@ export const Route = createFileRoute("/app/approvals")({
     meta: [
       { title: "الموافقات | سهل" },
       { name: "description", content: "راجع ما أنجزه فريقك واعتمده قبل النشر." },
+      { property: "og:title", content: "الموافقات | سهل" },
+      { property: "og:description", content: "راجع ما أنجزه فريقك واعتمده قبل النشر." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -48,9 +52,21 @@ function ApprovalsPage() {
         : undefined;
     try {
       await update.mutateAsync({ id, patch: steps ? { status, steps } : { status } });
-      if (status === "rejected" && workspace?.id) {
+      if (workspace?.id) {
         const task = pending.find((item) => item.id === id);
-        if (task) await saveFeedback({ data: { workspaceId: workspace.id, taskId: id, employeeId: task.employee_id, kind: "rejected", reason: reason.trim() || "رفض المالك المخرج" } });
+        if (task)
+          await saveFeedback({
+            data: {
+              workspaceId: workspace.id,
+              taskId: id,
+              employeeId: task.employee_id,
+              kind: status === "done" ? "approved" : "rejected",
+              reason:
+                status === "rejected"
+                  ? reason.trim() || "رفض المالك المخرج"
+                  : "اعتمد المالك المخرج دون تعديل",
+            },
+          });
       }
     } finally {
       setBusyId(null);
@@ -166,7 +182,11 @@ function ApprovalsPage() {
                       placeholder="ما الذي تريد أن يتعلمه من هذا الرفض؟"
                       className="min-h-10 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                     />
-                    <button type="button" onClick={() => void act(a.id, "rejected")} className="min-h-10 rounded-lg bg-coral px-4 text-sm font-bold text-background">
+                    <button
+                      type="button"
+                      onClick={() => void act(a.id, "rejected")}
+                      className="min-h-10 rounded-lg bg-coral px-4 text-sm font-bold text-background"
+                    >
                       تأكيد الرفض
                     </button>
                   </div>
