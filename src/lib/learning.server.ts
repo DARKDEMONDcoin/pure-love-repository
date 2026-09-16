@@ -24,7 +24,9 @@ export async function learningBlock(client: Client, workspaceId: string, employe
     .order("confidence", { ascending: false })
     .limit(6);
   const experimentPercent = settings?.experiment_percent ?? 10;
-  const selected = (data ?? []).filter((lesson) => lesson.status === "active" || Math.random() * 100 < experimentPercent);
+  const selected = (data ?? []).filter(
+    (lesson) => lesson.status === "active" || Math.random() * 100 < experimentPercent,
+  );
   if (!selected.length) return { block: "", lessonIds: [] as string[] };
   return {
     block: [
@@ -119,12 +121,17 @@ function lessonFromFeedback(row: {
   if (row.kind === "edited" && row.original_text && row.edited_text) {
     const before = clean(row.original_text, 220);
     const after = clean(row.edited_text, 220);
-    if (before !== after) return `فضّل الصياغة والأسلوب اللذين استخدمهما المالك في النسخة المعدّلة: «${after}» بدل «${before}».`;
+    if (before !== after)
+      return `فضّل الصياغة والأسلوب اللذين استخدمهما المالك في النسخة المعدّلة: «${after}» بدل «${before}».`;
   }
   return null;
 }
 
-export async function buildLearningCandidates(client: Client, workspaceId: string, employeeId: string) {
+export async function buildLearningCandidates(
+  client: Client,
+  workspaceId: string,
+  employeeId: string,
+) {
   const { data: settings } = await client
     .from("employee_learning_settings")
     .select("enabled, auto_promote_low_risk, minimum_evidence, minimum_improvement")
@@ -146,7 +153,13 @@ export async function buildLearningCandidates(client: Client, workspaceId: strin
   for (const item of feedback ?? []) {
     const instruction = lessonFromFeedback(item);
     if (!instruction) continue;
-    const key = instruction.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().split(" ").slice(0, 8).join(" ");
+    const key = instruction
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim()
+      .split(" ")
+      .slice(0, 8)
+      .join(" ");
     const current = groups.get(key) ?? { instruction, evidence: [] };
     current.evidence?.push(item);
     groups.set(key, current);
@@ -194,9 +207,8 @@ export async function buildLearningCandidates(client: Client, workspaceId: strin
   return { created, promoted };
 }
 
-const average = (values: number[]) => values.length
-  ? values.reduce((sum, value) => sum + value, 0) / values.length
-  : null;
+const average = (values: number[]) =>
+  values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
 
 /** يقيس الدروس المرشحة من السجلات الحقيقية، ثم يفعّل النافع ويتراجع عن الضار. */
 export async function runLearningCycle(client: Client, workspaceId: string) {
@@ -264,8 +276,17 @@ export async function runLearningCycle(client: Client, workspaceId: string) {
     });
     evaluated += 1;
 
-    if (lesson.status === "approved" && lesson.risk_level === "low" && settings?.auto_promote_low_risk !== false && safetyPassed && improvement >= minimumImprovement) {
-      await client.from("employee_lessons").update({ status: "active", activated_at: new Date().toISOString() }).eq("id", lesson.id);
+    if (
+      lesson.status === "approved" &&
+      lesson.risk_level === "low" &&
+      settings?.auto_promote_low_risk !== false &&
+      safetyPassed &&
+      improvement >= minimumImprovement
+    ) {
+      await client
+        .from("employee_lessons")
+        .update({ status: "active", activated_at: new Date().toISOString() })
+        .eq("id", lesson.id);
       promoted += 1;
     } else if (lesson.status === "active" && (!safetyPassed || improvement < -minimumImprovement)) {
       await client.from("employee_lessons").update({ status: "rolled_back" }).eq("id", lesson.id);

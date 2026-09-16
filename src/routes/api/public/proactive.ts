@@ -32,7 +32,13 @@ export const Route = createFileRoute("/api/public/proactive")({
           import("@/lib/proactive.server"),
           import("@/lib/learning.server"),
         ]);
-        const report: { workspaceId: string; added: number; closed: number; learning?: Awaited<ReturnType<typeof runLearningCycle>>; note?: string }[] = [];
+        const report: {
+          workspaceId: string;
+          added: number;
+          closed: number;
+          learning?: Awaited<ReturnType<typeof runLearningCycle>>;
+          note?: string;
+        }[] = [];
 
         for (const row of workspaces ?? []) {
           try {
@@ -40,7 +46,12 @@ export const Route = createFileRoute("/api/public/proactive")({
               refreshProposals(supabaseAdmin, row.id),
               runLearningCycle(supabaseAdmin, row.id),
             ]);
-            report.push({ workspaceId: row.id, added: result.added, closed: result.closed, learning });
+            report.push({
+              workspaceId: row.id,
+              added: result.added,
+              closed: result.closed,
+              learning,
+            });
           } catch (e) {
             report.push({
               workspaceId: row.id,

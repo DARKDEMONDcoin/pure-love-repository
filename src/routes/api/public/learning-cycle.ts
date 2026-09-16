@@ -25,9 +25,15 @@ export const Route = createFileRoute("/api/public/learning-cycle")({
         const report = [];
         for (const workspace of workspaces ?? []) {
           try {
-            report.push({ workspaceId: workspace.id, ...(await runLearningCycle(supabaseAdmin, workspace.id)) });
+            report.push({
+              workspaceId: workspace.id,
+              ...(await runLearningCycle(supabaseAdmin, workspace.id)),
+            });
           } catch (error) {
-            report.push({ workspaceId: workspace.id, error: error instanceof Error ? error.message.slice(0, 160) : "failed" });
+            report.push({
+              workspaceId: workspace.id,
+              error: error instanceof Error ? error.message.slice(0, 160) : "failed",
+            });
           }
         }
         return Response.json({ ok: true, workspaces: report.length, report });
