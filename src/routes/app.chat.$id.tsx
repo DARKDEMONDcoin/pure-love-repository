@@ -839,7 +839,7 @@ function ChatView({
   const busy = send.isPending || skillRun.isPending;
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages?.length, send.isPending, skillRun.isPending, liveText, liveStep]);
 
   // إبقاء التركيز في مربع الكتابة + تمدد تلقائي لارتفاع النص.
