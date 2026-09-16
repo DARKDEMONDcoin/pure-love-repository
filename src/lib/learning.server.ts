@@ -166,7 +166,7 @@ export async function buildLearningCandidates(
   }
 
   let created = 0;
-  let promoted = 0;
+  const promoted = 0;
   for (const group of groups.values()) {
     const count = group.evidence?.length ?? 0;
     if (count < minimumEvidence) continue;

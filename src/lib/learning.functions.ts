@@ -63,13 +63,11 @@ export const updateLearningSettings = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await owns(context.supabase, data.workspaceId);
-    const { error } = await context.supabase
-      .from("employee_learning_settings")
-      .upsert({
-        workspace_id: data.workspaceId,
-        enabled: data.enabled,
-        paused_reason: data.enabled ? null : "أوقفه مالك المساحة",
-      });
+    const { error } = await context.supabase.from("employee_learning_settings").upsert({
+      workspace_id: data.workspaceId,
+      enabled: data.enabled,
+      paused_reason: data.enabled ? null : "أوقفه مالك المساحة",
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
