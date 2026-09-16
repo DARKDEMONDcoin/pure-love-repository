@@ -631,7 +631,7 @@ function ChatView({
   /** البثّ الحقيقي: المرحلة التي ينفّذها الموظف الآن + نص ردّه وهو يُكتب. */
   const [liveStep, setLiveStep] = useState<string | null>(null);
   const [liveText, setLiveText] = useState("");
-  const [savedTask, setSavedTask] = useState(false);
+  const [savedTask, setSavedTask] = useState<string | null>(null);
   /** طلب ربط سياقي: يظهر فقط عندما تحتاج المهمة الحالية حساباً غير مربوط. */
   const [needsConnection, setNeedsConnection] = useState<{
     provider: string;
@@ -822,7 +822,7 @@ function ChatView({
       setAttachments([]);
       setImagePrompt("");
 
-      setSavedTask(Boolean(res?.createdTaskId));
+      setSavedTask(res?.createdTaskId ?? null);
       setNeedsConnection(res?.needsConnection ?? null);
       void qc.invalidateQueries({ queryKey: ["messages-last", workspace?.id] });
       void qc.invalidateQueries({ queryKey: ["conversations", workspace?.id, id] });
@@ -860,7 +860,7 @@ function ChatView({
       });
     },
     onSuccess: (res) => {
-      setSavedTask(Boolean(res?.taskId));
+      setSavedTask(res?.taskId ?? null);
       void qc.invalidateQueries({ queryKey: ["messages", workspace?.id, id, conversationId] });
       void qc.invalidateQueries({ queryKey: ["messages-last", workspace?.id] });
       void qc.invalidateQueries({ queryKey: ["tasks", workspace?.id] });
@@ -895,7 +895,7 @@ function ChatView({
     const body = text.trim();
     if (!body || !workspace || busy) return;
     setError(null);
-    setSavedTask(false);
+    setSavedTask(null);
 
     cancelledRef.current = false;
     setDraft("");
@@ -1110,7 +1110,11 @@ function ChatView({
                             : "order-1 bg-transparent",
                         )}
                       >
-                        {isUser ? <p dir="auto">{m.body}</p> : <Markdown body={body} />}
+                        {isUser ? (
+                          <p dir="auto">{m.body}</p>
+                        ) : (
+                          <Markdown body={body} onOpenApp={openAppInChat} />
+                        )}
                         {!isUser &&
                         id === "nour" &&
                         workspace &&
@@ -1226,18 +1230,16 @@ function ChatView({
             ) : null}
 
             {savedTask && !busy ? (
-              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-jade/25 bg-jade/10 px-4 py-3 text-sm font-semibold text-jade-deep animate-pop-in">
-                <span className="grid size-7 place-items-center rounded-full bg-jade text-background">
-                  <Check className="size-3.5" strokeWidth={3} />
-                </span>
-                تم حفظ المخرج في «الموافقات» بانتظار اعتمادك.
-                <Link
-                  to="/app/approvals"
-                  className="ms-auto rounded-full bg-jade-deep px-4 py-1.5 text-xs font-bold text-background transition-transform hover:-translate-y-0.5"
-                >
-                  افتح الموافقات
-                </Link>
-              </div>
+              <InlineApproval
+                workspaceId={workspace?.id}
+                taskId={savedTask}
+                employeeName={member.name}
+                onEdit={(text) => {
+                  setDraft(text);
+                  inputRef.current?.focus();
+                }}
+                onDone={() => setSavedTask(null)}
+              />
             ) : null}
 
             {needsConnection && !busy ? (
