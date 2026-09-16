@@ -140,7 +140,7 @@ export function MediaStudio({
     onAttachmentsChange([...attachments, { url, type }]);
   };
 
-  /** رفع صور وفيديوهات من جهاز المستخدم (المعرض) إلى مخزن مساحة العمل، حتى ١٠ عناصر. */
+  /** رفع صور وفيديوهات وملفات من جهاز المستخدم أو كاميرته، حتى ١٠ عناصر. */
   const uploadFiles = async (files: File[]) => {
     if (!workspaceId) return setError("اختر مساحة العمل أولاً.");
     const room = MAX_ATTACHMENTS - attachments.length;
@@ -154,26 +154,43 @@ export function MediaStudio({
     for (const file of picked) {
       const isVideo = file.type.startsWith("video/");
       const isImage = file.type.startsWith("image/");
-      if (!isVideo && !isImage) {
-        setError("اختر صوراً أو فيديوهات فقط.");
+      const kind: Attachment["type"] = isVideo ? "video" : isImage ? "image" : "file";
+      const limit = kind === "file" ? MAX_FILE_BYTES : MAX_BYTES;
+      if (file.size > limit) {
+        setError(
+          `«${file.name}» ${humanSize(file.size)} — الحد الأقصى ${humanSize(limit)} ${
+            kind === "file" ? "للملف" : "للصورة/الفيديو"
+          }.`,
+        );
         continue;
       }
-      if (file.size > MAX_BYTES) {
-        setError(`«${file.name}» أكبر من ٥٠ ميجابايت.`);
+      if (file.size === 0) {
+        setError(`«${file.name}» ملف فارغ.`);
         continue;
       }
       try {
-        const ext = file.name.split(".").pop()?.toLowerCase() || (isVideo ? "mp4" : "jpg");
+        const ext =
+          file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
+          (isVideo ? "mp4" : isImage ? "jpg" : "bin");
         const key = `${workspaceId}/uploads/${crypto.randomUUID()}.${ext}`;
         const { error: upErr } = await supabase.storage
           .from("nour-media")
-          .upload(key, file, { contentType: file.type, upsert: false });
+          .upload(key, file, {
+            contentType: file.type || "application/octet-stream",
+            upsert: false,
+          });
         if (upErr) throw upErr;
         const { data } = await supabase.storage
           .from("nour-media")
           .createSignedUrl(key, 60 * 60 * 24 * 365 * 5);
         if (!data?.signedUrl) throw new Error("no-url");
-        added.push({ url: data.signedUrl, type: isVideo ? "video" : "image", alt: file.name });
+        added.push({
+          url: data.signedUrl,
+          type: kind,
+          alt: file.name,
+          mime: file.type || "application/octet-stream",
+          size: file.size,
+        });
       } catch {
         setError(`تعذّر رفع «${file.name}». أعد المحاولة.`);
       } finally {
