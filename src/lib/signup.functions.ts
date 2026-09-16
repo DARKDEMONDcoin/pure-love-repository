@@ -1,5 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
+
+import { isRateLimited, requestIdentifier } from "./rate-limit.server";
 
 const schema = z.object({
   email: z.string().email().max(160),
@@ -16,6 +19,11 @@ const schema = z.object({
 export const createAccount = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => schema.parse(input))
   .handler(async ({ data }) => {
+    // حد استخدام: 5 محاولات إنشاء حساب لكل عنوان خلال 10 دقائق.
+    if (await isRateLimited("signup", requestIdentifier(getRequest()), 5, 600)) {
+      return { ok: false as const, reason: "rate_limited" as const };
+    }
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const email = data.email.trim().toLowerCase();
 

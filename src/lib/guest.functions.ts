@@ -1,4 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+
+import { isRateLimited, requestIdentifier } from "./rate-limit.server";
 
 /** حساب التجربة المشترك — لا تسجيل ولا كلمات مرور من المستخدم. */
 export const GUEST_EMAIL = "guest@sahl.app";
@@ -8,6 +11,11 @@ export const GUEST_EMAIL = "guest@sahl.app";
  * ويعيد رمز دخول لمرة واحدة يستخدمه المتصفح فوراً.
  */
 export const guestSession = createServerFn({ method: "POST" }).handler(async () => {
+  // حد استخدام: 10 جلسات تجربة لكل عنوان خلال 10 دقائق.
+  if (await isRateLimited("guest-session", requestIdentifier(getRequest()), 10, 600)) {
+    throw new Error("تجاوزت عدد محاولات التجربة المسموح. أعد المحاولة بعد قليل.");
+  }
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
