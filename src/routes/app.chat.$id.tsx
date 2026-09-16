@@ -1402,7 +1402,6 @@ function ChatView({
             </button>
           ) : null}
 
-
           <div className="chat-composer-dock pointer-events-none p-3 sm:p-5">
             <PromptInput
               onSubmit={(message) => submit(message.text || draft)}

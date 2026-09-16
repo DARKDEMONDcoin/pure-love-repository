@@ -119,7 +119,8 @@ async function readOneFile(
           : { type: "image_url" as const, image_url: { url: `data:${mime};base64,${base64}` } },
       ];
       let read = "";
-      if (keys.lovable) read = await callVision(LOVABLE, keys.lovable, VISION_LOVABLE, parts).catch(() => "");
+      if (keys.lovable)
+        read = await callVision(LOVABLE, keys.lovable, VISION_LOVABLE, parts).catch(() => "");
       if (!read && keys.gemini)
         read = await callVision(GEMINI, keys.gemini, VISION_GEMINI, parts).catch(() => "");
       if (read) return `ملف ${index + 1} (${name}) — ما استخرجناه منه:\n${read}`;
@@ -128,7 +129,10 @@ async function readOneFile(
 
     return `ملف ${index + 1} (${name} · ${mime || "صيغة غير معروفة"} · ${Math.round(buf.byteLength / 1024)} ك.ب): صيغة لا تُقرأ نصياً مباشرة — اطلب من المستخدم نسخ محتواه أو إرساله PDF/نص إن احتجت تفاصيله.`;
   } catch (error) {
-    console.warn("[media-vision] file read failed:", error instanceof Error ? error.message : error);
+    console.warn(
+      "[media-vision] file read failed:",
+      error instanceof Error ? error.message : error,
+    );
     return `ملف ${index + 1} (${name}): تعذّرت قراءته.`;
   }
 }

@@ -172,15 +172,16 @@ export function MediaStudio({
       }
       try {
         const ext =
-          file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-          (isVideo ? "mp4" : isImage ? "jpg" : "bin");
+          file.name
+            .split(".")
+            .pop()
+            ?.toLowerCase()
+            .replace(/[^a-z0-9]/g, "") || (isVideo ? "mp4" : isImage ? "jpg" : "bin");
         const key = `${workspaceId}/uploads/${crypto.randomUUID()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("nour-media")
-          .upload(key, file, {
-            contentType: file.type || "application/octet-stream",
-            upsert: false,
-          });
+        const { error: upErr } = await supabase.storage.from("nour-media").upload(key, file, {
+          contentType: file.type || "application/octet-stream",
+          upsert: false,
+        });
         if (upErr) throw upErr;
         const { data } = await supabase.storage
           .from("nour-media")
@@ -368,9 +369,9 @@ export function MediaStudio({
               </div>
             </div>
             <p className="mt-1.5 text-[0.68rem] text-muted-foreground">
-              حتى ١٠ عناصر مع بعض: صور وفيديوهات حتى {humanSize(MAX_BYTES)} لكل ملف، ومستندات
-              وملفات (PDF · نصوص · CSV · JSON · أكواد) حتى {humanSize(MAX_FILE_BYTES)} —
-              والموظف يقرأ محتواها فعلياً وينفّذ عليها ما تطلبه.
+              حتى ١٠ عناصر مع بعض: صور وفيديوهات حتى {humanSize(MAX_BYTES)} لكل ملف، ومستندات وملفات
+              (PDF · نصوص · CSV · JSON · أكواد) حتى {humanSize(MAX_FILE_BYTES)} — والموظف يقرأ
+              محتواها فعلياً وينفّذ عليها ما تطلبه.
             </p>
             <input
               ref={fileInput}

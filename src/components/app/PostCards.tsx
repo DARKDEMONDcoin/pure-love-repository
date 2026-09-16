@@ -23,7 +23,11 @@ import { PublishPanel, imageFromOutput } from "@/components/app/PublishPanel";
 import { useConnectedAccounts } from "@/lib/data";
 import { adaptForProvider, sanitizePostBody } from "@/lib/post-format";
 import { PUBLISHABLE, providerLabel, requestedPublishTargets } from "@/lib/platforms";
-import { publishSocialNow, scheduleSocialPost, uploadSocialMedia } from "@/lib/social-queue.functions";
+import {
+  publishSocialNow,
+  scheduleSocialPost,
+  uploadSocialMedia,
+} from "@/lib/social-queue.functions";
 import { saveLearningFeedback } from "@/lib/learning.functions";
 import { cn } from "@/lib/utils";
 
@@ -279,7 +283,10 @@ export function PostCards({
                 <p className={cn("post-card-body", !open && long && "is-clamped")}>
                   {card.text}
                   {long ? (
-                    <button type="button" onClick={() => setExpanded((p) => ({ ...p, [provider]: !open }))}>
+                    <button
+                      type="button"
+                      onClick={() => setExpanded((p) => ({ ...p, [provider]: !open }))}
+                    >
                       {open ? "أقل" : "المزيد"}
                     </button>
                   ) : null}
