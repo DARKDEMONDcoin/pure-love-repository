@@ -197,8 +197,8 @@
     font-family: var(--font-sans);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
-    /* لا تمدّد أفقي على أي شاشة مهما طال المحتوى. */
-    overflow-x: hidden;
+    /* لا تمدّد أفقي على أي شاشة — clip لا يجعل body حاوية تمرير فتبقى الشرائط اللاصقة تعمل. */
+    overflow-x: clip;
   }
 
   /* الصور والوسائط لا تتجاوز حاويتها أبداً. */
