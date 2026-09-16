@@ -719,6 +719,9 @@ function ChatView({
   };
   const [activeTool, setActiveTool] = useState<"media" | "length" | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const columnRef = useRef<HTMLDivElement>(null);
+  /** يبقى true وهو عند أسفل المحادثة، ويصير false لحظة ما يقلّب لأعلى بنفسه. */
+  const [stickToBottom, setStickToBottom] = useState(true);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   /** يصير true عند إيقاف الطلب بعد الإرسال — فنتجاهل نتيجته. */
   const cancelledRef = useRef(false);
@@ -1114,7 +1117,11 @@ function ChatView({
             <span />
             <span />
           </div>
-          <div className="chat-message-column relative mx-auto flex w-full max-w-5xl flex-1 flex-col px-3 sm:px-6">
+          <div
+            ref={columnRef}
+            onScroll={onColumnScroll}
+            className="chat-message-column relative mx-auto flex w-full max-w-5xl flex-1 flex-col px-3 sm:px-6"
+          >
             {(messages ?? []).length === 0 && !pending ? (
               <div className="chat-welcome animate-pop-in">
                 <div className="chat-welcome-portraits" aria-hidden="true">
