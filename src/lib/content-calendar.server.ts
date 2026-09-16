@@ -602,8 +602,13 @@ export async function learnFromPerformance(
     }));
   let source: "live" | "internal" | "none" = live.length ? "live" : "none";
   if (!sample.length) {
+    type Chain = {
+      eq: (c: string, v: string) => Chain;
+      not: (c: string, op: string, v: string) => Chain;
+      limit: (n: number) => PromiseLike<{ data: unknown[] | null }>;
+    };
     const { data: internal } = await (
-      admin.from("social_posts") as unknown as { select: (s: string) => any }
+      admin.from("social_posts") as unknown as { select: (s: string) => Chain }
     )
       .select("body, provider, published_at, metrics")
       .eq("workspace_id", workspaceId)
