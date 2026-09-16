@@ -106,7 +106,7 @@ export async function recordTaskFeedback(
     metrics: input.metrics ?? {},
     weight: input.kind === "rejected" || input.kind === "edited" ? 2 : 1,
   });
-  if (run?.id) {
+  if (run?.id && ["approved", "edited", "rejected", "published"].includes(input.kind)) {
     await client.from("employee_runs").update({ outcome: input.kind }).eq("id", run.id);
   }
 }
@@ -239,7 +239,10 @@ export async function runLearningCycle(client: Client, workspaceId: string) {
     .in("status", ["approved", "active"])
     .limit(200);
   const minimumEvidence = Math.max(3, settings?.minimum_evidence ?? 3);
-  const minimumImprovement = settings?.minimum_improvement ?? 0.05;
+  const configuredImprovement = settings?.minimum_improvement ?? 4;
+  const minimumImprovement = configuredImprovement > 1
+    ? configuredImprovement / 100
+    : configuredImprovement;
   let evaluated = 0;
   let promoted = 0;
   let rolledBack = 0;
