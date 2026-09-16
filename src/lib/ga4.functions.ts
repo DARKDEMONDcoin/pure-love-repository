@@ -32,7 +32,9 @@ async function runReport(
   workspaceId: string,
   propertyId: string,
   body: Record<string, unknown>,
-): Promise<{ rows: { dimensionValues?: { value: string }[]; metricValues?: { value: string }[] }[] }> {
+): Promise<{
+  rows: { dimensionValues?: { value: string }[]; metricValues?: { value: string }[] }[];
+}> {
   const { googleDataRequest } = await import("./google-data.server");
   return googleDataRequest(
     workspaceId,
@@ -50,15 +52,25 @@ async function autoSelectProperty(
     const { googleDataRequest } = await import("./google-data.server");
     const parsed = await googleDataRequest<{
       accountSummaries?: { propertySummaries?: { property?: string }[] }[];
-    }>(workspaceId, "analytics", "https://analyticsadmin.googleapis.com/v1beta/accountSummaries?pageSize=50");
-    const ids = (parsed.accountSummaries ?? []).flatMap((a) =>
-      (a.propertySummaries ?? []).map((p) => (p.property ?? "").replace("properties/", "")),
-    ).filter(Boolean);
+    }>(
+      workspaceId,
+      "analytics",
+      "https://analyticsadmin.googleapis.com/v1beta/accountSummaries?pageSize=50",
+    );
+    const ids = (parsed.accountSummaries ?? [])
+      .flatMap((a) =>
+        (a.propertySummaries ?? []).map((p) => (p.property ?? "").replace("properties/", "")),
+      )
+      .filter(Boolean);
     if (ids.length !== 1) return { empty: ids.length === 0 };
     const propertyId = ids[0]!;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("integration_credentials").upsert(
-      { workspace_id: workspaceId, provider: "analytics", config: { propertyId } as unknown as Record<string, string> },
+      {
+        workspace_id: workspaceId,
+        provider: "analytics",
+        config: { propertyId } as unknown as Record<string, string>,
+      },
       { onConflict: "workspace_id,provider" },
     );
     await supabaseAdmin
@@ -86,7 +98,10 @@ export async function ga4SnapshotDetailed(
     const { hasGoogleAccount } = await import("./gsc.functions");
     if (!(await hasGoogleAccount(workspaceId, "analytics"))) {
       return {
-        status: { state: "not_connected", message: "Google Analytics 4 غير مربوط — اربط حساب Google من صفحة التكاملات." },
+        status: {
+          state: "not_connected",
+          message: "Google Analytics 4 غير مربوط — اربط حساب Google من صفحة التكاملات.",
+        },
         snapshot: null,
       };
     }
@@ -200,7 +215,11 @@ export const listGa4Properties = createServerFn({ method: "POST" })
         displayName?: string;
         propertySummaries?: { property?: string; displayName?: string }[];
       }[];
-    }>(data.workspaceId, "analytics", "https://analyticsadmin.googleapis.com/v1beta/accountSummaries?pageSize=50");
+    }>(
+      data.workspaceId,
+      "analytics",
+      "https://analyticsadmin.googleapis.com/v1beta/accountSummaries?pageSize=50",
+    );
     const properties = (parsed.accountSummaries ?? []).flatMap((a) =>
       (a.propertySummaries ?? []).map((p) => ({
         id: (p.property ?? "").replace("properties/", ""),

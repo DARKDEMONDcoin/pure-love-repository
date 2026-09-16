@@ -99,7 +99,11 @@ export async function extractDecisions(request: string, reply: string): Promise<
 }
 
 function tokens(text: string): Set<string> {
-  return new Set(normalizeArabic(text).split(" ").filter((w) => w.length > 2));
+  return new Set(
+    normalizeArabic(text)
+      .split(" ")
+      .filter((w) => w.length > 2),
+  );
 }
 
 function similar(a: string, b: string): boolean {
@@ -133,8 +137,8 @@ export async function recordDecisions(
 
   let saved = 0;
   for (const draft of params.drafts) {
-    const twin = (existing ?? []).find(
-      (row) => similar(`${row.title} ${row.decision}`, `${draft.title} ${draft.decision}`),
+    const twin = (existing ?? []).find((row) =>
+      similar(`${row.title} ${row.decision}`, `${draft.title} ${draft.decision}`),
     );
     const { data: inserted } = await client
       .from("decisions")
@@ -194,7 +198,8 @@ export async function decisionsBlock(
     "هذه قرارات وقيود اتفق عليها المالك فعلاً. التزم بها ولا تناقضها ولا تعِد طرحها كسؤال.",
     "إن كان الطلب الحالي يخالف قراراً منها، نبّه المالك في سطر واحد ثم نفّذ ما طلبه الآن.",
     ...ranked.map(
-      (r) => `- [${DECISION_KIND_LABEL[r.kind ?? "decision"] ?? "قرار"}] ${r.title}: ${r.body ?? ""}`,
+      (r) =>
+        `- [${DECISION_KIND_LABEL[r.kind ?? "decision"] ?? "قرار"}] ${r.title}: ${r.body ?? ""}`,
     ),
   ].join("\n");
 }

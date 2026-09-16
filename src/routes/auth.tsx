@@ -68,16 +68,23 @@ type Errors = Record<string, string>;
 
 function arabicError(message: string) {
   const m = message.toLowerCase();
-  if (m.includes("already registered") || m.includes("already been registered") || m.includes("user already"))
+  if (
+    m.includes("already registered") ||
+    m.includes("already been registered") ||
+    m.includes("user already")
+  )
     return "هذا البريد مسجّل بالفعل — جرّب تسجيل الدخول أو استعادة كلمة المرور.";
   if (m.includes("invalid login credentials")) return "البريد أو كلمة المرور غير صحيحة.";
-  if (m.includes("email not confirmed")) return "لم يتم تأكيد البريد بعد — افتح رسالة التأكيد في بريدك.";
-  if (m.includes("password should be at least")) return "كلمة المرور قصيرة جداً — ٨ أحرف على الأقل.";
+  if (m.includes("email not confirmed"))
+    return "لم يتم تأكيد البريد بعد — افتح رسالة التأكيد في بريدك.";
+  if (m.includes("password should be at least"))
+    return "كلمة المرور قصيرة جداً — ٨ أحرف على الأقل.";
   if (m.includes("provider is not enabled") || m.includes("unsupported provider"))
     return "الدخول عبر Google غير مفعّل حالياً — استخدم البريد وكلمة المرور.";
   if (m.includes("rate limit") || m.includes("too many"))
     return "محاولات كثيرة في وقت قصير — انتظر دقيقة ثم أعد المحاولة.";
-  if (m.includes("invalid email") || m.includes("email address")) return "صيغة البريد الإلكتروني غير صحيحة.";
+  if (m.includes("invalid email") || m.includes("email address"))
+    return "صيغة البريد الإلكتروني غير صحيحة.";
   if (m.includes("failed to fetch") || m.includes("network"))
     return "تعذّر الاتصال بالخدمة — تحقّق من الإنترنت وأعد المحاولة.";
   return message || "حدث خطأ غير متوقع — أعد المحاولة.";
@@ -94,7 +101,10 @@ function GoogleIcon() {
         fill="#34A853"
         d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18Z"
       />
-      <path fill="#FBBC05" d="M3.97 10.73a5.4 5.4 0 0 1 0-3.46V4.94H.96a9 9 0 0 0 0 8.12l3.01-2.33Z" />
+      <path
+        fill="#FBBC05"
+        d="M3.97 10.73a5.4 5.4 0 0 1 0-3.46V4.94H.96a9 9 0 0 0 0 8.12l3.01-2.33Z"
+      />
       <path
         fill="#EA4335"
         d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.01 2.33C4.68 5.15 6.66 3.58 9 3.58Z"
@@ -166,11 +176,12 @@ function AuthPage() {
   function validate(): boolean {
     const e: Errors = {};
     const mail = email.trim();
-    if (!mail) e['email'] = "أدخل بريدك الإلكتروني.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) e['email'] = "صيغة البريد غير صحيحة.";
-    if (!password) e['password'] = "أدخل كلمة المرور.";
-    else if (isSignup && password.length < 8) e['password'] = "٨ أحرف على الأقل.";
-    if (isSignup && fullName.trim().length < 3) e['fullName'] = "اكتب اسمك الكامل (٣ أحرف على الأقل).";
+    if (!mail) e["email"] = "أدخل بريدك الإلكتروني.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) e["email"] = "صيغة البريد غير صحيحة.";
+    if (!password) e["password"] = "أدخل كلمة المرور.";
+    else if (isSignup && password.length < 8) e["password"] = "٨ أحرف على الأقل.";
+    if (isSignup && fullName.trim().length < 3)
+      e["fullName"] = "اكتب اسمك الكامل (٣ أحرف على الأقل).";
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -285,10 +296,10 @@ function AuthPage() {
                   value={email}
                   autoComplete="email"
                   onChange={(e) => setEmail(e.target.value)}
-                  aria-invalid={Boolean(errors['email'])}
-                  className={cn("sauth-input", errors['email'] && "is-invalid")}
+                  aria-invalid={Boolean(errors["email"])}
+                  className={cn("sauth-input", errors["email"] && "is-invalid")}
                 />
-                {errors['email'] ? <p className="sauth-error">{errors['email']}</p> : null}
+                {errors["email"] ? <p className="sauth-error">{errors["email"]}</p> : null}
               </div>
 
               {isSignup ? (
@@ -300,10 +311,10 @@ function AuthPage() {
                     value={fullName}
                     autoComplete="name"
                     onChange={(e) => setFullName(e.target.value)}
-                    aria-invalid={Boolean(errors['fullName'])}
-                    className={cn("sauth-input", errors['fullName'] && "is-invalid")}
+                    aria-invalid={Boolean(errors["fullName"])}
+                    className={cn("sauth-input", errors["fullName"] && "is-invalid")}
                   />
-                  {errors['fullName'] ? <p className="sauth-error">{errors['fullName']}</p> : null}
+                  {errors["fullName"] ? <p className="sauth-error">{errors["fullName"]}</p> : null}
                 </div>
               ) : null}
 
@@ -317,8 +328,8 @@ function AuthPage() {
                     value={password}
                     autoComplete={isSignup ? "new-password" : "current-password"}
                     onChange={(e) => setPassword(e.target.value)}
-                    aria-invalid={Boolean(errors['password'])}
-                    className={cn("sauth-input", errors['password'] && "is-invalid")}
+                    aria-invalid={Boolean(errors["password"])}
+                    className={cn("sauth-input", errors["password"] && "is-invalid")}
                   />
                   <button
                     type="button"
@@ -329,7 +340,7 @@ function AuthPage() {
                     {showPw ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
-                {errors['password'] ? <p className="sauth-error">{errors['password']}</p> : null}
+                {errors["password"] ? <p className="sauth-error">{errors["password"]}</p> : null}
                 {!isSignup ? (
                   <button type="button" className="sauth-forgot" onClick={onForgot}>
                     نسيت كلمة المرور؟
@@ -357,7 +368,11 @@ function AuthPage() {
 
               {isSignup ? (
                 <label className="sauth-check">
-                  <input type="checkbox" checked={updates} onChange={(e) => setUpdates(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={updates}
+                    onChange={(e) => setUpdates(e.target.checked)}
+                  />
                   <span>
                     أوافق على تلقي تحديثات وعروض من سهل. يمكنك إلغاء الاشتراك في أي وقت.{" "}
                     <Link to="/privacy" className="sauth-link">
@@ -387,7 +402,11 @@ function AuthPage() {
 
           <div className="sauth-card-foot">
             {isSignup ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟"}{" "}
-            <button type="button" className="sauth-link" onClick={() => switchMode(isSignup ? "signin" : "signup")}>
+            <button
+              type="button"
+              className="sauth-link"
+              onClick={() => switchMode(isSignup ? "signin" : "signup")}
+            >
               {isSignup ? "سجّل الدخول" : "أنشئ حسابًا"}
             </button>
           </div>

@@ -27,9 +27,8 @@ export const generateMedia = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!workspace) throw new Error("مساحة العمل غير موجودة.");
 
-    const { literalBrief, imageBrief, aspectSize, ownedHeroImage } = await import(
-      "./image-gen.server"
-    );
+    const { literalBrief, imageBrief, aspectSize, ownedHeroImage } =
+      await import("./image-gen.server");
     const prompt =
       data.mode === "literal"
         ? await literalBrief(data.prompt)

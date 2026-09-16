@@ -151,7 +151,12 @@ export function AuthCover() {
               data-active={i === active}
               onClick={() => setActive(i)}
             >
-              <span style={{ animationDuration: `${INTERVAL}ms`, animationPlayState: paused ? "paused" : "running" }} />
+              <span
+                style={{
+                  animationDuration: `${INTERVAL}ms`,
+                  animationPlayState: paused ? "paused" : "running",
+                }}
+              />
             </button>
           ))}
         </div>

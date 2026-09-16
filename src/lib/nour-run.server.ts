@@ -42,8 +42,6 @@ export const ARTICLE_SKILLS = new Set([
   "visual-concept",
 ]);
 
-
-
 export const evidenceRules = [
   "استخدم كتلة «أدلة ميدانية» أدناه كمصدر وحيد للأرقام والمنافسين والكلمات — لا تخترع بيانات غيرها.",
   "اذكر مصدر كل رقم مهم (Search Console، اقتراحات البحث، نتائج البحث، تحليل الصفحة).",
@@ -99,7 +97,6 @@ export const craft: Record<string, string> = {
     "إن سقط أي بند، أعد كتابة الجزء قبل التسليم ولا تسلّم مسودة ناقصة — سلّم أفضل نسخة لا أول نسخة.",
     "كل منشور تسلّمه يمر على فاحص جودة آلي داخل المنصة (هوك، طول المنصة، دعوة واحدة، عدد الهاشتاقات، الرموز، الحشو، بقايا التنسيق). اكتب من البداية بما يجتازه: أول سطر أقل من ٩٠ حرفاً وفيه رقم أو سؤال أو خطاب مباشر، ونص المنشور بلا عناوين Markdown ولا نجوم ولا جداول.",
   ].join("\n"),
-
 
   eva: [
     "### كيف تفكّرين قبل أن تكتبي (داخلياً، لا يُعرض)",
@@ -195,7 +192,7 @@ export const craft: Record<string, string> = {
     "ممنوع كل ما يعاقبه Google: نص مخفي، حشو كلمات، محتوى مكرر أو مترجم آلياً، شبكات روابط، شراء روابط، بيانات منظمة لا تطابق الصفحة، صفحات مولّدة بلا قيمة.",
     "YMYL (صحة، دواء، مال، قانون، عقار، تعليم، هجرة): مصدر رسمي لكل رقم، بلا وعد نتيجة، وإحالة صريحة لمختص.",
     "في YMYL تحديداً — قواعد لا تُخالَف: (١) لا سعر ولا نسبة تحمّل ولا فترة انتظار ولا حد تغطية ولا مدة تعويض ولا شرط عمر يُكتب برقم إلا إذا أعطاه المالك أو ورد في الأدلة الميدانية؛ وإلا اتركي المكان جدولاً بعمود «القيمة من الشركة» فارغاً أو صياغة نوعية بلا رقم. (٢) لا تنسبي نسبة مئوية لسبب هبوط أو لتوزيع سوق («٤٠٪ من الهبوط سببه…») — رتّبي الأسباب باحتمال عالٍ/متوسط/منخفض مع الدليل المطلوب لتأكيد كل سبب. (٣) أسماء الجهات التنظيمية تُكتب بمسمّاها الرسمي الصحيح (مصر: الهيئة العامة للرقابة المالية · السعودية: هيئة التأمين · الإمارات: مصرف الإمارات العربية المتحدة المركزي)، وإن لم تتأكدي فاكتبي «الجهة الرقابية المختصة». (٤) ممنوع اختراع مؤلف أو صفة («خبير معتمد») أو مراجعة طبية أو تاريخ مراجعة؛ اطلبي اسم المؤلف الحقيقي ومؤهله في سطر واحد. (٥) عناوين وأوصاف تحمل سنة (٢٠٢٦) لا تُكتب مع أرقام غير موثّقة.",
-    "JSON-LD يخرج بحقول حقيقية فقط: الرابط والناشر والشعار والمؤلف من بيانات المالك، ونص الأسئلة المعلَّم مطابق حرفياً للنص الظاهر في الصفحة. أي حقل غير متوفر يُترك كعنصر واضح `\"REPLACE_ME\"` مع سطر يوضح ما يجب لصقه — لا قيمة مخترعة ولا تقييم ولا سعر.",
+    'JSON-LD يخرج بحقول حقيقية فقط: الرابط والناشر والشعار والمؤلف من بيانات المالك، ونص الأسئلة المعلَّم مطابق حرفياً للنص الظاهر في الصفحة. أي حقل غير متوفر يُترك كعنصر واضح `"REPLACE_ME"` مع سطر يوضح ما يجب لصقه — لا قيمة مخترعة ولا تقييم ولا سعر.',
     "خطة القياس تبدأ بخط أساس: القيمة الحالية لكل مؤشر ومصدره (Search Console / Analytics / فحص الموقع) وعنوان الصفحات المستهدفة وحجم الفرق الذي يُعتبر تغيّراً حقيقياً — بلا خط أساس لا معنى لقياس ١٤ أو ٢٨ يوماً، فاطلبيه صراحة إن غاب.",
     "التدقيق التقني ليس قائمة عامة: كل بند يُصاغ كفحص قابل للتنفيذ على هذا الموقع (ما الذي يُفحص، بأي أداة، ما العتبة، وأي نوع صفحات) وإن لم تتوفر بيانات زحف فقولي ذلك واطلبي الوصول بدل إصدار حكم على وضع لم تفحصيه.",
     "أي تدقيق تقني يمرّ إلزامياً على هذه الفحوص بالاسم: robots.txt وقواعد الحجب · وسوم noindex/nofollow · خرائط الموقع (اكتمالها وتحديثها وتوافقها مع الصفحات المفهرسة) · تقرير الفهرسة وأسباب الاستبعاد · حالات canonical والمتضاربة · التكرار والتشابه بين صفحات المدونة والخدمات · أكواد الاستجابة (٣٠١/٣٠٢/٤٠٤/٥xx وسلاسل التحويل) · العرض بـJavaScript وما يظهر بعد التنفيذ · البيانات المنظمة وأخطاؤها · الروابط الداخلية والصفحات المعزولة وعمق النقرات · hreflang إن وُجدت نسخ لغوية · Core Web Vitals لكل نوع صفحة (رئيسية/فئة/مقال/نموذج) · الأمان وHTTPS. لكل بند: كيف يُفحص، العتبة، والأثر المتوقع.",
@@ -355,7 +352,6 @@ export const personas: Record<
       "توزيع الأدوار: المستخدم يملك الاستراتيجية والاعتماد والنشر النهائي، وأنت تملك البحث والكتابة والتصميم والجدولة المقترحة والقياس — نفّذ ملكيتك كاملة بلا استئذان، ولا تتجاوز ملكيته.",
       "منهجك: هوك قبل كل شيء، ونشر بإيقاع ثابت، ورقم يقيس كل منشور، وتعديل الخطة بناءً على ما نجح فعلاً لا على الذوق.",
       "تكتب عربية طبيعية باللهجة المطلوبة، وتحترم حدود كل منصة وأنظمة الإعلان في السوق العربي، ولا تختلق أرقاماً ولا شهادات عملاء ولا ادعاءات.",
-
     ].join(" "),
     channel: "instagram",
     kind: "منشور",
@@ -428,7 +424,6 @@ export const personas: Record<
     channel: "analytics",
     kind: "تقرير",
   },
-
 };
 
 /** يجمع أدلة حقيقية مجانية (اقتراحات بحث، نتائج SERP، تحليل صفحات، Search Console، GA4). */
@@ -470,9 +465,32 @@ function needsResearch(message: string): boolean {
   const text = message.trim();
   if (text.length < 25) return false;
   const signals = [
-    "كلمات", "كلمة", "سيو", "seo", "ترتيب", "منافس", "بحث", "مقال", "محتوى", "صفحة",
-    "رابط", "http", "نقرات", "ظهور", "search console", "خطة", "استراتيج", "تحليل",
-    "موقع", "مدونة", "شهري", "تقرير", "فرص", "عنوان", "ميتا", "schema",
+    "كلمات",
+    "كلمة",
+    "سيو",
+    "seo",
+    "ترتيب",
+    "منافس",
+    "بحث",
+    "مقال",
+    "محتوى",
+    "صفحة",
+    "رابط",
+    "http",
+    "نقرات",
+    "ظهور",
+    "search console",
+    "خطة",
+    "استراتيج",
+    "تحليل",
+    "موقع",
+    "مدونة",
+    "شهري",
+    "تقرير",
+    "فرص",
+    "عنوان",
+    "ميتا",
+    "schema",
   ];
   const lower = text.toLowerCase();
   return signals.some((s) => lower.includes(s));
@@ -520,7 +538,6 @@ export function isTruncated(text: string): boolean {
  * حتى يبدأ كل مخرج بالمحتوى القابل للاستخدام مباشرة.
  */
 export function stripPreamble(text: string): string {
-
   const lines = text.split("\n");
   const greeting =
     /^(أهلاً|أهلا|مرحباً|مرحبا|بالتأكيد|تفضل|تفضلي|حسناً|حسنا|بصفتي|يسعدني|سعيدة|إليك|اليك|فيما يلي|بناءً على طلبك|بناء على طلبك|طبعاً|طبعا|يا سيدي|يا سيدتي|يا سيد|عزيزي|عزيزتي|سعدت|شكراً على|شكرا على|تمام|ماشي|أكيد|اكيد|جميل|رائع|واضح|خلاص|دعنا|دعينا|لنبدأ|سأبدأ|سأركز|سنركز|قبل أن نبدأ|بما أن|هنا |هذه قائمة|هذا تحليل|هذا البحث|نظراً ل|نظرا ل)|^.{0,60}(بصفتي|بما أن مهمتي|إليك ما طلبت|اليك ما طلبت|سأركز على|سأقدم لك)/;
@@ -585,9 +602,6 @@ export function sanitizeOutput(text: string): string {
   return out;
 }
 
-
-
-
 export type SkillRun = {
   output: string;
   messageId: string | null;
@@ -615,7 +629,6 @@ export async function executeSkill(
   // المفاتيح تُقرأ داخل freeChat من جدول app_secrets في Supabase.
   const apiKey = "";
 
-
   const persona = personas[params.employeeId];
   const skill = getSkill(params.skillId, params.employeeId);
   if (!persona || !skill || skill.employeeId !== params.employeeId)
@@ -638,7 +651,10 @@ export async function executeSkill(
     .eq("workspace_id", params.workspaceId)
     .eq("status", "connected");
   const connected = [
-    ...new Set([...(linked ?? []).map((a) => a.provider), ...(direct ?? []).map((i) => i.provider)]),
+    ...new Set([
+      ...(linked ?? []).map((a) => a.provider),
+      ...(direct ?? []).map((i) => i.provider),
+    ]),
   ];
 
   // نكمل القيم الناقصة من تعريف الحقول (defaultValue أو أول خيار) حتى لا يظهر "undefined"
@@ -647,15 +663,14 @@ export async function executeSkill(
   for (const field of skill.fields) {
     const provided = params.values[field.name];
     values[field.name] =
-      (provided?.trim() ? provided : undefined) ??
-      field.defaultValue ??
-      field.options?.[0] ??
-      "";
+      (provided?.trim() ? provided : undefined) ?? field.defaultValue ?? field.options?.[0] ?? "";
   }
   for (const [key, value] of Object.entries(params.values)) {
     if (value?.trim() && !(key in values)) values[key] = value;
   }
-  const missing = skill.fields.filter((f) => f.required && !values[f.name]?.trim()).map((f) => f.label);
+  const missing = skill.fields
+    .filter((f) => f.required && !values[f.name]?.trim())
+    .map((f) => f.label);
   if (missing.length) throw new Error(`بيانات ناقصة لهذه القدرة: ${missing.join("، ")}.`);
 
   const prompt = skill.buildPrompt(values);
@@ -664,7 +679,6 @@ export async function executeSkill(
     .filter(([, v]) => v?.trim())
     .map(([k, v]) => `${k}: ${v.length > 120 ? `${v.slice(0, 120)}…` : v}`)
     .join(" · ");
-
 
   const brainText = memoryBlock(brain ?? [], `${skill.title} ${requestSummary}`, 8);
 
@@ -695,9 +709,7 @@ export async function executeSkill(
           rivals: values["rivals"] || values["competitors"],
         });
         if (social.block) {
-          research.block = research.block
-            ? `${research.block}\n\n${social.block}`
-            : social.block;
+          research.block = research.block ? `${research.block}\n\n${social.block}` : social.block;
           research.used.push(...social.used);
         }
       }
@@ -742,11 +754,6 @@ export async function executeSkill(
     console.error("[decisions] skill context failed:", error);
   }
 
-
-
-
-
-
   // سياق حيّ من حسابات العلامة المربوطة (بريد، تقويم، CRM…) عبر Pipedream.
   let live = { block: "", used: [] as string[] };
   try {
@@ -759,7 +766,6 @@ export async function executeSkill(
   } catch (error) {
     console.error("[live] context failed:", error);
   }
-
 
   const today = new Date();
   const todayAr = today.toLocaleDateString("ar-EG", {
@@ -784,7 +790,10 @@ export async function executeSkill(
       ? `كلمات ممنوعة تماماً: ${workspace.banned_words.join("، ")}.`
       : "",
     craft[params.employeeId] ? `## معايير حِرفتك\n${craft[params.employeeId]}` : "",
-    playbookFor(params.employeeId, `${params.skillId} ${Object.values(params.values ?? {}).join(" ")}`),
+    playbookFor(
+      params.employeeId,
+      `${params.skillId} ${Object.values(params.values ?? {}).join(" ")}`,
+    ),
     qualityCriteria[params.employeeId]?.length
       ? `## معايير قبول المخرج (راجعها بنداً بنداً قبل التسليم)\n${(qualityCriteria[params.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
       : "",
@@ -816,7 +825,6 @@ export async function executeSkill(
     .filter(Boolean)
     .join("\n");
 
-
   await client.from("messages").insert({
     workspace_id: params.workspaceId,
     employee_id: params.employeeId,
@@ -832,10 +840,12 @@ export async function executeSkill(
       maxTokens: long ? 8000 : 3600,
     });
 
-  let output = (await chat([
-    { role: "system", content: system },
-    { role: "user", content: prompt },
-  ])).trim();
+  let output = (
+    await chat([
+      { role: "system", content: system },
+      { role: "user", content: prompt },
+    ])
+  ).trim();
 
   if (!output) throw new Error("لم يصل مخرج من الموظف — أعد المحاولة.");
 
@@ -885,8 +895,6 @@ export async function executeSkill(
     console.warn("[judge] skill skipped:", error instanceof Error ? error.message : error);
   }
 
-
-
   // صورة رئيسية مجانية لكل مخرج تحريري (مقال/صفحة/حزمة نشر) — مثل Penny وأدق منها:
   // نستخدم مزوّداً بلا مفتاح وبلا حد يومي، والرابط دائم صالح للنشر مباشرة.
   if (ARTICLE_SKILLS.has(skill.id)) {
@@ -924,8 +932,6 @@ export async function executeSkill(
   if (sources.length) {
     output = `${output}\n\n> مصادر البيانات: ${sources.join(" · ")}`;
   }
-
-
 
   const { data: assistantRow, error: assistantError } = await client
     .from("messages")
@@ -987,7 +993,10 @@ export async function executeSkill(
       drafts,
     });
   } catch (error) {
-    console.warn("[decisions] skill capture skipped:", error instanceof Error ? error.message : error);
+    console.warn(
+      "[decisions] skill capture skipped:",
+      error instanceof Error ? error.message : error,
+    );
   }
 
   return {

@@ -103,12 +103,7 @@ export const startWhatsappConnect = createServerFn({ method: "POST" })
       "whatsapp",
     );
     return {
-      url: meta.metaAuthorizeUrl(
-        config,
-        meta.metaRedirectUri(),
-        state,
-        meta.WHATSAPP_SCOPES,
-      ),
+      url: meta.metaAuthorizeUrl(config, meta.metaRedirectUri(), state, meta.WHATSAPP_SCOPES),
     };
   });
 

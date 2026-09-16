@@ -112,9 +112,7 @@ export async function improvePost(input: ImproveInput): Promise<ImproveResult> {
     }),
   );
 
-  const variants = drafts
-    .filter((v): v is ImproveVariant => !!v)
-    .sort((a, b) => b.score - a.score);
+  const variants = drafts.filter((v): v is ImproveVariant => !!v).sort((a, b) => b.score - a.score);
 
   const best = variants[0];
   const fixed = best

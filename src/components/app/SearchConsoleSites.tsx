@@ -40,7 +40,11 @@ export function SearchConsoleSites({
               نور ستقرأ بيانات هذا الموقع فقط (كلمات البحث، الصفحات، النقرات) لتحسين المحتوى.
             </p>
           </div>
-          <button onClick={onClose} aria-label="إغلاق" className="grid size-9 place-items-center rounded-xl hover:bg-secondary">
+          <button
+            onClick={onClose}
+            aria-label="إغلاق"
+            className="grid size-9 place-items-center rounded-xl hover:bg-secondary"
+          >
             <X className="size-4.5" />
           </button>
         </div>

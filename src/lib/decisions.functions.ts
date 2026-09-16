@@ -19,7 +19,9 @@ export const listDecisions = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     let query = context.supabase
       .from("decisions")
-      .select("id, employee_id, conversation_id, kind, title, decision, rationale, status, created_at")
+      .select(
+        "id, employee_id, conversation_id, kind, title, decision, rationale, status, created_at",
+      )
       .eq("workspace_id", data.workspaceId)
       .order("created_at", { ascending: false })
       .limit(200);

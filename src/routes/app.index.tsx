@@ -1,5 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, LayoutDashboard, Activity, CheckCircle2, Clock3, Link2, ListChecks, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  LayoutDashboard,
+  Activity,
+  CheckCircle2,
+  Clock3,
+  Link2,
+  ListChecks,
+  Sparkles,
+} from "lucide-react";
 
 import { ActivationMap } from "@/components/app/ActivationMap";
 import { AdsResultsCard } from "@/components/app/AdsResultsCard";
@@ -43,7 +52,9 @@ function FirstRun({ workspace }: { workspace: { id: string } | null }) {
   return (
     <>
       <section className="app-editorial-panel app-first-run">
-        <p className="app-editorial-kicker flex items-center gap-1.5"><Sparkles className="size-3 text-primary" /> ابدأ من هنا</p>
+        <p className="app-editorial-kicker flex items-center gap-1.5">
+          <Sparkles className="size-3 text-primary" /> ابدأ من هنا
+        </p>
         <h2 className="mt-1.5 font-display text-xl font-black sm:text-2xl">
           اطلب أول عمل من فريقك
         </h2>
@@ -64,7 +75,9 @@ function FirstRun({ workspace }: { workspace: { id: string } | null }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-bold">{m.name}</span>
-                <span className="block truncate text-[0.72rem] text-muted-foreground">{m.role}</span>
+                <span className="block truncate text-[0.72rem] text-muted-foreground">
+                  {m.role}
+                </span>
               </span>
               <ArrowLeft className="size-4 shrink-0 transition-transform group-hover:-translate-x-1" />
             </Link>
@@ -119,10 +132,7 @@ function AppHome() {
           <p className="flex-1 text-sm font-semibold">
             {broken.length} حساب يحتاج إعادة ربط — المهام المرتبطة به متوقفة.
           </p>
-          <Link
-            to="/app/integrations"
-            className="app-text-link"
-          >
+          <Link to="/app/integrations" className="app-text-link">
             إصلاح الربط
           </Link>
         </div>
@@ -141,18 +151,22 @@ function AppHome() {
           <section className="app-command-head">
             <div>
               <p>SAHL / EXECUTIVE CONTROL</p>
-              <h2 className="flex items-center gap-2.5"> <LayoutDashboard className="size-6 text-primary" /> مركز قيادة العمل والنتائج </h2>
+              <h2 className="flex items-center gap-2.5">
+                {" "}
+                <LayoutDashboard className="size-6 text-primary" /> مركز قيادة العمل والنتائج{" "}
+              </h2>
             </div>
-            <span><i /> تحديث مباشر من حساباتك</span>
+            <span>
+              <i /> تحديث مباشر من حساباتك
+            </span>
           </section>
           {kpis.length ? (
             <section className="app-metric-strip" aria-label="ملخص مساحة العمل">
               {kpis.map((k) => (
-                <div
-                  key={k.k}
-                  className={k.urgent ? "app-metric is-urgent" : "app-metric"}
-                >
-                  <span className="app-metric-icon" aria-hidden="true"><k.icon /></span>
+                <div key={k.k} className={k.urgent ? "app-metric is-urgent" : "app-metric"}>
+                  <span className="app-metric-icon" aria-hidden="true">
+                    <k.icon />
+                  </span>
                   <p className="app-metric-label">{k.k}</p>
                   <p className="app-metric-number">{k.n}</p>
                   <p className="app-metric-note">{k.d}</p>
@@ -163,12 +177,16 @@ function AppHome() {
 
           <ActivationMap variant="compact" />
 
-          {workspace ? <AdsResultsCard workspaceId={workspace.id} integrations={integrations ?? []} /> : null}
+          {workspace ? (
+            <AdsResultsCard workspaceId={workspace.id} integrations={integrations ?? []} />
+          ) : null}
 
           <div className="app-operations-grid">
             <section className="app-editorial-panel">
               <div className="flex items-center justify-between">
-                <h2 className="flex items-center gap-2 font-display text-base font-black sm:text-lg"><CheckCircle2 className="size-5 text-jade" /> آخر ما أنجزه فريقك</h2>
+                <h2 className="flex items-center gap-2 font-display text-base font-black sm:text-lg">
+                  <CheckCircle2 className="size-5 text-jade" /> آخر ما أنجزه فريقك
+                </h2>
                 <Link to="/app/tasks" className="app-text-link">
                   كل المهام
                 </Link>
@@ -177,10 +195,7 @@ function AppHome() {
                 {list.slice(0, 5).map((t) => {
                   const member = getMember(t.employee_id);
                   return (
-                    <li
-                      key={t.id}
-                      className="app-work-row"
-                    >
+                    <li key={t.id} className="app-work-row">
                       <div className="flex flex-wrap items-center gap-2.5 text-xs">
                         {member ? (
                           <span className="inline-flex items-center gap-1.5 font-bold">
@@ -188,7 +203,11 @@ function AppHome() {
                               className="size-6 overflow-hidden rounded-lg"
                               style={{ background: member.tintSoft }}
                             >
-                              <Portrait memberId={member.id} name={member.name} className="size-full" />
+                              <Portrait
+                                memberId={member.id}
+                                name={member.name}
+                                className="size-full"
+                              />
                             </span>
                             {member.name}
                           </span>
@@ -197,7 +216,9 @@ function AppHome() {
                         <span className="app-status-word">
                           {taskStatusLabel[t.status as keyof typeof taskStatusLabel] ?? t.status}
                         </span>
-                        <span className="ms-auto text-muted-foreground">{timeAgo(t.created_at)}</span>
+                        <span className="ms-auto text-muted-foreground">
+                          {timeAgo(t.created_at)}
+                        </span>
                       </div>
                       <p className="mt-2.5 break-words font-bold">{t.title}</p>
                     </li>
@@ -207,7 +228,9 @@ function AppHome() {
             </section>
 
             <section className="app-editorial-panel app-running-panel">
-              <h2 className="flex items-center gap-2 font-display text-base font-black sm:text-lg"><Activity className="size-5 text-amber" /> مهام جارية</h2>
+              <h2 className="flex items-center gap-2 font-display text-base font-black sm:text-lg">
+                <Activity className="size-5 text-amber" /> مهام جارية
+              </h2>
               <ul className="app-running-list">
                 {running.slice(0, 5).map((t) => (
                   <li key={t.id} className="flex items-center gap-3 text-sm">
@@ -219,10 +242,7 @@ function AppHome() {
                   <li className="text-sm text-muted-foreground">لا توجد مهام جارية.</li>
                 ) : null}
               </ul>
-              <Link
-                to="/app/chat"
-                className="app-text-link mt-5 inline-flex items-center gap-1.5"
-              >
+              <Link to="/app/chat" className="app-text-link mt-5 inline-flex items-center gap-1.5">
                 اطلب مهمة جديدة <ArrowLeft className="size-4" />
               </Link>
             </section>

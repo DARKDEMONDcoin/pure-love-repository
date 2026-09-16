@@ -162,9 +162,7 @@ const VISUAL_EMPLOYEES = new Set(["dana", "sonny", "nour"]);
 
 /** حدث تقدّم حقيقي يُبثّ للمستخدم أثناء تنفيذ الطلب. */
 export type TurnEvent =
-  | { type: "step"; label: string }
-  | { type: "delta"; text: string }
-  | { type: "reset" };
+  { type: "step"; label: string } | { type: "delta"; text: string } | { type: "reset" };
 
 export type TurnEmit = (event: TurnEvent) => void;
 
@@ -419,7 +417,10 @@ export async function runEmployeeTurn(
     if (toolBlocks.length) {
       emit({
         type: "step",
-        label: `خلصت: ${toolBlocks.map((t) => t.tool).slice(0, 3).join("، ")}`,
+        label: `خلصت: ${toolBlocks
+          .map((t) => t.tool)
+          .slice(0, 3)
+          .join("، ")}`,
       });
     }
     const toolsBlock = toolBlocks.length
@@ -833,50 +834,49 @@ export async function runEmployeeTurn(
       : (async (): Promise<string | null> => {
           let imageUrl: string | null = null;
           try {
-        const { ownedHeroImage, extractImagePrompt, imageBrief, literalBrief, aspectSize } =
-          await import("./image-gen.server");
-        const fromField = deliverables
-          .map((d) => d.image_prompt)
-          .find((p) => typeof p === "string" && p.trim().length > 30);
-        const draft =
-          (fromField ? fromField.trim() : null) ??
-          extractImagePrompt(`${reply}\n${deliverables.map((d) => d.body ?? "").join("\n")}`);
-        const wantsVisual =
-          imageMode === "manual" ||
-          // طلب صريح للصورة: نولّدها دائماً حتى لو لم يُرجع النموذج وصفاً بصرياً.
-          explicitImage ||
-          Boolean(draft) ||
-          deliverables.some((d) => d.body && d.body.length > 80);
-        if (wantsVisual) {
-          emit({ type: "step", label: "أولّد الصورة المطلوبة الآن" });
-          // وصف المستخدم يُحترم حرفياً؛ وإلا يُشتق الوصف من طلبه ومن المخرج نفسه.
-          const prompt =
-            imageMode === "manual"
-              ? await literalBrief(userImagePrompt)
-              : await imageBrief({
-                  request: data.message,
-                  title: deliverables[0]?.title ?? null,
-                  body: deliverables[0]?.body ?? reply,
-                  brand: {
-                    name: workspace?.name,
-                    industry: workspace?.industry,
-                    country: workspace?.country ?? null,
-                  },
-                  draft,
-                });
-          imageUrl = await ownedHeroImage(
-            supabase as unknown as Parameters<typeof ownedHeroImage>[0],
-            data.workspaceId,
-            prompt,
-            aspectSize(data.imageAspect ?? "landscape"),
-          );
-        }
+            const { ownedHeroImage, extractImagePrompt, imageBrief, literalBrief, aspectSize } =
+              await import("./image-gen.server");
+            const fromField = deliverables
+              .map((d) => d.image_prompt)
+              .find((p) => typeof p === "string" && p.trim().length > 30);
+            const draft =
+              (fromField ? fromField.trim() : null) ??
+              extractImagePrompt(`${reply}\n${deliverables.map((d) => d.body ?? "").join("\n")}`);
+            const wantsVisual =
+              imageMode === "manual" ||
+              // طلب صريح للصورة: نولّدها دائماً حتى لو لم يُرجع النموذج وصفاً بصرياً.
+              explicitImage ||
+              Boolean(draft) ||
+              deliverables.some((d) => d.body && d.body.length > 80);
+            if (wantsVisual) {
+              emit({ type: "step", label: "أولّد الصورة المطلوبة الآن" });
+              // وصف المستخدم يُحترم حرفياً؛ وإلا يُشتق الوصف من طلبه ومن المخرج نفسه.
+              const prompt =
+                imageMode === "manual"
+                  ? await literalBrief(userImagePrompt)
+                  : await imageBrief({
+                      request: data.message,
+                      title: deliverables[0]?.title ?? null,
+                      body: deliverables[0]?.body ?? reply,
+                      brand: {
+                        name: workspace?.name,
+                        industry: workspace?.industry,
+                        country: workspace?.country ?? null,
+                      },
+                      draft,
+                    });
+              imageUrl = await ownedHeroImage(
+                supabase as unknown as Parameters<typeof ownedHeroImage>[0],
+                data.workspaceId,
+                prompt,
+                aspectSize(data.imageAspect ?? "landscape"),
+              );
+            }
           } catch (error) {
             console.error("[chat] image generation failed:", error);
           }
           return imageUrl;
         })();
-
 
     // مخرج واحد جاهز للنشر: نص المنشور نفسه هو أهم ما يراه المستخدم — نضعه في صدر الرد
     // ونضع تعليق الموظف بعده خلف فاصل، حتى تلتقطه لوحة النشر نظيفاً بلا كلام موظف.
@@ -915,7 +915,7 @@ export async function runEmployeeTurn(
           });
 
     const [imageUrl, verdict] = await Promise.all([imageTask, judgeTask]);
-    let qualityScore: number | null = verdict?.score || null;
+    const qualityScore: number | null = verdict?.score || null;
     if (verdict?.revised) {
       // مخرج واحد فقط: نجعل المهمة المحفوظة مطابقة تماماً لما يظهر في المحادثة.
       if (deliverables.length === 1 && deliverables[0]?.body) {
@@ -1019,8 +1019,6 @@ export async function runEmployeeTurn(
       reply = `${reply.trim()}\n\n### 📸 صور من موقعك تصلح لهذا المحتوى\n\n${gallery}\n\nاختر أي صورة منها بدل الصورة المولّدة — كلها صور حقيقية من موقعك.`;
     }
 
-
-
     emit({ type: "step", label: "أحفظ الرد والمخرجات في مساحتك" });
 
     // ذاكرة القرارات تُستخلص بالتوازي مع الحفظ بدل أن تُضاف إلى زمن انتظار المستخدم.
@@ -1099,7 +1097,6 @@ export async function runEmployeeTurn(
     if (assistantError) throw new Error(assistantError.message);
     const createdTaskId = taskRows.find((id): id is string => Boolean(id)) ?? null;
 
-
     return {
       qualityScore,
       savedDecisions,
@@ -1112,7 +1109,6 @@ export async function runEmployeeTurn(
     };
   }
 }
-
 
 const skillInput = z.object({
   workspaceId: z.string().uuid(),

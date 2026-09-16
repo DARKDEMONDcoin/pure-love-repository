@@ -51,7 +51,8 @@ export const syncSiteAssets = createServerFn({ method: "POST" })
       );
     }
     // نحفظ الموقع في الملف حتى لا يعيد المستخدم إدخاله.
-    if (!ws?.website) await supabase.from("workspaces").update({ website: site }).eq("id", data.workspaceId);
+    if (!ws?.website)
+      await supabase.from("workspaces").update({ website: site }).eq("id", data.workspaceId);
 
     return { ok: true as const, count: found.length, site };
   });
@@ -82,7 +83,12 @@ export const listSiteAssets = createServerFn({ method: "POST" })
     const { rankAssets } = await import("./brand-assets.server");
     const ranked = rankAssets(
       q,
-      assets.map((a) => ({ url: a.url, alt: a.alt ?? "", pageUrl: a.page_url ?? "", weight: a.weight })),
+      assets.map((a) => ({
+        url: a.url,
+        alt: a.alt ?? "",
+        pageUrl: a.page_url ?? "",
+        weight: a.weight,
+      })),
       limit,
     );
     const byUrl = new Map(assets.map((a) => [a.url, a]));

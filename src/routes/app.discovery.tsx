@@ -28,7 +28,8 @@ export const Route = createFileRoute("/app/discovery")({
       { title: "كشف العلامة والموقع | سهل" },
       {
         name: "description",
-        content: "حوار قصير مع نور ينتهي بتقرير كامل عن علامتك: سيو، فرص البحث، المنافسون، حضورك، وخطة البداية.",
+        content:
+          "حوار قصير مع نور ينتهي بتقرير كامل عن علامتك: سيو، فرص البحث، المنافسون، حضورك، وخطة البداية.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -55,7 +56,8 @@ const SCAN_STEPS = [
 function DiscoveryPage() {
   const { data: workspace } = useWorkspace();
   const run = useServerFn(discoverBrand);
-  const savedSite = ((workspace as { website?: string | null } | undefined)?.website ?? "") as string;
+  const savedSite = ((workspace as { website?: string | null } | undefined)?.website ??
+    "") as string;
 
   const nour = getMember("nour");
   const [step, setStep] = useState<Step>("url");
@@ -96,7 +98,10 @@ function DiscoveryPage() {
     },
     onError: (e) => {
       setStep("url");
-      say("nour", `تعذّر إكمال الفحص: ${e instanceof Error ? e.message : "خطأ غير متوقع"}. جرّب رابطاً آخر.`);
+      say(
+        "nour",
+        `تعذّر إكمال الفحص: ${e instanceof Error ? e.message : "خطأ غير متوقع"}. جرّب رابطاً آخر.`,
+      );
     },
   });
 
@@ -138,7 +143,10 @@ function DiscoveryPage() {
     if (step === "goal") {
       setGoal(value);
       setStep("rivals");
-      say("nour", "آخر سؤال: مين أقرب منافس لك؟ ابعث نطاقه (أو أكثر من واحد)، وإن مش عارف اكتب «تخطَّ» وهأستنتجهم بنفسي.");
+      say(
+        "nour",
+        "آخر سؤال: مين أقرب منافس لك؟ ابعث نطاقه (أو أكثر من واحد)، وإن مش عارف اكتب «تخطَّ» وهأستنتجهم بنفسي.",
+      );
       return;
     }
 
@@ -174,7 +182,11 @@ function DiscoveryPage() {
           {turns.map((t, i) => (
             <div key={i} className={cn("flex gap-2.5", t.from === "me" && "flex-row-reverse")}>
               {t.from === "nour" && nour ? (
-                <Portrait memberId="nour" name={nour.name} className="size-9 shrink-0 rounded-full object-cover" />
+                <Portrait
+                  memberId="nour"
+                  name={nour.name}
+                  className="size-9 shrink-0 rounded-full object-cover"
+                />
               ) : null}
               <p
                 className={cn(
@@ -198,7 +210,9 @@ function DiscoveryPage() {
                   ) : (
                     <span className="size-4 shrink-0 rounded-full border border-border" />
                   )}
-                  <span className={cn("min-w-0", i > scanStep && "text-muted-foreground")}>{s}</span>
+                  <span className={cn("min-w-0", i > scanStep && "text-muted-foreground")}>
+                    {s}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -234,7 +248,11 @@ function DiscoveryPage() {
                 onChange={(e) => setDraft(e.target.value)}
                 dir={step === "url" ? "ltr" : "rtl"}
                 placeholder={
-                  step === "url" ? "https://your-site.com" : step === "goal" ? "اكتب هدفك…" : "نطاق منافسك…"
+                  step === "url"
+                    ? "https://your-site.com"
+                    : step === "goal"
+                      ? "اكتب هدفك…"
+                      : "نطاق منافسك…"
                 }
                 className={cn(field, "flex-1 text-start")}
               />
@@ -270,7 +288,6 @@ function DiscoveryPage() {
     </AppShell>
   );
 }
-
 
 function ReportView({ report }: { report: DiscoveryReport }) {
   const { profile, audit, opportunities, competitors, presence, actions } = report;
@@ -328,7 +345,9 @@ function ReportView({ report }: { report: DiscoveryReport }) {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-bold">{a.title}</span>
-                    <span className="mt-1 block text-sm leading-relaxed text-ink-soft">{a.why}</span>
+                    <span className="mt-1 block text-sm leading-relaxed text-ink-soft">
+                      {a.why}
+                    </span>
                     {m ? (
                       <span className="mt-1 block text-xs font-bold text-muted-foreground">
                         ينفّذها {m.name}
@@ -391,7 +410,10 @@ function ReportView({ report }: { report: DiscoveryReport }) {
           </div>
           <ul className="mt-4 grid gap-2 md:grid-cols-2">
             {audit.checks.map((c) => (
-              <li key={c.id} className="flex items-start gap-2.5 rounded-2xl border border-border/70 p-3">
+              <li
+                key={c.id}
+                className="flex items-start gap-2.5 rounded-2xl border border-border/70 p-3"
+              >
                 {c.status === "pass" ? (
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-jade-deep" />
                 ) : c.status === "warn" ? (

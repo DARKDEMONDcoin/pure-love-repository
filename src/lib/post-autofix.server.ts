@@ -43,7 +43,6 @@ export async function autofixPosts(
     );
   };
 
-
   const weak = posts
     .map((post, index) => ({ post, index, provider: providerOf(post) }))
     .filter((row): row is { post: Post; index: number; provider: string } => Boolean(row.provider))
@@ -59,21 +58,19 @@ export async function autofixPosts(
     .filter((row) => row.report.blockers.length > 0 || row.report.score < THRESHOLD)
     .slice(0, 4);
 
-
   if (!weak.length) return posts;
 
   const brief = weak
-    .map(
-      (row, i) =>
-        [
-          `### منشور ${i + 1} — المنصة: ${row.report.providerLabel} (الدرجة الحالية ${row.report.score}/100)`,
-          "نقاط يجب إصلاحها:",
-          ...row.report.checks
-            .filter((c) => c.severity !== "pass")
-            .map((c) => `- ${c.label}: ${c.hint}`),
-          "النص الحالي:",
-          String(row.post.body ?? ""),
-        ].join("\n"),
+    .map((row, i) =>
+      [
+        `### منشور ${i + 1} — المنصة: ${row.report.providerLabel} (الدرجة الحالية ${row.report.score}/100)`,
+        "نقاط يجب إصلاحها:",
+        ...row.report.checks
+          .filter((c) => c.severity !== "pass")
+          .map((c) => `- ${c.label}: ${c.hint}`),
+        "النص الحالي:",
+        String(row.post.body ?? ""),
+      ].join("\n"),
     )
     .join("\n\n");
 
@@ -99,7 +96,12 @@ export async function autofixPosts(
       { json: true, timeoutMs: 30_000, maxTokens: 1600, budgetMs: 38_000 },
     );
 
-    const parsed = JSON.parse(raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim()) as {
+    const parsed = JSON.parse(
+      raw
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/```\s*$/i, "")
+        .trim(),
+    ) as {
       posts?: { i?: number; body?: string }[];
     };
     const out = posts.slice();
@@ -107,7 +109,12 @@ export async function autofixPosts(
       const row = weak[(Number(fix.i) || 0) - 1];
       const body = typeof fix.body === "string" ? fix.body.trim() : "";
       if (!row || body.length < 20) continue;
-      const after = scorePost({ text: body, provider: row.provider, hasMedia: mediaOf(row.post), bannedWords: banned });
+      const after = scorePost({
+        text: body,
+        provider: row.provider,
+        hasMedia: mediaOf(row.post),
+        bannedWords: banned,
+      });
       // لا نستبدل إلا بتحسّن حقيقي — حتى لا يفسد الإصلاح نصاً كان أفضل.
       if (after.score > row.report.score && after.blockers.length <= row.report.blockers.length) {
         out[row.index] = { ...row.post, body };

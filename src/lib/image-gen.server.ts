@@ -42,7 +42,6 @@ export function imageUrl(prompt: string, opts: ImageOptions = {}): string {
   return `${POLLINATIONS}/${encodeURIComponent(withQuality(prompt).slice(0, 900))}?${q}`;
 }
 
-
 export type ImageBriefInput = {
   /** طلب المستخدم الأصلي (بالعربية غالباً). */
   request: string;
@@ -66,7 +65,9 @@ export async function imageBrief(input: ImageBriefInput): Promise<string> {
   const fallback = [
     `Photorealistic commercial photograph that clearly shows: ${subject}.`,
     input.brand?.industry ? `Business: ${input.brand.industry}.` : "",
-    input.brand?.country ? `Setting: ${input.brand.country}, Middle East.` : "Setting: Middle East / Arab world.",
+    input.brand?.country
+      ? `Setting: ${input.brand.country}, Middle East.`
+      : "Setting: Middle East / Arab world.",
     "Hero subject centered and unmistakable, natural light, high detail, premium look, 8k.",
   ]
     .filter(Boolean)
@@ -89,7 +90,9 @@ export async function imageBrief(input: ImageBriefInput): Promise<string> {
             input.body ? `Post text (excerpt): ${input.body.slice(0, 500)}` : "",
             input.brand?.name ? `Brand: ${input.brand.name} (${input.brand.industry ?? ""})` : "",
             input.brand?.country ? `Country: ${input.brand.country}` : "",
-            input.draft ? `Draft idea from writer (may be generic, fix it): ${input.draft.slice(0, 300)}` : "",
+            input.draft
+              ? `Draft idea from writer (may be generic, fix it): ${input.draft.slice(0, 300)}`
+              : "",
           ]
             .filter(Boolean)
             .join("\n"),
@@ -153,7 +156,6 @@ export function aspectSize(aspect: "square" | "portrait" | "landscape" | "story"
   return { width: 1216, height: 640 };
 }
 
-
 /** يولّد الصورة فعلياً ويعيد بايتاتها (للرفع إلى التخزين أو النشر إلى ووردبريس). */
 export async function generateImageBytes(
   prompt: string,
@@ -180,7 +182,8 @@ export async function generateImageBytes(
           const early = await geminiImage(withQuality(prompt), opts);
           if (early) return early;
         }
-        if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * 2 ** attempt + Math.random() * 900));
+        if (attempt < 3)
+          await new Promise((r) => setTimeout(r, 2000 * 2 ** attempt + Math.random() * 900));
       } finally {
         clearTimeout(timer);
       }
@@ -188,8 +191,6 @@ export async function generateImageBytes(
     return geminiImage(withQuality(prompt), opts);
   });
 }
-
-
 
 /** احتياطي: توليد الصورة عبر Gemini image بمفتاح Google AI Studio المخزَّن في Supabase. */
 async function geminiImage(
@@ -203,7 +204,14 @@ async function geminiImage(
     // Gemini لا يأخذ أبعاداً رقمية، فنمرّر النسبة نصّياً حتى لا تخرج الصورة بقصّ خاطئ.
     const w = opts.width ?? 1216;
     const h = opts.height ?? 640;
-    const ratio = w === h ? "1:1 square" : w > h ? "16:9 landscape" : h / w > 1.6 ? "9:16 vertical story" : "4:5 portrait";
+    const ratio =
+      w === h
+        ? "1:1 square"
+        : w > h
+          ? "16:9 landscape"
+          : h / w > 1.6
+            ? "9:16 vertical story"
+            : "4:5 portrait";
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${gemini}`,
       {
@@ -218,7 +226,9 @@ async function geminiImage(
 
     if (!res.ok) return null;
     const json = (await res.json()) as {
-      candidates?: { content?: { parts?: { inlineData?: { data?: string; mimeType?: string } }[] } }[];
+      candidates?: {
+        content?: { parts?: { inlineData?: { data?: string; mimeType?: string } }[] };
+      }[];
     };
     const part = json.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
     const b64 = part?.inlineData?.data;
@@ -263,23 +273,34 @@ export function extractImagePrompt(markdown: string): string | null {
   // 1) كتل كود تحتوي نصاً إنجليزياً طويلاً
   for (const m of markdown.matchAll(/```[a-z]*\n([\s\S]*?)```/gi)) {
     const body = (m[1] ?? "").trim();
-    if (body.length > 40 && /[a-z]{4,}/i.test(body) && !/[\u0600-\u06FF]{3,}/.test(body.slice(0, 80))) candidates.push(body);
+    if (
+      body.length > 40 &&
+      /[a-z]{4,}/i.test(body) &&
+      !/[\u0600-\u06FF]{3,}/.test(body.slice(0, 80))
+    )
+      candidates.push(body);
   }
   // 2) سطر بعد عنوان/تسمية الوصف
-  const label = /(?:image\s*prompt|prompt|وصف الصورة|برومبت الصورة|برومبت|الوصف البصري)\s*[:：\-–]?\s*\**\s*\n?\s*([^\n]{40,900})/gi;
+  const label =
+    /(?:image\s*prompt|prompt|وصف الصورة|برومبت الصورة|برومبت|الوصف البصري)\s*[:：\-–]?\s*\**\s*\n?\s*([^\n]{40,900})/gi;
   for (const m of markdown.matchAll(label)) {
     const line = (m[1] ?? "").replace(/^[*_`"“]+|[*_`"”]+$/g, "").trim();
     if (/[a-z]{4,}/i.test(line)) candidates.push(line);
   }
   // 3) اقتباس إنجليزي طويل بين علامتي تنصيص
-  for (const m of markdown.matchAll(/["“]([A-Za-z][^"”\n]{60,700})["”]/g)) candidates.push((m[1] ?? "").trim());
+  for (const m of markdown.matchAll(/["“]([A-Za-z][^"”\n]{60,700})["”]/g))
+    candidates.push((m[1] ?? "").trim());
 
   const best = candidates
     .map((c) => c.replace(/\s+/g, " ").trim())
     .filter((c) => c.length >= 40)
     .sort((a, b) => b.length - a.length)[0];
   if (!best) return null;
-  const clean = best.replace(/[\u0600-\u06FF]+/g, "").replace(/\s+/g, " ").trim().slice(0, 900);
+  const clean = best
+    .replace(/[\u0600-\u06FF]+/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 900);
   return clean.length >= 30 ? clean + NO_TEXT : null;
 }
 
@@ -288,7 +309,14 @@ export function extractImagePrompt(markdown: string): string | null {
  * فتصبح أصلاً دائماً يخصّ العميل لا رابطاً خارجياً. عند أي فشل نرجع لرابط المزوّد المجاني.
  */
 export async function ownedHeroImage(
-  client: { storage: { from: (b: string) => { upload: (p: string, f: Blob, o?: Record<string, unknown>) => Promise<{ error: unknown }>; createSignedUrl: (p: string, s: number) => Promise<{ data: { signedUrl: string } | null }> } } },
+  client: {
+    storage: {
+      from: (b: string) => {
+        upload: (p: string, f: Blob, o?: Record<string, unknown>) => Promise<{ error: unknown }>;
+        createSignedUrl: (p: string, s: number) => Promise<{ data: { signedUrl: string } | null }>;
+      };
+    };
+  },
   workspaceId: string,
   prompt: string,
   opts: ImageOptions = {},
@@ -301,10 +329,14 @@ export async function ownedHeroImage(
     const ext = image.contentType.includes("png") ? "png" : "jpg";
     const path = `${workspaceId}/hero/${crypto.randomUUID()}.${ext}`;
     const bucket = client.storage.from("nour-media");
-    const { error } = await bucket.upload(path, new Blob([image.bytes as BlobPart], { type: image.contentType }), {
-      contentType: image.contentType,
-      upsert: false,
-    });
+    const { error } = await bucket.upload(
+      path,
+      new Blob([image.bytes as BlobPart], { type: image.contentType }),
+      {
+        contentType: image.contentType,
+        upsert: false,
+      },
+    );
     if (error) return fallback;
     // رابط موقّع طويل الأمد (5 سنوات) صالح للنشر داخل المقال
     const { data } = await bucket.createSignedUrl(path, 60 * 60 * 24 * 365 * 5);

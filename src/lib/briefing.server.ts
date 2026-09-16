@@ -14,7 +14,14 @@ export type Briefing = {
   greeting: string;
   headline: string;
   approvals: { id: string; title: string; employee: string }[];
-  todayPosts: { id: string; provider: string; at: string; status: string; title: string; image: string | null }[];
+  todayPosts: {
+    id: string;
+    provider: string;
+    at: string;
+    status: string;
+    title: string;
+    image: string | null;
+  }[];
   rankMoves: { keyword: string; from: number | null; to: number | null; delta: number }[];
   attention: string[];
   ideas: { title: string; hook: string; provider: string; prompt: string }[];
@@ -31,36 +38,73 @@ function todayIso(tz: string) {
 
 function localHour(tz: string) {
   try {
-    return Number(new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "numeric", hour12: false }).format(new Date()));
+    return Number(
+      new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "numeric", hour12: false }).format(
+        new Date(),
+      ),
+    );
   } catch {
     return new Date().getUTCHours();
   }
 }
 
 export async function buildBriefing(admin: Admin, workspaceId: string): Promise<Briefing> {
-  const { data: ws } = await admin.from("workspaces").select("*").eq("id", workspaceId).maybeSingle();
+  const { data: ws } = await admin
+    .from("workspaces")
+    .select("*")
+    .eq("id", workspaceId)
+    .maybeSingle();
   if (!ws) throw new Error("مساحة العمل غير موجودة.");
-  const { data: auto } = await admin.from("social_autopilot").select("timezone, dialect").eq("workspace_id", workspaceId).maybeSingle();
+  const { data: auto } = await admin
+    .from("social_autopilot")
+    .select("timezone, dialect")
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
   const tz = auto?.timezone ?? "Asia/Riyadh";
   const day = todayIso(tz);
   const dayStart = new Date(`${day}T00:00:00`);
   const dayEnd = new Date(dayStart.getTime() + 86_400_000);
   const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
 
-  const [{ data: review }, { data: posts }, { data: doneTasks }, { data: integrations }, { data: keywords }] =
-    await Promise.all([
-      admin.from("tasks").select("id, title, employee_id").eq("workspace_id", workspaceId).eq("status", "review").order("created_at", { ascending: false }).limit(6),
-      admin
-        .from("social_posts")
-        .select("id, provider, scheduled_at, status, image_url, meta, body, published_at")
-        .eq("workspace_id", workspaceId)
-        .gte("scheduled_at", new Date(dayStart.getTime() - 12 * 3_600_000).toISOString())
-        .lte("scheduled_at", new Date(dayEnd.getTime() + 12 * 3_600_000).toISOString())
-        .order("scheduled_at"),
-      admin.from("tasks").select("id").eq("workspace_id", workspaceId).eq("status", "done").gte("updated_at", weekAgo),
-      admin.from("integrations").select("provider, status").eq("workspace_id", workspaceId).eq("status", "error"),
-      admin.from("tracked_keywords").select("id, keyword").eq("workspace_id", workspaceId).eq("active", true).limit(30),
-    ]);
+  const [
+    { data: review },
+    { data: posts },
+    { data: doneTasks },
+    { data: integrations },
+    { data: keywords },
+  ] = await Promise.all([
+    admin
+      .from("tasks")
+      .select("id, title, employee_id")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "review")
+      .order("created_at", { ascending: false })
+      .limit(6),
+    admin
+      .from("social_posts")
+      .select("id, provider, scheduled_at, status, image_url, meta, body, published_at")
+      .eq("workspace_id", workspaceId)
+      .gte("scheduled_at", new Date(dayStart.getTime() - 12 * 3_600_000).toISOString())
+      .lte("scheduled_at", new Date(dayEnd.getTime() + 12 * 3_600_000).toISOString())
+      .order("scheduled_at"),
+    admin
+      .from("tasks")
+      .select("id")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "done")
+      .gte("updated_at", weekAgo),
+    admin
+      .from("integrations")
+      .select("provider, status")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "error"),
+    admin
+      .from("tracked_keywords")
+      .select("id, keyword")
+      .eq("workspace_id", workspaceId)
+      .eq("active", true)
+      .limit(30),
+  ]);
 
   const { count: published7d } = await admin
     .from("social_posts")
@@ -81,7 +125,10 @@ export async function buildBriefing(admin: Admin, workspaceId: string): Promise<
       .from("rank_snapshots")
       .select("keyword_id, position, captured_at")
       .eq("workspace_id", workspaceId)
-      .in("keyword_id", keywords.map((k) => k.id))
+      .in(
+        "keyword_id",
+        keywords.map((k) => k.id),
+      )
       .order("captured_at", { ascending: false })
       .limit(200);
     const byKw = new Map<string, (number | null)[]>();
@@ -102,8 +149,11 @@ export async function buildBriefing(admin: Admin, workspaceId: string): Promise<
   for (const i of integrations ?? []) attention.push(`حساب ${i.provider} يحتاج إعادة ربط.`);
   const failed = (posts ?? []).filter((p) => p.status === "failed");
   if (failed.length) attention.push(`${failed.length} منشور فشل نشره اليوم — راجع الطابور.`);
-  const ideasPending = (posts ?? []).filter((p) => p.status === "idea" || p.status === "draft").length;
-  if (ideasPending) attention.push(`${ideasPending} منشور اليوم بانتظار الاعتماد في تقويم المحتوى.`);
+  const ideasPending = (posts ?? []).filter(
+    (p) => p.status === "idea" || p.status === "draft",
+  ).length;
+  if (ideasPending)
+    attention.push(`${ideasPending} منشور اليوم بانتظار الاعتماد في تقويم المحتوى.`);
 
   let ideas: Briefing["ideas"] = [];
   try {
@@ -140,13 +190,25 @@ export async function buildBriefing(admin: Admin, workspaceId: string): Promise<
     rankMoves: rankMoves.slice(0, 5),
     attention,
     ideas,
-    stats: { done7d: doneTasks?.length ?? 0, published7d: published7d ?? 0, scheduled: scheduled ?? 0 },
+    stats: {
+      done7d: doneTasks?.length ?? 0,
+      published7d: published7d ?? 0,
+      scheduled: scheduled ?? 0,
+    },
   };
 }
 
 /** يبني الإحاطة ويحفظها مرة واحدة لليوم (idempotent). */
-export async function ensureTodayBriefing(admin: Admin, workspaceId: string, force = false): Promise<Briefing> {
-  const { data: auto } = await admin.from("social_autopilot").select("timezone").eq("workspace_id", workspaceId).maybeSingle();
+export async function ensureTodayBriefing(
+  admin: Admin,
+  workspaceId: string,
+  force = false,
+): Promise<Briefing> {
+  const { data: auto } = await admin
+    .from("social_autopilot")
+    .select("timezone")
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
   const day = todayIso(auto?.timezone ?? "Asia/Riyadh");
   if (!force) {
     const { data: existing } = await admin
@@ -156,7 +218,8 @@ export async function ensureTodayBriefing(admin: Admin, workspaceId: string, for
       .eq("employee_id", "eva")
       .eq("day", day)
       .maybeSingle();
-    if (existing?.content && Object.keys(existing.content as object).length) return existing.content as unknown as Briefing;
+    if (existing?.content && Object.keys(existing.content as object).length)
+      return existing.content as unknown as Briefing;
   }
   const briefing = await buildBriefing(admin, workspaceId);
   await admin
@@ -170,23 +233,41 @@ export async function ensureTodayBriefing(admin: Admin, workspaceId: string, for
 
 /** تشغيل الكرون: يبني إحاطة اليوم لكل مساحة لم تُبنَ بعد (محدود العدد). */
 export async function runMorningBriefings(admin: Admin, limit = 25) {
-  const { data: spaces } = await admin.from("workspaces").select("id").order("updated_at", { ascending: false }).limit(200);
+  const { data: spaces } = await admin
+    .from("workspaces")
+    .select("id")
+    .order("updated_at", { ascending: false })
+    .limit(200);
   const report: { workspaceId: string; ok: boolean; error?: string }[] = [];
   let built = 0;
   for (const ws of spaces ?? []) {
     if (built >= limit) break;
-    const { data: auto } = await admin.from("social_autopilot").select("timezone").eq("workspace_id", ws.id).maybeSingle();
+    const { data: auto } = await admin
+      .from("social_autopilot")
+      .select("timezone")
+      .eq("workspace_id", ws.id)
+      .maybeSingle();
     const tz = auto?.timezone ?? "Asia/Riyadh";
     if (localHour(tz) < 6) continue; // لا نبني قبل السادسة بتوقيت المستخدم
     const day = todayIso(tz);
-    const { data: existing } = await admin.from("briefings").select("id").eq("workspace_id", ws.id).eq("employee_id", "eva").eq("day", day).maybeSingle();
+    const { data: existing } = await admin
+      .from("briefings")
+      .select("id")
+      .eq("workspace_id", ws.id)
+      .eq("employee_id", "eva")
+      .eq("day", day)
+      .maybeSingle();
     if (existing) continue;
     try {
       await ensureTodayBriefing(admin, ws.id);
       built++;
       report.push({ workspaceId: ws.id, ok: true });
     } catch (e) {
-      report.push({ workspaceId: ws.id, ok: false, error: e instanceof Error ? e.message : String(e) });
+      report.push({
+        workspaceId: ws.id,
+        ok: false,
+        error: e instanceof Error ? e.message : String(e),
+      });
     }
     // تعلّم سِراج من أداء المنشورات الحقيقية — مرة كل أسبوع (الأحد) بلا تدخل من المستخدم.
     try {

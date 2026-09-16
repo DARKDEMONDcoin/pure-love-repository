@@ -23,7 +23,11 @@ export function AuthShell({
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-[1fr_1.05fr]">
       <div className="relative hidden overflow-hidden lg:block">
-        <div className="sahl-smoke sahl-smoke-auth" aria-hidden="true"><i /><i /><i /></div>
+        <div className="sahl-smoke sahl-smoke-auth" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
         <div
           aria-hidden
           className="absolute inset-0"

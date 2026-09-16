@@ -26,7 +26,6 @@ import { createPin } from "./social-extra.server";
 import { metaAdsSummary } from "./ads-insights.server";
 import { sendWhatsappText, createDriveFolder } from "./messaging-extra.server";
 
-
 type Admin = SupabaseClient<Database>;
 
 export type CustomActionContext = {
@@ -52,7 +51,6 @@ export type EmployeeActionDef = {
   run?: (ctx: CustomActionContext) => Promise<unknown>;
 };
 
-
 export const employeeActions: EmployeeActionDef[] = [
   {
     id: "eva-send-email",
@@ -65,7 +63,12 @@ export const employeeActions: EmployeeActionDef[] = [
       { name: "subject", label: "الموضوع", required: true },
       { name: "body", label: "النص", required: true },
     ],
-    toProps: (v) => ({ to: [v["to"]], subject: v["subject"], body: v["body"], bodyType: "plaintext" }),
+    toProps: (v) => ({
+      to: [v["to"]],
+      subject: v["subject"],
+      body: v["body"],
+      bodyType: "plaintext",
+    }),
   },
   {
     id: "eva-draft-email",
@@ -78,7 +81,12 @@ export const employeeActions: EmployeeActionDef[] = [
       { name: "subject", label: "الموضوع", required: true },
       { name: "body", label: "النص", required: true },
     ],
-    toProps: (v) => ({ to: [v["to"]], subject: v["subject"], body: v["body"], bodyType: "plaintext" }),
+    toProps: (v) => ({
+      to: [v["to"]],
+      subject: v["subject"],
+      body: v["body"],
+      bodyType: "plaintext",
+    }),
   },
   {
     id: "eva-outlook-send",
@@ -620,7 +628,9 @@ export const employeeActions: EmployeeActionDef[] = [
       sendWhatsappText(config, workspaceId, accountId, {
         to: values["to"]!,
         text: values["text"]!,
-        ...(values["phoneNumberId"]?.trim() ? { phoneNumberId: values["phoneNumberId"].trim() } : {}),
+        ...(values["phoneNumberId"]?.trim()
+          ? { phoneNumberId: values["phoneNumberId"].trim() }
+          : {}),
       }),
   },
   {
@@ -865,9 +875,13 @@ const allActions: EmployeeActionDef[] = [...employeeActions, ...extraEmployeeAct
 
 export function actionsFor(employeeId: string): EmployeeActionDef[] {
   // الإجراءات المشتركة تظهر فقط لمنصات هذا الموظف — لا يرى سِراج أدوات سلاك/جيرا الخاصة بأمَل.
-  const own = new Set(employeeDirectory[employeeId as EmployeeId]?.integrations.map((i) => i.provider) ?? []);
+  const own = new Set(
+    employeeDirectory[employeeId as EmployeeId]?.integrations.map((i) => i.provider) ?? [],
+  );
   return allActions.filter(
-    (a) => a.employeeId === employeeId || (a.employeeId === "*" && (own.size === 0 || own.has(a.provider))),
+    (a) =>
+      a.employeeId === employeeId ||
+      (a.employeeId === "*" && (own.size === 0 || own.has(a.provider))),
   );
 }
 
@@ -875,11 +889,7 @@ export function getEmployeeAction(id: string): EmployeeActionDef | undefined {
   return allActions.find((a) => a.id === id);
 }
 
-async function requirePage(
-  config: PipedreamConfig,
-  workspaceId: string,
-  accountId: string,
-) {
+async function requirePage(config: PipedreamConfig, workspaceId: string, accountId: string) {
   const page = await pageTarget(config, workspaceId, accountId);
   if (!page) throw new Error("لا توجد صفحة فيسبوك مرتبطة بالحساب المربوط.");
   return page;
@@ -952,4 +962,3 @@ export async function runEmployeeActionServer(
 
   return { actionId: def.id, provider: def.provider, result };
 }
-

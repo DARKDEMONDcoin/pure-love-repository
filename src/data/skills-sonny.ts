@@ -86,7 +86,13 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "handle", label: "رابط حسابك أو موقعك", type: "text", placeholder: "https://instagram.com/brand", required: true },
+      {
+        name: "handle",
+        label: "رابط حسابك أو موقعك",
+        type: "text",
+        placeholder: "https://instagram.com/brand",
+        required: true,
+      },
       { name: "samples", label: "الصق ٣–٥ منشورات سابقة (اختياري)", type: "textarea" },
       audience,
       dialect,
@@ -115,13 +121,24 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "goal", label: "هدف الشهر", type: "text", placeholder: "زيادة الطلبات من إنستغرام", required: true },
+      {
+        name: "goal",
+        label: "هدف الشهر",
+        type: "text",
+        placeholder: "زيادة الطلبات من إنستغرام",
+        required: true,
+      },
       platform,
       { name: "perWeek", label: "عدد المنشورات أسبوعياً", type: "number", defaultValue: "5" },
       audience,
       tone,
       dialect,
-      { name: "occasions", label: "مناسبات أو عروض خلال الشهر", type: "text", placeholder: "اليوم الوطني، خصم نهاية الشهر" },
+      {
+        name: "occasions",
+        label: "مناسبات أو عروض خلال الشهر",
+        type: "text",
+        placeholder: "اليوم الوطني، خصم نهاية الشهر",
+      },
     ],
     buildPrompt: (v) =>
       q([
@@ -146,8 +163,19 @@ export const sonnySkills: Skill[] = [
     kind: "تقرير ترند",
     channel: "instagram",
     fields: [
-      { name: "niche", label: "المجال", type: "text", placeholder: "مقاهي مختصة في جدة", required: true },
-      { name: "competitors", label: "حسابات منافسة (اختياري)", type: "textarea", placeholder: "@brand1\n@brand2" },
+      {
+        name: "niche",
+        label: "المجال",
+        type: "text",
+        placeholder: "مقاهي مختصة في جدة",
+        required: true,
+      },
+      {
+        name: "competitors",
+        label: "حسابات منافسة (اختياري)",
+        type: "textarea",
+        placeholder: "@brand1\n@brand2",
+      },
       platform,
     ],
     buildPrompt: (v) =>
@@ -172,7 +200,13 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "topic", label: "الموضوع أو الرسالة", type: "text", placeholder: "إطلاق خلطة القهوة الجديدة", required: true },
+      {
+        name: "topic",
+        label: "الموضوع أو الرسالة",
+        type: "text",
+        placeholder: "إطلاق خلطة القهوة الجديدة",
+        required: true,
+      },
       platform,
       tone,
       dialect,
@@ -204,7 +238,13 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "topic", label: "الموضوع", type: "text", placeholder: "٧ أخطاء عند شراء التمور", required: true },
+      {
+        name: "topic",
+        label: "الموضوع",
+        type: "text",
+        placeholder: "٧ أخطاء عند شراء التمور",
+        required: true,
+      },
       { name: "slides", label: "عدد الشرائح", type: "number", defaultValue: "8" },
       tone,
       dialect,
@@ -229,9 +269,28 @@ export const sonnySkills: Skill[] = [
     channel: "tiktok",
     featured: true,
     fields: [
-      { name: "topic", label: "فكرة الفيديو", type: "text", placeholder: "كيف نختار حبة البن", required: true },
+      {
+        name: "topic",
+        label: "فكرة الفيديو",
+        type: "text",
+        placeholder: "كيف نختار حبة البن",
+        required: true,
+      },
       { name: "duration", label: "المدة بالثواني", type: "number", defaultValue: "30" },
-      { name: "format", label: "الصيغة", type: "select", options: ["تعليمي سريع", "قبل/بعد", "خلف الكواليس", "رد على سؤال", "قائمة سريعة", "قصة عميل"], defaultValue: "تعليمي سريع" },
+      {
+        name: "format",
+        label: "الصيغة",
+        type: "select",
+        options: [
+          "تعليمي سريع",
+          "قبل/بعد",
+          "خلف الكواليس",
+          "رد على سؤال",
+          "قائمة سريعة",
+          "قصة عميل",
+        ],
+        defaultValue: "تعليمي سريع",
+      },
       dialect,
       audience,
     ],
@@ -253,7 +312,13 @@ export const sonnySkills: Skill[] = [
     kind: "قصص",
     channel: "instagram",
     fields: [
-      { name: "goal", label: "هدف السلسلة", type: "text", placeholder: "تشويق لإطلاق منتج", required: true },
+      {
+        name: "goal",
+        label: "هدف السلسلة",
+        type: "text",
+        placeholder: "تشويق لإطلاق منتج",
+        required: true,
+      },
       { name: "count", label: "عدد القصص", type: "number", defaultValue: "6" },
       tone,
       dialect,
@@ -275,8 +340,20 @@ export const sonnySkills: Skill[] = [
     kind: "صورة",
     channel: "instagram",
     fields: [
-      { name: "topic", label: "موضوع الصورة", type: "text", placeholder: "كوب قهوة مختصة على طاولة خشب", required: true },
-      { name: "style", label: "النمط البصري", type: "select", options: ["تصوير واقعي", "بسيط ونظيف", "دافئ وحميمي", "فاخر", "ملوّن وجريء"], defaultValue: "تصوير واقعي" },
+      {
+        name: "topic",
+        label: "موضوع الصورة",
+        type: "text",
+        placeholder: "كوب قهوة مختصة على طاولة خشب",
+        required: true,
+      },
+      {
+        name: "style",
+        label: "النمط البصري",
+        type: "select",
+        options: ["تصوير واقعي", "بسيط ونظيف", "دافئ وحميمي", "فاخر", "ملوّن وجريء"],
+        defaultValue: "تصوير واقعي",
+      },
       platform,
     ],
     buildPrompt: (v) =>
@@ -297,7 +374,13 @@ export const sonnySkills: Skill[] = [
     kind: "حملة",
     channel: "instagram",
     fields: [
-      { name: "product", label: "المنتج أو العرض", type: "text", required: true, placeholder: "خصم الجمعة البيضاء ٣٠٪" },
+      {
+        name: "product",
+        label: "المنتج أو العرض",
+        type: "text",
+        required: true,
+        placeholder: "خصم الجمعة البيضاء ٣٠٪",
+      },
       { name: "date", label: "تاريخ الإطلاق", type: "text", placeholder: "٢٨ نوفمبر" },
       platform,
       tone,
@@ -324,7 +407,13 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "business", label: "النشاط أو الرسالة هذا الأسبوع", type: "text", placeholder: "متجر عطور — تركيز على العود", required: true },
+      {
+        name: "business",
+        label: "النشاط أو الرسالة هذا الأسبوع",
+        type: "text",
+        placeholder: "متجر عطور — تركيز على العود",
+        required: true,
+      },
       { name: "count", label: "عدد المنشورات", type: "number", defaultValue: "5" },
       platform,
       tone,
@@ -347,7 +436,13 @@ export const sonnySkills: Skill[] = [
     kind: "نظام نشر",
     channel: "instagram",
     fields: [
-      { name: "business", label: "النشاط", type: "text", required: true, placeholder: "عيادة أسنان" },
+      {
+        name: "business",
+        label: "النشاط",
+        type: "text",
+        required: true,
+        placeholder: "عيادة أسنان",
+      },
       platform,
       audience,
     ],
@@ -370,7 +465,13 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "comments", label: "الصق التعليقات أو الرسائل", type: "textarea", required: true, placeholder: "كم السعر؟\nالتوصيل يوصل الدمام؟\nتجربتي كانت سيئة" },
+      {
+        name: "comments",
+        label: "الصق التعليقات أو الرسائل",
+        type: "textarea",
+        required: true,
+        placeholder: "كم السعر؟\nالتوصيل يوصل الدمام؟\nتجربتي كانت سيئة",
+      },
       tone,
       dialect,
       { name: "policy", label: "معلومات ثابتة (أسعار/توصيل/سياسات)", type: "textarea" },
@@ -400,7 +501,12 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     fields: [
       { name: "source", label: "الصق المقال أو رابطه", type: "textarea", required: true },
-      { name: "platforms", label: "المنصات المستهدفة", type: "text", defaultValue: "إنستغرام، تيك توك، لينكدإن، إكس" },
+      {
+        name: "platforms",
+        label: "المنصات المستهدفة",
+        type: "text",
+        defaultValue: "إنستغرام، تيك توك، لينكدإن، إكس",
+      },
       dialect,
     ],
     buildPrompt: (v) =>
@@ -444,7 +550,13 @@ export const sonnySkills: Skill[] = [
     kind: "تقرير",
     channel: "instagram",
     fields: [
-      { name: "metrics", label: "الصق أرقام المنشورات", type: "textarea", required: true, placeholder: "منشور ١: وصول ٤٢٠٠، تفاعل ٣١٠، حفظ ٤٥ ..." },
+      {
+        name: "metrics",
+        label: "الصق أرقام المنشورات",
+        type: "textarea",
+        required: true,
+        placeholder: "منشور ١: وصول ٤٢٠٠، تفاعل ٣١٠، حفظ ٤٥ ...",
+      },
       platform,
       { name: "goal", label: "الهدف", type: "text", placeholder: "زيادة الحفظ والمشاركة" },
     ],
@@ -495,11 +607,22 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "business", label: "النشاط", type: "text", required: true, placeholder: "متجر عطور في الرياض" },
+      {
+        name: "business",
+        label: "النشاط",
+        type: "text",
+        required: true,
+        placeholder: "متجر عطور في الرياض",
+      },
       platform,
       audience,
       dialect,
-      { name: "context", label: "ما الجديد اليوم؟ (اختياري)", type: "textarea", placeholder: "وصلت شحنة عود جديدة، وأمس صار عندنا تقييم ٥ نجوم" },
+      {
+        name: "context",
+        label: "ما الجديد اليوم؟ (اختياري)",
+        type: "textarea",
+        placeholder: "وصلت شحنة عود جديدة، وأمس صار عندنا تقييم ٥ نجوم",
+      },
     ],
     buildPrompt: (v) =>
       q([
@@ -520,8 +643,20 @@ export const sonnySkills: Skill[] = [
     kind: "تحليل منافسين",
     channel: "instagram",
     fields: [
-      { name: "us", label: "أرقامنا", type: "textarea", required: true, placeholder: "متابعون ٨٤٠٠، ٤ منشورات أسبوعياً، متوسط تفاعل ٢١٠" },
-      { name: "rivals", label: "المنافسون وأرقامهم", type: "textarea", required: true, placeholder: "@brand1: ٣٢ ألف متابع، ينشر يومياً…\n@brand2: …" },
+      {
+        name: "us",
+        label: "أرقامنا",
+        type: "textarea",
+        required: true,
+        placeholder: "متابعون ٨٤٠٠، ٤ منشورات أسبوعياً، متوسط تفاعل ٢١٠",
+      },
+      {
+        name: "rivals",
+        label: "المنافسون وأرقامهم",
+        type: "textarea",
+        required: true,
+        placeholder: "@brand1: ٣٢ ألف متابع، ينشر يومياً…\n@brand2: …",
+      },
       platform,
     ],
     buildPrompt: (v) =>
@@ -547,7 +682,13 @@ export const sonnySkills: Skill[] = [
     kind: "هاشتاقات",
     channel: "instagram",
     fields: [
-      { name: "topic", label: "موضوع المنشور", type: "text", required: true, placeholder: "عطر عود فاخر" },
+      {
+        name: "topic",
+        label: "موضوع المنشور",
+        type: "text",
+        required: true,
+        placeholder: "عطر عود فاخر",
+      },
       platform,
       { name: "city", label: "المدينة أو السوق", type: "text", placeholder: "الرياض" },
       dialect,
@@ -574,7 +715,12 @@ export const sonnySkills: Skill[] = [
       { name: "draft", label: "الصق المنشور (أو أكثر من منشور)", type: "textarea", required: true },
       platform,
       audience,
-      { name: "past", label: "أرقام منشورات سابقة (اختياري)", type: "textarea", placeholder: "منشور تعليمي: وصول ٥٢٠٠ / منشور عرض: وصول ١٩٠٠" },
+      {
+        name: "past",
+        label: "أرقام منشورات سابقة (اختياري)",
+        type: "textarea",
+        placeholder: "منشور تعليمي: وصول ٥٢٠٠ / منشور عرض: وصول ١٩٠٠",
+      },
     ],
     buildPrompt: (v) =>
       q([
@@ -597,7 +743,13 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     fields: [
       { name: "post", label: "المنشور الأساسي", type: "textarea", required: true },
-      { name: "variable", label: "المتغير المُختبر", type: "select", options: ["الهوك", "دعوة الفعل", "الصورة", "الطول", "النبرة", "توقيت النشر"], defaultValue: "الهوك" },
+      {
+        name: "variable",
+        label: "المتغير المُختبر",
+        type: "select",
+        options: ["الهوك", "دعوة الفعل", "الصورة", "الطول", "النبرة", "توقيت النشر"],
+        defaultValue: "الهوك",
+      },
       platform,
       { name: "reach", label: "متوسط الوصول لكل منشور", type: "number", placeholder: "4000" },
     ],
@@ -622,7 +774,13 @@ export const sonnySkills: Skill[] = [
     kind: "خطة تدوير",
     channel: "instagram",
     fields: [
-      { name: "winners", label: "المنشورات الأفضل أداءً", type: "textarea", required: true, placeholder: "الصق نص المنشور وأرقامه" },
+      {
+        name: "winners",
+        label: "المنشورات الأفضل أداءً",
+        type: "textarea",
+        required: true,
+        placeholder: "الصق نص المنشور وأرقامه",
+      },
       platform,
       dialect,
       { name: "gap", label: "كم مضى على نشرها؟", type: "text", placeholder: "من ٣ إلى ٩ أشهر" },
@@ -647,7 +805,12 @@ export const sonnySkills: Skill[] = [
     featured: true,
     fields: [
       { name: "idea", label: "الفكرة أو المنشور الأصلي", type: "textarea", required: true },
-      { name: "platforms", label: "المنصات", type: "text", defaultValue: "إنستغرام، تيك توك، لينكدإن، إكس، فيسبوك" },
+      {
+        name: "platforms",
+        label: "المنصات",
+        type: "text",
+        defaultValue: "إنستغرام، تيك توك، لينكدإن، إكس، فيسبوك",
+      },
       tone,
       dialect,
     ],
@@ -669,9 +832,21 @@ export const sonnySkills: Skill[] = [
     kind: "سكربت فيديو",
     channel: "tiktok",
     fields: [
-      { name: "topic", label: "موضوع الفيديو", type: "text", required: true, placeholder: "ثلاث علامات إن عطرك مقلّد" },
+      {
+        name: "topic",
+        label: "موضوع الفيديو",
+        type: "text",
+        required: true,
+        placeholder: "ثلاث علامات إن عطرك مقلّد",
+      },
       { name: "duration", label: "المدة بالثواني", type: "number", defaultValue: "35" },
-      { name: "speaker", label: "من يتكلم؟", type: "select", options: ["المؤسس", "موظف", "صوت معلّق بلا وجه"], defaultValue: "المؤسس" },
+      {
+        name: "speaker",
+        label: "من يتكلم؟",
+        type: "select",
+        options: ["المؤسس", "موظف", "صوت معلّق بلا وجه"],
+        defaultValue: "المؤسس",
+      },
       dialect,
     ],
     buildPrompt: (v) =>
@@ -694,7 +869,12 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     fields: [
       { name: "business", label: "النشاط وما تبيعه", type: "text", required: true },
-      { name: "links", label: "الروابط المتاحة", type: "textarea", placeholder: "المتجر، واتساب، الفروع، الأسعار، تقييمات" },
+      {
+        name: "links",
+        label: "الروابط المتاحة",
+        type: "textarea",
+        placeholder: "المتجر، واتساب، الفروع، الأسعار، تقييمات",
+      },
       { name: "goal", label: "الهدف الأول من الصفحة", type: "text", placeholder: "طلب من المتجر" },
       dialect,
     ],
@@ -716,7 +896,13 @@ export const sonnySkills: Skill[] = [
     kind: "تقرير شهري",
     channel: "instagram",
     fields: [
-      { name: "numbers", label: "أرقام الشهر لكل منصة", type: "textarea", required: true, placeholder: "إنستغرام: وصول ١٢٠ ألف، تفاعل ٤٢٠٠، متابعون +٦١٠ …" },
+      {
+        name: "numbers",
+        label: "أرقام الشهر لكل منصة",
+        type: "textarea",
+        required: true,
+        placeholder: "إنستغرام: وصول ١٢٠ ألف، تفاعل ٤٢٠٠، متابعون +٦١٠ …",
+      },
       { name: "goal", label: "هدف الشهر", type: "text", placeholder: "زيادة الطلبات" },
       { name: "prev", label: "أرقام الشهر الماضي (اختياري)", type: "textarea" },
     ],
@@ -746,10 +932,32 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "business", label: "النشاط ووصفه", type: "textarea", required: true, placeholder: "مطعم أكل صحي، فرعان في القاهرة والإسكندرية + توريد بالجملة" },
-      { name: "goal", label: "هدف العمل الرقمي خلال ٩٠ يوماً", type: "text", required: true, placeholder: "زيادة الطلبات أونلاين ١٥٪ ورفع التحويل من ٢٪ إلى ٣.٥٪" },
-      { name: "platforms", label: "المنصات", type: "text", defaultValue: "إنستغرام، فيسبوك، تيك توك، لينكدإن" },
-      { name: "segments", label: "شرائح الجمهور (سطر لكل شريحة)", type: "textarea", placeholder: "أمهات ٢٥–٤٠ حساسات للسعر\nشباب ١٨–٣٠ على تيك توك" },
+      {
+        name: "business",
+        label: "النشاط ووصفه",
+        type: "textarea",
+        required: true,
+        placeholder: "مطعم أكل صحي، فرعان في القاهرة والإسكندرية + توريد بالجملة",
+      },
+      {
+        name: "goal",
+        label: "هدف العمل الرقمي خلال ٩٠ يوماً",
+        type: "text",
+        required: true,
+        placeholder: "زيادة الطلبات أونلاين ١٥٪ ورفع التحويل من ٢٪ إلى ٣.٥٪",
+      },
+      {
+        name: "platforms",
+        label: "المنصات",
+        type: "text",
+        defaultValue: "إنستغرام، فيسبوك، تيك توك، لينكدإن",
+      },
+      {
+        name: "segments",
+        label: "شرائح الجمهور (سطر لكل شريحة)",
+        type: "textarea",
+        placeholder: "أمهات ٢٥–٤٠ حساسات للسعر\nشباب ١٨–٣٠ على تيك توك",
+      },
       { name: "market", label: "السوق/الدولة", type: "text", defaultValue: "مصر" },
       { name: "rivals", label: "المنافسون", type: "textarea" },
       dialect,
@@ -783,16 +991,39 @@ export const sonnySkills: Skill[] = [
     channel: "instagram",
     featured: true,
     fields: [
-      { name: "business", label: "النشاط", type: "text", required: true, placeholder: "مطعم أكل صحي بالقاهرة" },
-      { name: "scenarios", label: "سيناريوهات تخشاها (سطر لكل سيناريو)", type: "textarea", placeholder: "شكوى تسمم غذائي\nانتقاد من مؤثر\nهجوم تقييمات منظم" },
-      { name: "facts", label: "حقائق وسياسات مؤكدة يُسمح باستخدامها", type: "textarea", placeholder: "شهادة سلامة غذاء سارية، استرجاع خلال ٧ أيام" },
-      { name: "team", label: "من يُبلَّغ داخلياً", type: "text", placeholder: "مدير الفروع ثم المالك" },
+      {
+        name: "business",
+        label: "النشاط",
+        type: "text",
+        required: true,
+        placeholder: "مطعم أكل صحي بالقاهرة",
+      },
+      {
+        name: "scenarios",
+        label: "سيناريوهات تخشاها (سطر لكل سيناريو)",
+        type: "textarea",
+        placeholder: "شكوى تسمم غذائي\nانتقاد من مؤثر\nهجوم تقييمات منظم",
+      },
+      {
+        name: "facts",
+        label: "حقائق وسياسات مؤكدة يُسمح باستخدامها",
+        type: "textarea",
+        placeholder: "شهادة سلامة غذاء سارية، استرجاع خلال ٧ أيام",
+      },
+      {
+        name: "team",
+        label: "من يُبلَّغ داخلياً",
+        type: "text",
+        placeholder: "مدير الفروع ثم المالك",
+      },
       dialect,
     ],
     buildPrompt: (v) =>
       q([
         `اكتب دليل إدارة أزمات سوشيال ميديا لـ: ${v["business"]}، باللهجة ${v["dialect"]}.`,
-        v["scenarios"] ? `غطِّ هذه السيناريوهات:\n${v["scenarios"]}` : "غطِّ خمسة سيناريوهات واقعية شائعة في هذا النشاط.",
+        v["scenarios"]
+          ? `غطِّ هذه السيناريوهات:\n${v["scenarios"]}`
+          : "غطِّ خمسة سيناريوهات واقعية شائعة في هذا النشاط.",
         v["facts"] ? `حقائق مسموح استخدامها:\n${v["facts"]}` : "",
         v["team"] ? `مسار التصعيد الداخلي: ${v["team"]}.` : "",
         "لكل سيناريو أخرج بلوكاً بهذا الشكل:",
@@ -809,4 +1040,3 @@ export const sonnySkills: Skill[] = [
       ]),
   },
 ];
-

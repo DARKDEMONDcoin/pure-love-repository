@@ -7,8 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { adsOverview } from "@/lib/ads-overview.functions";
 import type { Integration } from "@/lib/data";
 
-const fmt = (n: number, digits = 0) =>
-  n.toLocaleString("ar-EG", { maximumFractionDigits: digits });
+const fmt = (n: number, digits = 0) => n.toLocaleString("ar-EG", { maximumFractionDigits: digits });
 
 /**
  * نتائج الإعلانات الحقيقية لآخر ٣٠ يوماً (حساب ميتا المرتبط).
@@ -39,12 +38,14 @@ export function AdsResultsCard({
   });
 
   const cost = data?.conversions ? data.spend / data.conversions : 0;
-  const metrics = data ? [
-    { k: "الإنفاق", v: `${fmt(data.spend)} ${data.currency}`, icon: ReceiptText },
-    { k: "النقرات", v: fmt(data.clicks), icon: MousePointerClick },
-    { k: "نسبة النقر", v: `${fmt(data.ctr, 2)}%`, icon: Activity },
-    { k: "التحويلات", v: fmt(data.conversions), icon: Target },
-  ] : [];
+  const metrics = data
+    ? [
+        { k: "الإنفاق", v: `${fmt(data.spend)} ${data.currency}`, icon: ReceiptText },
+        { k: "النقرات", v: fmt(data.clicks), icon: MousePointerClick },
+        { k: "نسبة النقر", v: `${fmt(data.ctr, 2)}%`, icon: Activity },
+        { k: "التحويلات", v: fmt(data.conversions), icon: Target },
+      ]
+    : [];
   const maxSpend = Math.max(...(data?.campaigns ?? []).map((campaign) => campaign.spend), 1);
   const isConnected = (providers: readonly string[]) =>
     integrations.some((row) => providers.includes(row.provider) && row.status === "connected");
@@ -54,7 +55,9 @@ export function AdsResultsCard({
       <div className="ads-report-head">
         <div>
           <p>مركز قيادة موحّد · بيانات فعلية فقط</p>
-          <h2 id="ads-command-title" className="flex items-center gap-2.5"><BarChart3 className="size-6 text-primary" /> أداء الإعلانات عبر المنصات</h2>
+          <h2 id="ads-command-title" className="flex items-center gap-2.5">
+            <BarChart3 className="size-6 text-primary" /> أداء الإعلانات عبر المنصات
+          </h2>
         </div>
         <span>{data ? `${data.account} · آخر ٣٠ يوماً` : "في انتظار أول مصدر بيانات"}</span>
       </div>
@@ -62,16 +65,26 @@ export function AdsResultsCard({
       <div className="ads-platform-rail" aria-label="حالة منصات الإعلانات">
         {channels.map((channel) => {
           const connected = isConnected(channel.providers);
-          const reporting = Boolean(data) && channel.providers.some((provider) =>
-            provider === "facebook" || provider === "meta-ads" || provider === "instagram",
-          );
+          const reporting =
+            Boolean(data) &&
+            channel.providers.some(
+              (provider) =>
+                provider === "facebook" || provider === "meta-ads" || provider === "instagram",
+            );
           return (
-            <div key={channel.code} className={cn(
-              "flex items-center gap-3",
-              reporting ? "is-reporting" : connected ? "is-connected" : undefined
-            )}>
+            <div
+              key={channel.code}
+              className={cn(
+                "flex items-center gap-3",
+                reporting ? "is-reporting" : connected ? "is-connected" : undefined,
+              )}
+            >
               <div className="grid size-10 shrink-0 place-items-center rounded-xl border border-command-line bg-background shadow-sm">
-                <AppIcon name={channel.providers[0]} className="size-5" colored={connected || reporting} />
+                <AppIcon
+                  name={channel.providers[0]}
+                  className="size-5"
+                  colored={connected || reporting}
+                />
               </div>
               <div className="min-w-0">
                 <b className="block truncate text-sm">{channel.label}</b>
@@ -89,7 +102,9 @@ export function AdsResultsCard({
           <div className="ads-report-metrics">
             {metrics.map((m) => (
               <div key={m.k}>
-                <p className="flex items-center gap-1.5"><m.icon className="size-4" /> {m.k}</p>
+                <p className="flex items-center gap-1.5">
+                  <m.icon className="size-4" /> {m.k}
+                </p>
                 <strong>{m.v}</strong>
               </div>
             ))}
@@ -103,16 +118,29 @@ export function AdsResultsCard({
               </div>
               <div className="ads-chart-bars" aria-hidden="true">
                 {data.campaigns.map((campaign) => (
-                  <i key={campaign.name} style={{ height: `${Math.max(12, (campaign.spend / maxSpend) * 100)}%` }} />
+                  <i
+                    key={campaign.name}
+                    style={{ height: `${Math.max(12, (campaign.spend / maxSpend) * 100)}%` }}
+                  />
                 ))}
               </div>
               {data.conversions ? (
-                <p>تكلفة التحويل <b>{fmt(cost, 2)} {data.currency}</b></p>
-              ) : <p>لم تُسجّل تحويلات في هذه الفترة</p>}
+                <p>
+                  تكلفة التحويل{" "}
+                  <b>
+                    {fmt(cost, 2)} {data.currency}
+                  </b>
+                </p>
+              ) : (
+                <p>لم تُسجّل تحويلات في هذه الفترة</p>
+              )}
             </div>
 
             <div className="ads-campaign-board">
-              <div className="ads-report-label"><span>أعلى الحملات</span><span>الإنفاق / النقرات</span></div>
+              <div className="ads-report-label">
+                <span>أعلى الحملات</span>
+                <span>الإنفاق / النقرات</span>
+              </div>
               <ol className="ads-campaigns">
                 {data.campaigns.map((campaign, index) => (
                   <li key={campaign.name}>
@@ -120,10 +148,14 @@ export function AdsResultsCard({
                     <div className="ads-campaign-copy">
                       <div className="ads-campaign-line">
                         <span>{campaign.name}</span>
-                        <b>{fmt(campaign.spend)} {data.currency} · {fmt(campaign.clicks)}</b>
+                        <b>
+                          {fmt(campaign.spend)} {data.currency} · {fmt(campaign.clicks)}
+                        </b>
                       </div>
                       <span className="ads-campaign-track" aria-hidden="true">
-                        <i style={{ width: `${Math.max(5, (campaign.spend / maxSpend) * 100)}%` }} />
+                        <i
+                          style={{ width: `${Math.max(5, (campaign.spend / maxSpend) * 100)}%` }}
+                        />
                       </span>
                     </div>
                   </li>
@@ -139,7 +171,9 @@ export function AdsResultsCard({
             <h3>اربط منصة إعلانية لتظهر النتائج هنا تلقائيًا.</h3>
             <p>ستظهر المقارنة والإنفاق والنقرات والتحويلات فور توفر بيانات حقيقية من الحساب.</p>
           </div>
-          <Link to="/app/integrations">إدارة المنصات <span aria-hidden="true">←</span></Link>
+          <Link to="/app/integrations">
+            إدارة المنصات <span aria-hidden="true">←</span>
+          </Link>
         </div>
       )}
     </section>

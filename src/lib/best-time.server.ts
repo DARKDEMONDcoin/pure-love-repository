@@ -150,7 +150,12 @@ export async function computeBestTimes(
         note: "محسوبة من ساعات تواجد متابعيك فعلياً على إنستجرام.",
         slots: top.map((h) => {
           const at = nextAt(h.hour, null, offsetMin, now);
-          return { at: at.toISOString(), hour: h.hour, weekday: local(at, offsetMin).weekday, score: h.score };
+          return {
+            at: at.toISOString(),
+            hour: h.hour,
+            weekday: local(at, offsetMin).weekday,
+            score: h.score,
+          };
         }),
       };
     }
@@ -200,7 +205,12 @@ export async function computeBestTimes(
           : `محسوبة من مواعيد ${rows.length} منشوراً ناجحاً من حسابك (التفاعل لم يُتَح بعد).`,
         slots: top.map((b) => {
           const at = nextAt(b.hour, b.weekday, offsetMin, now);
-          return { at: at.toISOString(), hour: b.hour, weekday: b.weekday, score: Math.round(b.score) };
+          return {
+            at: at.toISOString(),
+            hour: b.hour,
+            weekday: b.weekday,
+            score: Math.round(b.score),
+          };
         }),
       };
     }

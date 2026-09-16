@@ -38,7 +38,10 @@ function PostNotFound() {
     <PageShell>
       <PageHero eyebrow="المدونة" title="لم نجد هذا المقال" lead="ربما تغيّر الرابط أو حُذف." />
       <div className="py-16 text-center">
-        <Link to="/blog" className="rounded-full bg-foreground px-7 py-3.5 font-bold text-background">
+        <Link
+          to="/blog"
+          className="rounded-full bg-foreground px-7 py-3.5 font-bold text-background"
+        >
           العودة إلى المدونة
         </Link>
       </div>

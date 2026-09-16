@@ -45,9 +45,15 @@ export const Route = createFileRoute("/app/settings")({
   head: () => ({
     meta: [
       { title: "الإعدادات | سهل" },
-      { name: "description", content: "إدارة مساحة عمل سهل والحساب والأمان والتنبيهات والتكاملات." },
+      {
+        name: "description",
+        content: "إدارة مساحة عمل سهل والحساب والأمان والتنبيهات والتكاملات.",
+      },
       { property: "og:title", content: "الإعدادات | سهل" },
-      { property: "og:description", content: "إدارة مساحة عمل سهل والحساب والأمان والتنبيهات والتكاملات." },
+      {
+        property: "og:description",
+        content: "إدارة مساحة عمل سهل والحساب والأمان والتنبيهات والتكاملات.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -160,7 +166,11 @@ function SettingsPage() {
               : "border-destructive/30 bg-destructive/10 text-destructive",
           )}
         >
-          {notice.type === "success" ? <CheckCircle2 className="size-4" /> : <Bell className="size-4" />}
+          {notice.type === "success" ? (
+            <CheckCircle2 className="size-4" />
+          ) : (
+            <Bell className="size-4" />
+          )}
           {notice.text}
         </div>
       ) : null}
@@ -186,12 +196,19 @@ function SettingsPage() {
                     : "border-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground",
                 )}
               >
-                <span className={cn("grid size-9 shrink-0 place-items-center rounded-md", active ? "bg-primary text-primary-foreground" : "bg-secondary")}>
+                <span
+                  className={cn(
+                    "grid size-9 shrink-0 place-items-center rounded-md",
+                    active ? "bg-primary text-primary-foreground" : "bg-secondary",
+                  )}
+                >
                   <item.icon className="size-4" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-extrabold">{item.label}</span>
-                  <span className="hidden text-xs font-medium text-muted-foreground lg:block">{item.hint}</span>
+                  <span className="hidden text-xs font-medium text-muted-foreground lg:block">
+                    {item.hint}
+                  </span>
                 </span>
               </Button>
             );
@@ -207,16 +224,22 @@ function SettingsPage() {
             <AccountPanel profile={profile} onNotice={setNotice} />
           ) : null}
           {tab === "notifications" ? <NotificationsPanel onNotice={setNotice} /> : null}
-          {tab === "billing" ? (
-            <BillingPanel doneCount={doneCount} loading={tasksLoading} />
-          ) : null}
+          {tab === "billing" ? <BillingPanel doneCount={doneCount} loading={tasksLoading} /> : null}
         </main>
       </div>
     </AppShell>
   );
 }
 
-function PanelHeader({ icon: Icon, title, description }: { icon: typeof Building2; title: string; description: string }) {
+function PanelHeader({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof Building2;
+  title: string;
+  description: string;
+}) {
   return (
     <header className="mb-6 flex gap-3 border-b border-border pb-5">
       <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
@@ -231,7 +254,11 @@ function PanelHeader({ icon: Icon, title, description }: { icon: typeof Building
 }
 
 function SettingsCard({ children }: { children: React.ReactNode }) {
-  return <section className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-7">{children}</section>;
+  return (
+    <section className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-7">
+      {children}
+    </section>
+  );
 }
 
 function SettingsLoading() {
@@ -239,7 +266,9 @@ function SettingsLoading() {
     <div className="rounded-lg border border-border bg-card p-7" aria-label="جارٍ تحميل الإعدادات">
       <div className="mb-7 h-12 w-48 animate-pulse rounded-lg bg-secondary" />
       <div className="grid gap-4 sm:grid-cols-2">
-        {[1, 2, 3, 4].map((item) => <div key={item} className="h-20 animate-pulse rounded-lg bg-secondary/70" />)}
+        {[1, 2, 3, 4].map((item) => (
+          <div key={item} className="h-20 animate-pulse rounded-lg bg-secondary/70" />
+        ))}
       </div>
     </div>
   );
@@ -249,12 +278,22 @@ type WorkspaceData = NonNullable<ReturnType<typeof useWorkspace>["data"]>;
 type ProfileData = NonNullable<ReturnType<typeof useProfile>["data"]>;
 type NoticeSetter = (notice: { type: "success" | "error"; text: string }) => void;
 
-function WorkspacePanel({ workspace, onNotice }: { workspace: WorkspaceData; onNotice: NoticeSetter }) {
+function WorkspacePanel({
+  workspace,
+  onNotice,
+}: {
+  workspace: WorkspaceData;
+  onNotice: NoticeSetter;
+}) {
   const updateWorkspace = useUpdateWorkspace();
 
   return (
     <SettingsCard>
-      <PanelHeader icon={Building2} title="مساحة العمل" description="هذه التفاصيل توجه الفريق عند إنشاء أي محتوى أو مهمة." />
+      <PanelHeader
+        icon={Building2}
+        title="مساحة العمل"
+        description="هذه التفاصيل توجه الفريق عند إنشاء أي محتوى أو مهمة."
+      />
       <form
         className="space-y-6"
         onSubmit={async (event) => {
@@ -270,7 +309,10 @@ function WorkspacePanel({ workspace, onNotice }: { workspace: WorkspaceData; onN
               id: workspace.id,
               patch: {
                 name,
-                initials: String(form.get("initials") ?? "").trim().slice(0, 3) || name.slice(0, 2),
+                initials:
+                  String(form.get("initials") ?? "")
+                    .trim()
+                    .slice(0, 3) || name.slice(0, 2),
                 industry: String(form.get("industry") ?? "").trim(),
                 website: String(form.get("website") ?? "").trim() || null,
                 country: String(form.get("country") ?? "").trim() || null,
@@ -288,27 +330,64 @@ function WorkspacePanel({ workspace, onNotice }: { workspace: WorkspaceData; onN
         }}
       >
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="اسم النشاط" required><input name="name" required defaultValue={workspace.name} className={field} /></Field>
-          <Field label="الأحرف المختصرة" hint="تظهر في صورة مساحة العمل"><input name="initials" maxLength={3} defaultValue={workspace.initials} className={field} /></Field>
-          <Field label="المجال"><input name="industry" defaultValue={workspace.industry} className={field} /></Field>
+          <Field label="اسم النشاط" required>
+            <input name="name" required defaultValue={workspace.name} className={field} />
+          </Field>
+          <Field label="الأحرف المختصرة" hint="تظهر في صورة مساحة العمل">
+            <input
+              name="initials"
+              maxLength={3}
+              defaultValue={workspace.initials}
+              className={field}
+            />
+          </Field>
+          <Field label="المجال">
+            <input name="industry" defaultValue={workspace.industry} className={field} />
+          </Field>
           <Field label="الدولة">
             <select name="country" defaultValue={workspace.country ?? ""} className={field}>
               <option value="">اختر الدولة</option>
-              {COUNTRIES.map((item) => <option key={item.code} value={item.name}>{item.name}</option>)}
+              {COUNTRIES.map((item) => (
+                <option key={item.code} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
             </select>
           </Field>
           <Field label="الموقع الإلكتروني" hint="اختياري">
-            <div className="relative"><Globe2 className="absolute right-3 top-3 size-4 text-muted-foreground" /><input name="website" type="url" dir="ltr" defaultValue={workspace.website ?? ""} placeholder="https://example.com" className={cn(field, "pe-9")} /></div>
+            <div className="relative">
+              <Globe2 className="absolute right-3 top-3 size-4 text-muted-foreground" />
+              <input
+                name="website"
+                type="url"
+                dir="ltr"
+                defaultValue={workspace.website ?? ""}
+                placeholder="https://example.com"
+                className={cn(field, "pe-9")}
+              />
+            </div>
           </Field>
         </div>
         <Field label="نبرة العلامة" hint="صف كيف تريد أن يبدو صوت علامتك">
-          <textarea name="tone" defaultValue={workspace.tone} className={cn(field, "min-h-28 resize-y")} />
+          <textarea
+            name="tone"
+            defaultValue={workspace.tone}
+            className={cn(field, "min-h-28 resize-y")}
+          />
         </Field>
         <Field label="الكلمات الممنوعة" hint="افصل بينها بفاصلة عربية أو اكتب كل كلمة في سطر">
-          <textarea name="banned" defaultValue={workspace.banned_words.join("، ")} className={cn(field, "min-h-24 resize-y")} />
+          <textarea
+            name="banned"
+            defaultValue={workspace.banned_words.join("، ")}
+            className={cn(field, "min-h-24 resize-y")}
+          />
         </Field>
         <Button type="submit" disabled={updateWorkspace.isPending} className="gap-2">
-          {updateWorkspace.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+          {updateWorkspace.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Save className="size-4" />
+          )}
           {updateWorkspace.isPending ? "جارٍ الحفظ" : "حفظ التغييرات"}
         </Button>
       </form>
@@ -316,10 +395,23 @@ function WorkspacePanel({ workspace, onNotice }: { workspace: WorkspaceData; onN
   );
 }
 
-function Field({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  required,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <label className="block">
-      <span className="mb-2 flex items-center gap-1 text-sm font-extrabold">{label}{required ? <span className="text-destructive">*</span> : null}</span>
+      <span className="mb-2 flex items-center gap-1 text-sm font-extrabold">
+        {label}
+        {required ? <span className="text-destructive">*</span> : null}
+      </span>
       {children}
       {hint ? <span className="mt-1.5 block text-xs text-muted-foreground">{hint}</span> : null}
     </label>
@@ -346,7 +438,11 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
   return (
     <div className="space-y-5">
       <SettingsCard>
-        <PanelHeader icon={User} title="بيانات الحساب" description="بياناتك الشخصية واللغة التي يكتب بها فريقك." />
+        <PanelHeader
+          icon={User}
+          title="بيانات الحساب"
+          description="بياناتك الشخصية واللغة التي يكتب بها فريقك."
+        />
         {userId ? (
           <div className="mb-6 rounded-lg border border-border bg-secondary/40 p-4">
             <AvatarUploader
@@ -356,8 +452,14 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
               onError={(text) => onNotice({ type: "error", text })}
               onChange={async (nextPath) => {
                 try {
-                  await updateProfile.mutateAsync({ id: profile.id, patch: { avatar_url: nextPath } });
-                  onNotice({ type: "success", text: nextPath ? "تم تحديث صورتك الشخصية." : "تم حذف صورتك الشخصية." });
+                  await updateProfile.mutateAsync({
+                    id: profile.id,
+                    patch: { avatar_url: nextPath },
+                  });
+                  onNotice({
+                    type: "success",
+                    text: nextPath ? "تم تحديث صورتك الشخصية." : "تم حذف صورتك الشخصية.",
+                  });
                 } catch {
                   onNotice({ type: "error", text: "تعذّر حفظ الصورة." });
                 }
@@ -387,34 +489,78 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
           }}
         >
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="الاسم"><input name="full_name" defaultValue={profile.full_name ?? ""} className={field} /></Field>
-            <Field label="البريد الإلكتروني"><div className="relative"><Mail className="absolute right-3 top-3 size-4 text-muted-foreground" /><input value={email} readOnly className={cn(field, "pe-9 text-muted-foreground")} /></div></Field>
+            <Field label="الاسم">
+              <input name="full_name" defaultValue={profile.full_name ?? ""} className={field} />
+            </Field>
+            <Field label="البريد الإلكتروني">
+              <div className="relative">
+                <Mail className="absolute right-3 top-3 size-4 text-muted-foreground" />
+                <input value={email} readOnly className={cn(field, "pe-9 text-muted-foreground")} />
+              </div>
+            </Field>
             <Field label="المسمى الوظيفي" hint="اختياري — يظهر في التقارير التي يعدّها فريقك">
-              <input name="job_title" defaultValue={profile.job_title ?? ""} placeholder="مدير التسويق" className={field} />
+              <input
+                name="job_title"
+                defaultValue={profile.job_title ?? ""}
+                placeholder="مدير التسويق"
+                className={field}
+              />
             </Field>
             <Field label="رقم الجوال" hint="اختياري — لتنبيهات واتساب مستقبلاً">
-              <input name="phone" type="tel" dir="ltr" defaultValue={profile.phone ?? ""} placeholder="+9665…" className={field} />
+              <input
+                name="phone"
+                type="tel"
+                dir="ltr"
+                defaultValue={profile.phone ?? ""}
+                placeholder="+9665…"
+                className={field}
+              />
             </Field>
             <Field label="لهجة المحتوى">
               <select name="dialect" defaultValue={profile.dialect} className={field}>
-                {["خليجية", "مصرية", "شامية", "مغاربية", "فصحى معاصرة"].map((dialect) => <option key={dialect}>{dialect}</option>)}
+                {["خليجية", "مصرية", "شامية", "مغاربية", "فصحى معاصرة"].map((dialect) => (
+                  <option key={dialect}>{dialect}</option>
+                ))}
               </select>
             </Field>
             <Field label="زيّ الفريق في الصور" hint="يغيّر مظهر الموظفين في الصور التي ينشئها سهل">
-              <select value={country} onChange={(event) => setCountry(event.target.value)} className={field}>
-                {COUNTRIES.map((item) => <option key={item.code} value={item.code}>{item.name}</option>)}
+              <select
+                value={country}
+                onChange={(event) => setCountry(event.target.value)}
+                className={field}
+              >
+                {COUNTRIES.map((item) => (
+                  <option key={item.code} value={item.code}>
+                    {item.name}
+                  </option>
+                ))}
               </select>
             </Field>
           </div>
-          <Button type="submit" disabled={updateProfile.isPending} className="gap-2"><Save className="size-4" />حفظ الحساب</Button>
+          <Button type="submit" disabled={updateProfile.isPending} className="gap-2">
+            <Save className="size-4" />
+            حفظ الحساب
+          </Button>
         </form>
       </SettingsCard>
 
       <SettingsCard>
-        <PanelHeader icon={LockKeyhole} title="الأمان" description="استخدم كلمة مرور قوية ومختلفة عن حساباتك الأخرى." />
+        <PanelHeader
+          icon={LockKeyhole}
+          title="الأمان"
+          description="استخدم كلمة مرور قوية ومختلفة عن حساباتك الأخرى."
+        />
         {anonymous ? (
           <div className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm">
-            أنت تستخدم التجربة حالياً. <Link to="/auth" search={{ mode: "signup" }} className="font-bold text-primary underline">أنشئ حساباً دائماً</Link> لإدارة كلمة المرور.
+            أنت تستخدم التجربة حالياً.{" "}
+            <Link
+              to="/auth"
+              search={{ mode: "signup" }}
+              className="font-bold text-primary underline"
+            >
+              أنشئ حساباً دائماً
+            </Link>{" "}
+            لإدارة كلمة المرور.
           </div>
         ) : (
           <form
@@ -424,8 +570,13 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
               const form = new FormData(event.currentTarget);
               const password = String(form.get("password") ?? "");
               const confirm = String(form.get("confirm") ?? "");
-              if (password.length < 8) return onNotice({ type: "error", text: "كلمة المرور يجب أن تكون ٨ أحرف على الأقل." });
-              if (password !== confirm) return onNotice({ type: "error", text: "كلمتا المرور غير متطابقتين." });
+              if (password.length < 8)
+                return onNotice({
+                  type: "error",
+                  text: "كلمة المرور يجب أن تكون ٨ أحرف على الأقل.",
+                });
+              if (password !== confirm)
+                return onNotice({ type: "error", text: "كلمتا المرور غير متطابقتين." });
               setPasswordBusy(true);
               const { error } = await supabase.auth.updateUser({ password });
               setPasswordBusy(false);
@@ -437,10 +588,41 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
             }}
           >
             <Field label="كلمة المرور الجديدة">
-              <div className="relative"><input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" className={cn(field, "ps-10")} /><Button type="button" variant="ghost" size="icon" onClick={() => setShowPassword((value) => !value)} className="absolute left-1 top-1 size-8" aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>{showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</Button></div>
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  className={cn(field, "ps-10")}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowPassword((value) => !value)}
+                  className="absolute left-1 top-1 size-8"
+                  aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </Button>
+              </div>
             </Field>
-            <Field label="تأكيد كلمة المرور"><input name="confirm" type={showPassword ? "text" : "password"} autoComplete="new-password" className={field} /></Field>
-            <Button type="submit" disabled={passwordBusy} className="gap-2">{passwordBusy ? <Loader2 className="size-4 animate-spin" /> : <LockKeyhole className="size-4" />}تغيير كلمة المرور</Button>
+            <Field label="تأكيد كلمة المرور">
+              <input
+                name="confirm"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className={field}
+              />
+            </Field>
+            <Button type="submit" disabled={passwordBusy} className="gap-2">
+              {passwordBusy ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <LockKeyhole className="size-4" />
+              )}
+              تغيير كلمة المرور
+            </Button>
           </form>
         )}
         <div className="mt-6 flex flex-wrap gap-3 border-t border-border pt-5">
@@ -453,7 +635,9 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
                 supabase.from("workspaces").select("*"),
                 supabase.from("profiles").select("*"),
               ]);
-              const blob = new Blob([JSON.stringify({ profiles, workspaces }, null, 2)], { type: "application/json" });
+              const blob = new Blob([JSON.stringify({ profiles, workspaces }, null, 2)], {
+                type: "application/json",
+              });
               const url = URL.createObjectURL(blob);
               const anchor = document.createElement("a");
               anchor.href = url;
@@ -463,12 +647,33 @@ function AccountPanel({ profile, onNotice }: { profile: ProfileData; onNotice: N
               onNotice({ type: "success", text: "تم تنزيل نسخة من بياناتك." });
             }}
           >
-            <Download className="size-4" />تنزيل نسخة من بياناتي
+            <Download className="size-4" />
+            تنزيل نسخة من بياناتي
           </Button>
-          <Button type="button" variant="outline" className="gap-2" onClick={async () => { await supabase.auth.signOut({ scope: "global" }); window.location.assign("/"); }}>
-            <ShieldCheck className="size-4" />تسجيل الخروج من كل الأجهزة
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2"
+            onClick={async () => {
+              await supabase.auth.signOut({ scope: "global" });
+              window.location.assign("/");
+            }}
+          >
+            <ShieldCheck className="size-4" />
+            تسجيل الخروج من كل الأجهزة
           </Button>
-          <Button type="button" variant="outline" className="gap-2 text-destructive hover:text-destructive" onClick={async () => { await supabase.auth.signOut(); window.location.assign("/"); }}><LogOut className="size-4" />تسجيل الخروج من هذا الجهاز</Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2 text-destructive hover:text-destructive"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.assign("/");
+            }}
+          >
+            <LogOut className="size-4" />
+            تسجيل الخروج من هذا الجهاز
+          </Button>
         </div>
       </SettingsCard>
     </div>
@@ -494,35 +699,88 @@ function NotificationsPanel({ onNotice }: { onNotice: NoticeSetter }) {
   }, [data]);
 
   const options = [
-    { key: "approval_ready", title: "جاهزية عنصر للموافقة", description: "عندما ينتظر منشور أو تصميم قرارك." },
-    { key: "publishing_failed", title: "فشل النشر", description: "تنبيه فوري عند تعذّر نشر محتوى مجدول." },
-    { key: "integration_disconnected", title: "انقطاع اتصال", description: "عندما يحتاج حساب مرتبط إلى إعادة تسجيل الدخول." },
-    { key: "task_digest", title: "ملخص المهام", description: "ملخص بالمهام التي أتمها الفريق وما ينتظر قرارك." },
-    { key: "weekly_summary", title: "التقرير الأسبوعي", description: "نظرة موجزة على أداء الفريق كل أسبوع." },
+    {
+      key: "approval_ready",
+      title: "جاهزية عنصر للموافقة",
+      description: "عندما ينتظر منشور أو تصميم قرارك.",
+    },
+    {
+      key: "publishing_failed",
+      title: "فشل النشر",
+      description: "تنبيه فوري عند تعذّر نشر محتوى مجدول.",
+    },
+    {
+      key: "integration_disconnected",
+      title: "انقطاع اتصال",
+      description: "عندما يحتاج حساب مرتبط إلى إعادة تسجيل الدخول.",
+    },
+    {
+      key: "task_digest",
+      title: "ملخص المهام",
+      description: "ملخص بالمهام التي أتمها الفريق وما ينتظر قرارك.",
+    },
+    {
+      key: "weekly_summary",
+      title: "التقرير الأسبوعي",
+      description: "نظرة موجزة على أداء الفريق كل أسبوع.",
+    },
   ] as const;
 
   if (isLoading) return <SettingsLoading />;
 
   return (
     <SettingsCard>
-      <PanelHeader icon={Bell} title="التنبيهات" description="اختر الأحداث المهمة فقط، ويمكنك تعديلها في أي وقت." />
+      <PanelHeader
+        icon={Bell}
+        title="التنبيهات"
+        description="اختر الأحداث المهمة فقط، ويمكنك تعديلها في أي وقت."
+      />
       <div className="space-y-3">
         {options.map((option) => (
-          <div key={option.key} className="flex items-center justify-between gap-5 rounded-lg border border-border p-4">
-            <div><p className="text-sm font-extrabold">{option.title}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{option.description}</p></div>
-            <Switch checked={preferences[option.key]} onCheckedChange={(checked) => setPreferences((current) => ({ ...current, [option.key]: checked }))} aria-label={option.title} />
+          <div
+            key={option.key}
+            className="flex items-center justify-between gap-5 rounded-lg border border-border p-4"
+          >
+            <div>
+              <p className="text-sm font-extrabold">{option.title}</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">{option.description}</p>
+            </div>
+            <Switch
+              checked={preferences[option.key]}
+              onCheckedChange={(checked) =>
+                setPreferences((current) => ({ ...current, [option.key]: checked }))
+              }
+              aria-label={option.title}
+            />
           </div>
         ))}
       </div>
       <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2">
         <Field label="وتيرة الملخص">
-          <select value={preferences.digest_frequency} onChange={(event) => setPreferences((current) => ({ ...current, digest_frequency: event.target.value }))} className={field}>
-            <option value="daily">يومي</option><option value="weekly">أسبوعي</option><option value="monthly">شهري</option>
+          <select
+            value={preferences.digest_frequency}
+            onChange={(event) =>
+              setPreferences((current) => ({ ...current, digest_frequency: event.target.value }))
+            }
+            className={field}
+          >
+            <option value="daily">يومي</option>
+            <option value="weekly">أسبوعي</option>
+            <option value="monthly">شهري</option>
           </select>
         </Field>
         <Field label="المنطقة الزمنية">
-          <select value={preferences.timezone} onChange={(event) => setPreferences((current) => ({ ...current, timezone: event.target.value }))} className={field}>
-            <option value="Asia/Riyadh">الرياض</option><option value="Africa/Cairo">القاهرة</option><option value="Asia/Dubai">دبي</option><option value="Africa/Casablanca">الدار البيضاء</option>
+          <select
+            value={preferences.timezone}
+            onChange={(event) =>
+              setPreferences((current) => ({ ...current, timezone: event.target.value }))
+            }
+            className={field}
+          >
+            <option value="Asia/Riyadh">الرياض</option>
+            <option value="Africa/Cairo">القاهرة</option>
+            <option value="Asia/Dubai">دبي</option>
+            <option value="Africa/Casablanca">الدار البيضاء</option>
           </select>
         </Field>
       </div>
@@ -539,7 +797,12 @@ function NotificationsPanel({ onNotice }: { onNotice: NoticeSetter }) {
           }
         }}
       >
-        {update.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}حفظ التنبيهات
+        {update.isPending ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Save className="size-4" />
+        )}
+        حفظ التنبيهات
       </Button>
     </SettingsCard>
   );
@@ -550,13 +813,48 @@ function BillingPanel({ doneCount, loading }: { doneCount: number; loading: bool
   const usage = Math.min(100, (doneCount / limit) * 100);
   return (
     <SettingsCard>
-      <PanelHeader icon={CircleGauge} title="الاستخدام والباقات" description="أرقام حقيقية من مهام مساحة العمل الحالية." />
+      <PanelHeader
+        icon={CircleGauge}
+        title="الاستخدام والباقات"
+        description="أرقام حقيقية من مهام مساحة العمل الحالية."
+      />
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-primary/20 bg-primary/10 p-5"><p className="text-xs font-bold text-primary">الخطة الحالية</p><p className="mt-2 text-xl font-black">التجربة المجانية</p><p className="mt-2 text-sm text-muted-foreground">ابدأ بدون بطاقة دفع، ثم اختر الباقة المناسبة عند الحاجة.</p></div>
-        <div className="rounded-lg border border-border p-5"><div className="flex items-center justify-between"><p className="text-sm font-extrabold">المهام المكتملة</p><Sparkles className="size-5 text-primary" /></div><p className="mt-3 text-3xl font-black">{loading ? "—" : doneCount}<span className="text-base font-semibold text-muted-foreground"> / {limit}</span></p><Progress value={usage} className="mt-4" /></div>
+        <div className="rounded-lg border border-primary/20 bg-primary/10 p-5">
+          <p className="text-xs font-bold text-primary">الخطة الحالية</p>
+          <p className="mt-2 text-xl font-black">التجربة المجانية</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            ابدأ بدون بطاقة دفع، ثم اختر الباقة المناسبة عند الحاجة.
+          </p>
+        </div>
+        <div className="rounded-lg border border-border p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-extrabold">المهام المكتملة</p>
+            <Sparkles className="size-5 text-primary" />
+          </div>
+          <p className="mt-3 text-3xl font-black">
+            {loading ? "—" : doneCount}
+            <span className="text-base font-semibold text-muted-foreground"> / {limit}</span>
+          </p>
+          <Progress value={usage} className="mt-4" />
+        </div>
       </div>
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border p-4"><div><p className="text-sm font-extrabold">هل تحتاج سعة أكبر؟</p><p className="mt-1 text-xs text-muted-foreground">قارن الحدود والمزايا قبل اختيار خطتك.</p></div><Button asChild className="gap-2"><Link to="/pricing">عرض الباقات<ChevronLeft className="size-4" /></Link></Button></div>
-      <p className="mt-4 text-xs text-muted-foreground">لا توجد وسيلة دفع مرتبطة بهذه المساحة حالياً.</p>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border p-4">
+        <div>
+          <p className="text-sm font-extrabold">هل تحتاج سعة أكبر؟</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            قارن الحدود والمزايا قبل اختيار خطتك.
+          </p>
+        </div>
+        <Button asChild className="gap-2">
+          <Link to="/pricing">
+            عرض الباقات
+            <ChevronLeft className="size-4" />
+          </Link>
+        </Button>
+      </div>
+      <p className="mt-4 text-xs text-muted-foreground">
+        لا توجد وسيلة دفع مرتبطة بهذه المساحة حالياً.
+      </p>
     </SettingsCard>
   );
 }

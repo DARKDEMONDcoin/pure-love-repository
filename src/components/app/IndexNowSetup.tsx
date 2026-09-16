@@ -40,8 +40,8 @@ export function IndexNowSetup({
           <div>
             <h2 className="font-display text-xl font-black">تجهيز IndexNow</h2>
             <p className="mt-1 text-sm text-ink-soft">
-              خدمة مجانية من بينج وياندكس: بمجرد نشر نور مقالاً، تُبلّغ محركات البحث فوراً بدل انتظار
-              الزحف.
+              خدمة مجانية من بينج وياندكس: بمجرد نشر نور مقالاً، تُبلّغ محركات البحث فوراً بدل
+              انتظار الزحف.
             </p>
           </div>
           <button

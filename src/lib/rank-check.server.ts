@@ -55,7 +55,13 @@ const isMine = (host: string, domain: string) => host === domain || host.endsWit
 /* ---------- 1) Search Console ---------- */
 
 type GscSite = { siteUrl: string; permissionLevel?: string };
-type GscRow = { keys: string[]; clicks: number; impressions: number; ctr: number; position: number };
+type GscRow = {
+  keys: string[];
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+};
 
 async function gscSiteFor(workspaceId: string, domain: string): Promise<string | null> {
   const { googleDataRequest } = await import("./google-data.server");
@@ -103,7 +109,9 @@ export async function rankViaSearchConsole(
           {
             filters: [
               { dimension: "query", operator: "equals", expression: keyword },
-              ...(country ? [{ dimension: "country", operator: "equals", expression: country }] : []),
+              ...(country
+                ? [{ dimension: "country", operator: "equals", expression: country }]
+                : []),
             ],
           },
         ],
@@ -136,16 +144,39 @@ export async function rankViaSearchConsole(
 
 function iso3(a2: string): string {
   const m: Record<string, string> = {
-    EG: "egy", SA: "sau", AE: "are", KW: "kwt", QA: "qat", BH: "bhr", OM: "omn", JO: "jor", LB: "lbn",
-    IQ: "irq", MA: "mar", DZ: "dza", TN: "tun", LY: "lby", SD: "sdn", PS: "pse", SY: "syr", YE: "yem",
-    MR: "mrt", SO: "som", DJ: "dji", KM: "com",
+    EG: "egy",
+    SA: "sau",
+    AE: "are",
+    KW: "kwt",
+    QA: "qat",
+    BH: "bhr",
+    OM: "omn",
+    JO: "jor",
+    LB: "lbn",
+    IQ: "irq",
+    MA: "mar",
+    DZ: "dza",
+    TN: "tun",
+    LY: "lby",
+    SD: "sdn",
+    PS: "pse",
+    SY: "syr",
+    YE: "yem",
+    MR: "mrt",
+    SO: "som",
+    DJ: "dji",
+    KM: "com",
   };
   return m[a2.toUpperCase()] ?? "";
 }
 
 /* ---------- 2) Google SERP الحقيقي ---------- */
 
-export async function rankViaGoogleSerp(keyword: string, domain: string, market: string): Promise<RankResult | null> {
+export async function rankViaGoogleSerp(
+  keyword: string,
+  domain: string,
+  market: string,
+): Promise<RankResult | null> {
   const g = marketToGoogle[market.toUpperCase()] ?? { gl: "eg", hl: "ar", domain: "google.com" };
   const url = `https://www.${g.domain}/search?q=${encodeURIComponent(keyword)}&num=100&hl=${g.hl}&gl=${g.gl}&pws=0&safe=off`;
   let html = "";
@@ -160,7 +191,8 @@ export async function rankViaGoogleSerp(keyword: string, domain: string, market:
   } catch {
     return null;
   }
-  if (/consent\.google|\/sorry\/index|unusual traffic|captcha/i.test(html) || !/<html/i.test(html)) return null;
+  if (/consent\.google|\/sorry\/index|unusual traffic|captcha/i.test(html) || !/<html/i.test(html))
+    return null;
 
   const seen = new Set<string>();
   const organic: string[] = [];
@@ -169,7 +201,13 @@ export async function rankViaGoogleSerp(keyword: string, domain: string, market:
   while ((m = re.exec(html)) && organic.length < 100) {
     const href = decodeURIComponent(m[2] ?? "");
     const host = hostOf(href);
-    if (!host || /(^|\.)(google\.[a-z.]+|gstatic\.com|youtube\.com\/results|googleusercontent\.com)$/.test(host)) continue;
+    if (
+      !host ||
+      /(^|\.)(google\.[a-z.]+|gstatic\.com|youtube\.com\/results|googleusercontent\.com)$/.test(
+        host,
+      )
+    )
+      continue;
     // نتيجة لكل نطاق (كما يجمّع جوجل الروابط الفرعية للنطاق نفسه)
     if (seen.has(host)) continue;
     seen.add(host);
@@ -197,7 +235,9 @@ export async function rankViaEngines(keyword: string, domain: string): Promise<R
     source: "search-engines",
     position: hit?.rank ?? null,
     url: hit?.url ?? null,
-    competitors: results.slice(0, 5).map((r, i) => ({ host: hostOf(r.url), url: r.url, position: r.rank ?? i + 1 })),
+    competitors: results
+      .slice(0, 5)
+      .map((r, i) => ({ host: hostOf(r.url), url: r.url, position: r.rank ?? i + 1 })),
     note: "تقدير من محركات بديلة (Bing/Brave) — اربط Search Console لأرقام جوجل الفعلية.",
   };
 }
@@ -212,10 +252,17 @@ export async function checkRank(params: {
 }): Promise<RankResult> {
   if (params.gscConnected) {
     try {
-      const r = await rankViaSearchConsole(params.workspaceId, params.keyword, params.domain, params.market);
+      const r = await rankViaSearchConsole(
+        params.workspaceId,
+        params.keyword,
+        params.domain,
+        params.market,
+      );
       if (r) {
         // نُكمل المنافسين من SERP الحقيقي إن أمكن (GSC لا يعطي المنافسين)
-        const serp = await rankViaGoogleSerp(params.keyword, params.domain, params.market).catch(() => null);
+        const serp = await rankViaGoogleSerp(params.keyword, params.domain, params.market).catch(
+          () => null,
+        );
         if (serp) r.competitors = serp.competitors;
         return r;
       }

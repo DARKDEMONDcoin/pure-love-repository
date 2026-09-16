@@ -189,7 +189,9 @@ function Blob({ quality, reduced }: { quality: Quality; reduced: boolean }) {
 /** قطرات ضوء تنفصل من الكتلة وتطير نحو بطاقة الموظف النشطة. */
 function Droplets({ reduced }: { reduced: boolean }) {
   const group = useRef<THREE.Group>(null);
-  const drops = useRef<{ mesh: THREE.Mesh; t: number; from: THREE.Vector3; to: THREE.Vector3 }[]>([]);
+  const drops = useRef<{ mesh: THREE.Mesh; t: number; from: THREE.Vector3; to: THREE.Vector3 }[]>(
+    [],
+  );
   const next = useRef(4);
   const { camera, size } = useThree();
 
@@ -213,11 +215,7 @@ function Droplets({ reduced }: { reduced: boolean }) {
       const geo = new THREE.SphereGeometry(0.075, 12, 12);
       const mat = new THREE.MeshBasicMaterial({ color: "#F4D590", transparent: true, opacity: 1 });
       const m = new THREE.Mesh(geo, mat);
-      const from = new THREE.Vector3(
-        (Math.random() - 0.5) * 1.6,
-        (Math.random() - 0.5) * 1.6,
-        1.2,
-      );
+      const from = new THREE.Vector3((Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 1.6, 1.2);
       m.position.copy(from);
       group.current.add(m);
       drops.current.push({ mesh: m, t: 0, from, to });

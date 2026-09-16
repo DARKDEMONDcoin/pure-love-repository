@@ -228,7 +228,10 @@ export const Route = createFileRoute("/app/chat/$id")({
         name: "description",
         content: loaderData ? `تحدث مع ${loaderData.name} — ${loaderData.role}.` : "محادثة الموظف.",
       },
-      { property: "og:title", content: loaderData ? `محادثة ${loaderData.name} | سهل` : "محادثة | سهل" },
+      {
+        property: "og:title",
+        content: loaderData ? `محادثة ${loaderData.name} | سهل` : "محادثة | سهل",
+      },
       {
         property: "og:description",
         content: loaderData ? `تحدث مع ${loaderData.name} — ${loaderData.role}.` : "محادثة الموظف.",
@@ -770,7 +773,6 @@ function ChatView({
       }
     },
 
-
     onSuccess: async ({ result: res, activeConversationId }) => {
       await qc.invalidateQueries({
         queryKey: ["messages", workspace?.id, id, activeConversationId],
@@ -1004,7 +1006,11 @@ function ChatView({
             <b />
             <b />
             <b />
-            <span /><span /><span /><span /><span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
           </div>
           <div className="chat-message-column relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 sm:px-6">
             {(messages ?? []).length === 0 && !pending ? (
@@ -1025,7 +1031,6 @@ function ChatView({
                   {rotatingGreeting}
                   <span className="typewriter-caret" aria-hidden="true" />
                 </p>
-                
               </div>
             ) : null}
 

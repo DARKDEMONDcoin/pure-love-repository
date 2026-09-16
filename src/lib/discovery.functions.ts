@@ -87,38 +87,38 @@ export const discoverBrand = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<DiscoveryReport> => {
     const { profileWebsite } = await import("./business-profile.server");
     const { auditPage } = await import("./seo-audit.server");
-    const {
-      keywordExpansion,
-      keywordMetrics,
-      competitorInventory,
-      serpSearch,
-      withBudget,
-    } = await import("./seo-research.server");
+    const { keywordExpansion, keywordMetrics, competitorInventory, serpSearch, withBudget } =
+      await import("./seo-research.server");
 
     const profile = await profileWebsite(data.url);
     const host = (() => {
       try {
-        return new URL(/^https?:\/\//.test(data.url) ? data.url : `https://${data.url}`).host.replace(
-          /^www\./,
-          "",
-        );
+        return new URL(
+          /^https?:\/\//.test(data.url) ? data.url : `https://${data.url}`,
+        ).host.replace(/^www\./, "");
       } catch {
         return "";
       }
     })();
 
-    const seed = [profile.products[0], profile.industry, profile.locations[0]]
-      .filter(Boolean)
-      .join(" ")
-      .trim()
-      .slice(0, 60) || profile.name;
+    const seed =
+      [profile.products[0], profile.industry, profile.locations[0]]
+        .filter(Boolean)
+        .join(" ")
+        .trim()
+        .slice(0, 60) || profile.name;
 
     /** أسماء المنافسين قد تأتي كنص لا كنطاق — نحوّلها لنطاق نظيف ونتجاهل ما لا يصلح. */
     const rivalDomains = [
       ...new Set(
         [...(data.competitors ?? []), ...profile.competitors]
           .map((c) => {
-            const raw = c.trim().replace(/^https?:\/\//i, "").replace(/^www\./, "").split(/[\s/?#]/)[0] ?? "";
+            const raw =
+              c
+                .trim()
+                .replace(/^https?:\/\//i, "")
+                .replace(/^www\./, "")
+                .split(/[\s/?#]/)[0] ?? "";
             return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(raw) ? raw.toLowerCase() : "";
           })
           .filter(Boolean),
@@ -129,9 +129,7 @@ export const discoverBrand = createServerFn({ method: "POST" })
       withBudget(auditPage(data.url), 25_000, null as SeoAudit | null).catch(() => null),
       withBudget(keywordExpansion(seed), 25_000, null).catch(() => null),
       Promise.all(
-        rivalDomains.map((c) =>
-          withBudget(competitorInventory(c), 15_000, null).catch(() => null),
-        ),
+        rivalDomains.map((c) => withBudget(competitorInventory(c), 15_000, null).catch(() => null)),
       ),
     ]);
 
@@ -150,7 +148,6 @@ export const discoverBrand = createServerFn({ method: "POST" })
         picks.push({ keyword: k, intent: "معلوماتية" }),
       );
     }
-
 
     const opportunities: DiscoveryOpportunity[] = (
       await Promise.all(
@@ -175,13 +172,15 @@ export const discoverBrand = createServerFn({ method: "POST" })
       )
     )
       .filter((o): o is DiscoveryOpportunity => Boolean(o))
-      .sort((a, b) => b.demandScore - (b.difficultyScore ?? 50) - (a.demandScore - (a.difficultyScore ?? 50)));
+      .sort(
+        (a, b) =>
+          b.demandScore - (b.difficultyScore ?? 50) - (a.demandScore - (a.difficultyScore ?? 50)),
+      );
 
     const competitors: DiscoveryCompetitor[] = rivals
       .filter((r): r is NonNullable<typeof r> => Boolean(r?.domain))
       .map((r) => ({ domain: r.domain, contentCount: r.urlCount, topics: r.topics.slice(0, 6) }))
       .filter((c) => c.contentCount > 0 || c.topics.length > 0);
-
 
     // الحضور على المنصات: روابط الموقع أولاً ثم بحث حيّ عن اسم العلامة.
     const foundMap = new Map<string, string>();
@@ -307,12 +306,8 @@ export const discoverBrand = createServerFn({ method: "POST" })
       body: [
         profile.summary,
         `الجاهزية الرقمية: ${readiness}/100`,
-        opportunities.length
-          ? `فرص كلمات: ${opportunities.map((o) => o.keyword).join("، ")}`
-          : "",
-        presence.found.length
-          ? `حضور: ${presence.found.map((p) => p.platform).join("، ")}`
-          : "",
+        opportunities.length ? `فرص كلمات: ${opportunities.map((o) => o.keyword).join("، ")}` : "",
+        presence.found.length ? `حضور: ${presence.found.map((p) => p.platform).join("، ")}` : "",
         presence.missing.length ? `منصات ناقصة: ${presence.missing.join("، ")}` : "",
         actions.length ? `أولويات: ${actions.map((a) => a.title).join(" | ")}` : "",
       ]

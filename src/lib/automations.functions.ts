@@ -133,9 +133,7 @@ export const toggleAutomation = createServerFn({ method: "POST" })
 
 export const deleteAutomation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ ...base, id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ ...base, id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("automations")
@@ -149,9 +147,7 @@ export const deleteAutomation = createServerFn({ method: "POST" })
 /** تشغيل فوري لجدولة محددة (لتجربتها قبل انتظار موعدها). */
 export const runAutomationNow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ ...base, id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ ...base, id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: row, error } = await context.supabase
       .from("automations")

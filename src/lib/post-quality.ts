@@ -44,12 +44,54 @@ type Spec = {
 };
 
 const SPEC: Record<string, Spec> = {
-  instagram: { hardLimit: 2200, sweet: [120, 700], hashtags: [3, 10], maxEmojis: 8, needsMedia: true, maxLineLen: 160 },
-  facebook: { hardLimit: 5000, sweet: [80, 600], hashtags: [0, 4], maxEmojis: 6, needsMedia: false, maxLineLen: 200 },
-  linkedin: { hardLimit: 3000, sweet: [400, 1600], hashtags: [3, 5], maxEmojis: 3, needsMedia: false, maxLineLen: 220 },
-  x: { hardLimit: 280, sweet: [70, 260], hashtags: [0, 2], maxEmojis: 3, needsMedia: false, maxLineLen: 280 },
-  pinterest: { hardLimit: 480, sweet: [80, 400], hashtags: [0, 5], maxEmojis: 3, needsMedia: true, maxLineLen: 200 },
-  youtube: { hardLimit: 5000, sweet: [100, 1200], hashtags: [0, 3], maxEmojis: 5, needsMedia: false, maxLineLen: 220 },
+  instagram: {
+    hardLimit: 2200,
+    sweet: [120, 700],
+    hashtags: [3, 10],
+    maxEmojis: 8,
+    needsMedia: true,
+    maxLineLen: 160,
+  },
+  facebook: {
+    hardLimit: 5000,
+    sweet: [80, 600],
+    hashtags: [0, 4],
+    maxEmojis: 6,
+    needsMedia: false,
+    maxLineLen: 200,
+  },
+  linkedin: {
+    hardLimit: 3000,
+    sweet: [400, 1600],
+    hashtags: [3, 5],
+    maxEmojis: 3,
+    needsMedia: false,
+    maxLineLen: 220,
+  },
+  x: {
+    hardLimit: 280,
+    sweet: [70, 260],
+    hashtags: [0, 2],
+    maxEmojis: 3,
+    needsMedia: false,
+    maxLineLen: 280,
+  },
+  pinterest: {
+    hardLimit: 480,
+    sweet: [80, 400],
+    hashtags: [0, 5],
+    maxEmojis: 3,
+    needsMedia: true,
+    maxLineLen: 200,
+  },
+  youtube: {
+    hardLimit: 5000,
+    sweet: [100, 1200],
+    hashtags: [0, 3],
+    maxEmojis: 5,
+    needsMedia: false,
+    maxLineLen: 220,
+  },
 };
 
 const DEFAULT_SPEC: Spec = {
@@ -62,7 +104,8 @@ const DEFAULT_SPEC: Spec = {
 };
 
 /** دعوات الفعل الشائعة بالعربية والإنجليزية. */
-const CTA = /(اطلب|احجز|سجّل|سجل|اشترك|جرّب|جرب|تواصل|كلّمنا|كلمنا|راسلنا|زور|زر\s|حمّل|حمل\s|اضغط|شاركنا|علّق|علق\s|احفظ|تابعنا|استفد|اغتنم|رابط\s+ال|بالبايو|في\s+البايو|dm|link\s+in\s+bio|order|book|sign\s*up|subscribe)/iu;
+const CTA =
+  /(اطلب|احجز|سجّل|سجل|اشترك|جرّب|جرب|تواصل|كلّمنا|كلمنا|راسلنا|زور|زر\s|حمّل|حمل\s|اضغط|شاركنا|علّق|علق\s|احفظ|تابعنا|استفد|اغتنم|رابط\s+ال|بالبايو|في\s+البايو|dm|link\s+in\s+bio|order|book|sign\s*up|subscribe)/iu;
 
 /** أنماط هوك قوي في أول سطر: سؤال، رقم، مفاجأة، أو خطاب مباشر. */
 const HOOK_QUESTION = /[؟?]/u;
@@ -126,7 +169,10 @@ export function extractHashtags(text: string): string[] {
 }
 
 function bodyWithoutTags(text: string): string {
-  return text.replace(/#[\p{L}\p{N}_]+/gu, " ").replace(/\s+/g, " ").trim();
+  return text
+    .replace(/#[\p{L}\p{N}_]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 type Input = {
@@ -140,7 +186,12 @@ type Input = {
  * يفحص المنشور ويعيد درجة من ١٠٠ مع أسباب واضحة وإرشاد للإصلاح.
  * الدرجة = مجموع أوزان البنود الناجحة (نصف الوزن للتحذير) من إجمالي الأوزان.
  */
-export function scorePost({ text, provider, hasMedia = false, bannedWords = [] }: Input): QualityReport {
+export function scorePost({
+  text,
+  provider,
+  hasMedia = false,
+  bannedWords = [],
+}: Input): QualityReport {
   const spec = SPEC[provider] ?? DEFAULT_SPEC;
   const clean = text.trim();
   const core = bodyWithoutTags(clean);
@@ -148,7 +199,10 @@ export function scorePost({ text, provider, hasMedia = false, bannedWords = [] }
   const words = core ? core.split(/\s+/).length : 0;
   const hashtags = extractHashtags(clean);
   const emojis = countEmojis(clean);
-  const lines = clean.split("\n").map((l) => l.trim()).filter(Boolean);
+  const lines = clean
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
   const firstLine = lines[0] ?? "";
 
   const checks: QualityCheck[] = [];
@@ -234,7 +288,9 @@ export function scorePost({ text, provider, hasMedia = false, bannedWords = [] }
     "دعوة فعل واضحة",
     12,
     hasCta ? "pass" : "warn",
-    hasCta ? "يوجد إجراء مطلوب من القارئ." : "أضف سطر دعوة فعل: احجز، اطلب، علّق، أو الرابط في البايو.",
+    hasCta
+      ? "يوجد إجراء مطلوب من القارئ."
+      : "أضف سطر دعوة فعل: احجز، اطلب، علّق، أو الرابط في البايو.",
   );
 
   // ٧) الهاشتاقات حسب المنصة.
@@ -292,7 +348,9 @@ export function scorePost({ text, provider, hasMedia = false, bannedWords = [] }
     "تفصيلة ملموسة (رقم أو وقت أو مكان)",
     10,
     concrete ? "pass" : "warn",
-    concrete ? "يوجد تفصيل محدد." : "أضف تفصيلة محددة: رقم، سعر، مدة، أو اسم مكان — العموميات لا تُقنع.",
+    concrete
+      ? "يوجد تفصيل محدد."
+      : "أضف تفصيلة محددة: رقم، سعر، مدة، أو اسم مكان — العموميات لا تُقنع.",
   );
 
   // ١١) الوسائط عندما تشترطها المنصة.
@@ -302,12 +360,17 @@ export function scorePost({ text, provider, hasMedia = false, bannedWords = [] }
       "صورة أو فيديو مرفق",
       10,
       hasMedia ? "pass" : "fail",
-      hasMedia ? "الوسائط جاهزة." : `${PROVIDER_LABEL[provider] ?? provider} لا ينشر بدون صورة أو فيديو.`,
+      hasMedia
+        ? "الوسائط جاهزة."
+        : `${PROVIDER_LABEL[provider] ?? provider} لا ينشر بدون صورة أو فيديو.`,
     );
   }
 
   // ١٢) تكرار داخلي.
-  const sentences = core.split(/[.!؟\n]+/).map((s) => s.trim().toLowerCase()).filter((s) => s.length > 20);
+  const sentences = core
+    .split(/[.!؟\n]+/)
+    .map((s) => s.trim().toLowerCase())
+    .filter((s) => s.length > 20);
   const repeated = sentences.length !== new Set(sentences).size;
   add(
     "repeat",
@@ -343,5 +406,7 @@ export function scoreForProviders(
   providers: string[],
   input: Omit<Input, "provider">,
 ): QualityReport[] {
-  return providers.map((provider) => scorePost({ ...input, provider })).sort((a, b) => a.score - b.score);
+  return providers
+    .map((provider) => scorePost({ ...input, provider }))
+    .sort((a, b) => a.score - b.score);
 }

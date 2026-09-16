@@ -50,10 +50,7 @@ function TasksPage() {
   const list = filter === "all" ? all : all.filter((t) => t.status === filter);
 
   return (
-    <AppShell
-      title="المهام"
-      lead="كل مهمة تُنفَّذ على خطوات — وتتوقف بأمان إن انقطع أي ربط."
-    >
+    <AppShell title="المهام" lead="كل مهمة تُنفَّذ على خطوات — وتتوقف بأمان إن انقطع أي ربط.">
       <div className="flex flex-wrap gap-2">
         {filters.map((f) => (
           <button

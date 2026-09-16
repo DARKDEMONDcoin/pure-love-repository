@@ -74,7 +74,6 @@ export function missingMetaScopesMessage(
   );
 }
 
-
 /** أول صفحة مرتبطة بالحساب مع توكن الصفحة اللازم للرد كصفحة. */
 export async function pageTarget(
   config: PipedreamConfig,

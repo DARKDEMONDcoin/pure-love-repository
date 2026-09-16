@@ -71,7 +71,11 @@ export function HowItWorks() {
 
       <ol ref={listRef} className="timeline-list relative mt-14 space-y-10 ps-14">
         <span aria-hidden className="timeline-rail" />
-        <span aria-hidden className="timeline-rail-fill" style={{ transform: `scaleY(${progress})` }} />
+        <span
+          aria-hidden
+          className="timeline-rail-fill"
+          style={{ transform: `scaleY(${progress})` }}
+        />
         {steps.map((s, i) => {
           const on = i < active;
           return (

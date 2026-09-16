@@ -11,9 +11,15 @@ const ws = { workspaceId: z.string().uuid() };
 /** إحاطة أمَل الصباحية لليوم (تُبنى مرة واحدة يومياً، ويمكن تحديثها يدوياً). */
 export const getMorningBriefing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ ...ws, refresh: z.boolean().optional() }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ ...ws, refresh: z.boolean().optional() }).parse(input),
+  )
   .handler(async ({ data, context }): Promise<Briefing> => {
-    const { data: own } = await context.supabase.from("workspaces").select("id").eq("id", data.workspaceId).maybeSingle();
+    const { data: own } = await context.supabase
+      .from("workspaces")
+      .select("id")
+      .eq("id", data.workspaceId)
+      .maybeSingle();
     if (!own) throw new Error("غير مصرّح.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { ensureTodayBriefing } = await import("./briefing.server");

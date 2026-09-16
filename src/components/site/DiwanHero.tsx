@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Play, Send, Image, MessageCircle, TrendingUp, CalendarCheck, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Play,
+  Send,
+  Image,
+  MessageCircle,
+  TrendingUp,
+  CalendarCheck,
+  Search,
+} from "lucide-react";
 import { Portrait } from "@/components/site/Portrait";
 import { team } from "@/data/team";
 

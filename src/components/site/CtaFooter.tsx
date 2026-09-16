@@ -7,7 +7,15 @@ export function CtaFooter() {
       <section id="cta" className="scroll-mt-24 px-5 pb-24">
         <Reveal>
           <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] p-10 text-center md:p-20">
-            <div aria-hidden className="absolute inset-0" style={{ backgroundImage: "var(--gradient-aurora)", backgroundSize: "200% 200%", animation: "aurora-shift 18s ease-in-out infinite" }} />
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                backgroundImage: "var(--gradient-aurora)",
+                backgroundSize: "200% 200%",
+                animation: "aurora-shift 18s ease-in-out infinite",
+              }}
+            />
             <div aria-hidden className="grid-lines absolute inset-0 opacity-40" />
             <div className="relative">
               <h2 className="font-display text-4xl leading-tight font-black text-white md:text-6xl">
@@ -35,7 +43,6 @@ export function CtaFooter() {
           </div>
         </Reveal>
       </section>
-
     </>
   );
 }

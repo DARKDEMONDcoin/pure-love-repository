@@ -37,7 +37,10 @@ async function mkToken(extra: Record<string, unknown>) {
 
 out["plain"] = await mkToken({});
 out["oauth_scope_profile"] = await mkToken({ oauth_scope_profile: "admin" });
-out["oauth_scope_profile_app"] = await mkToken({ app: "facebook_pages", oauth_scope_profile: "admin" });
+out["oauth_scope_profile_app"] = await mkToken({
+  app: "facebook_pages",
+  oauth_scope_profile: "admin",
+});
 out["oauth_app_id"] = await mkToken({ oauth_app_id: "admin" });
 
 // إصدارات Graph المدعومة عبر الحساب المربوط

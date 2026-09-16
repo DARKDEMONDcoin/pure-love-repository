@@ -25,24 +25,44 @@ export const employeeDirectory: Record<
     role: "مدير السوشيال ميديا",
     does: "تقويم محتوى، منشورات وكاروسيل وريلز بلهجة الجمهور، صور المنشورات، الرد على التعليقات، رادار الترند، النشر والجدولة على المنصات، وبناء الحملات الإعلانية المموّلة: الوحدات الاقتصادية وهيكل الحساب ومصفوفة الكرييتف وخطة القياس والتحسين (الإطلاق الفعلي بعد الربط والاعتماد).",
     integrations: [
-      { provider: "instagram", label: "إنستغرام", why: "نشر المنشورات والريلز وقراءة التعليقات", anchor: true },
+      {
+        provider: "instagram",
+        label: "إنستغرام",
+        why: "نشر المنشورات والريلز وقراءة التعليقات",
+        anchor: true,
+      },
       { provider: "facebook", label: "فيسبوك", why: "نشر على الصفحة والرد على الرسائل" },
       { provider: "tiktok", label: "تيك توك", why: "نشر الفيديوهات القصيرة" },
       { provider: "linkedin", label: "لينكدإن", why: "نشر المحتوى المهني" },
       { provider: "x", label: "إكس", why: "نشر التغريدات والسلاسل" },
       { provider: "youtube", label: "يوتيوب", why: "نشر الشورتس" },
       { provider: "pinterest", label: "بنترست", why: "نشر البنات" },
-      { provider: "google-business", label: "نشاطي التجاري على Google", why: "نشر تحديثات النشاط والرد على المراجعات" },
+      {
+        provider: "google-business",
+        label: "نشاطي التجاري على Google",
+        why: "نشر تحديثات النشاط والرد على المراجعات",
+      },
     ],
-    handsOffTo: "المقالات وصفحات الموقع → نور. الهوية البصرية وكرييتف الإعلانات → دانة. أرقام GA4 والحملات → آدم.",
+    handsOffTo:
+      "المقالات وصفحات الموقع → نور. الهوية البصرية وكرييتف الإعلانات → دانة. أرقام GA4 والحملات → آدم.",
   },
   eva: {
     name: "أمَل",
     role: "المساعدة التنفيذية",
     does: "فرز البريد وصياغة الردود، إدارة التقويم والمواعيد، محاضر الاجتماعات والمتابعات، الملخص اليومي، ترتيب المهام.",
     integrations: [
-      { provider: "gmail", label: "Gmail", why: "قراءة البريد الحقيقي وصياغة الردود", anchor: true },
-      { provider: "calendar", label: "تقويم Google", why: "قراءة المواعيد وحماية وقت التركيز", anchor: true },
+      {
+        provider: "gmail",
+        label: "Gmail",
+        why: "قراءة البريد الحقيقي وصياغة الردود",
+        anchor: true,
+      },
+      {
+        provider: "calendar",
+        label: "تقويم Google",
+        why: "قراءة المواعيد وحماية وقت التركيز",
+        anchor: true,
+      },
       { provider: "outlook", label: "Outlook", why: "بديل Gmail للبريد والتقويم" },
       { provider: "whatsapp", label: "واتساب", why: "متابعات سريعة" },
       { provider: "slack", label: "Slack", why: "ملخصات الفريق" },
@@ -55,28 +75,40 @@ export const employeeDirectory: Record<
     role: "مسؤول المبيعات",
     does: "تعريف العميل المثالي، تسلسلات التواصل (بريد/لينكدإن/واتساب)، معالجة الاعتراضات، المقترحات والتسعير، متابعة الصفقات وتقارير خط الأنابيب.",
     integrations: [
-      { provider: "hubspot", label: "HubSpot", why: "قراءة الصفقات وجهات الاتصال الحقيقية", anchor: true },
+      {
+        provider: "hubspot",
+        label: "HubSpot",
+        why: "قراءة الصفقات وجهات الاتصال الحقيقية",
+        anchor: true,
+      },
       { provider: "sheets", label: "Google Sheets", why: "قوائم العملاء المحتملين بدل CRM" },
       { provider: "gmail", label: "Gmail", why: "إرسال تسلسلات التواصل" },
       { provider: "whatsapp", label: "واتساب", why: "متابعة العملاء في المنطقة العربية" },
       { provider: "pipedrive", label: "Pipedrive", why: "بديل HubSpot" },
       { provider: "salesforce", label: "Salesforce", why: "CRM للشركات الكبيرة" },
     ],
-    handsOffTo: "صفحات الهبوط ومحتوى الموقع → نور. تصميم العرض التقديمي → دانة. تحليل القمع بالأرقام → آدم.",
+    handsOffTo:
+      "صفحات الهبوط ومحتوى الموقع → نور. تصميم العرض التقديمي → دانة. تحليل القمع بالأرقام → آدم.",
   },
   nour: {
     name: "نور",
     role: "استراتيجية المحتوى والسيو",
     does: "بحث الكلمات وتحليل المنافسين، المقالات وصفحات الهبوط والمقارنة، التدقيق التقني العربي، رفع نسبة النقر من Search Console، تتبّع الترتيب، الظهور في مساعدات الذكاء الاصطناعي، النشر على المدونة.",
     integrations: [
-      { provider: "search-console", label: "Google Search Console", why: "أرقام الترتيب والنقرات الحقيقية لموقعك", anchor: true },
+      {
+        provider: "search-console",
+        label: "Google Search Console",
+        why: "أرقام الترتيب والنقرات الحقيقية لموقعك",
+        anchor: true,
+      },
       { provider: "wordpress", label: "ووردبريس", why: "نشر المقال كمسودة بضغطة", anchor: true },
       { provider: "shopify", label: "Shopify", why: "نشر مقالات المدونة وتحسين صفحات المنتجات" },
       { provider: "webflow", label: "Webflow", why: "نشر على مدونة Webflow" },
       { provider: "ghost", label: "Ghost", why: "نشر على مدونة Ghost" },
       { provider: "indexnow", label: "IndexNow", why: "إخطار محركات البحث بالصفحات الجديدة فوراً" },
     ],
-    handsOffTo: "منشورات السوشيال من المقال → سِراج. الصورة الرئيسية بهوية العلامة → دانة. تقارير GA4 → آدم.",
+    handsOffTo:
+      "منشورات السوشيال من المقال → سِراج. الصورة الرئيسية بهوية العلامة → دانة. تقارير GA4 → آدم.",
   },
   dana: {
     name: "دانة",
@@ -94,7 +126,12 @@ export const employeeDirectory: Record<
     role: "محلل بيانات النمو",
     does: "لوحات المؤشرات، تقارير GA4 وSearch Console، مراجعة الحملات الإعلانية وإعادة توزيع الميزانية، تحليل القمع، الاختبارات، الملخص التنفيذي.",
     integrations: [
-      { provider: "analytics", label: "Google Analytics 4", why: "الجلسات والتحويلات الحقيقية", anchor: true },
+      {
+        provider: "analytics",
+        label: "Google Analytics 4",
+        why: "الجلسات والتحويلات الحقيقية",
+        anchor: true,
+      },
       { provider: "meta-ads", label: "إعلانات Meta", why: "أداء الحملات والإنفاق" },
       { provider: "google-ads", label: "إعلانات Google", why: "أداء حملات البحث" },
       { provider: "search-console", label: "Google Search Console", why: "بيانات البحث العضوي" },
@@ -182,11 +219,19 @@ export const operatingPrinciples = [
 ].join("\n");
 
 /** كتلة ملف العلامة من الـ profile المخزَّن في مساحة العمل. */
-export function businessProfileBlock(profile: unknown, website?: string | null, country?: string | null): string {
+export function businessProfileBlock(
+  profile: unknown,
+  website?: string | null,
+  country?: string | null,
+): string {
   if (!profile || typeof profile !== "object") return "";
   const p = profile as Record<string, unknown>;
-  const str = (k: string) => (typeof p[k] === "string" && (p[k] as string).trim() ? (p[k] as string).trim() : "");
-  const list = (k: string) => (Array.isArray(p[k]) ? (p[k] as unknown[]).filter((x) => typeof x === "string").slice(0, 8) as string[] : []);
+  const str = (k: string) =>
+    typeof p[k] === "string" && (p[k] as string).trim() ? (p[k] as string).trim() : "";
+  const list = (k: string) =>
+    Array.isArray(p[k])
+      ? ((p[k] as unknown[]).filter((x) => typeof x === "string").slice(0, 8) as string[])
+      : [];
   const rows = [
     website ? `- الموقع: ${website}` : "",
     country ? `- الدولة الرئيسية: ${country}` : "",

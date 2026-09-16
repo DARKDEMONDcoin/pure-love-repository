@@ -94,7 +94,8 @@ const hard: Record<string, string> = {
   link: "https://cdn.example.com/catalog.pdf",
   photoUrl: "https://cdn.example.com/post.jpg",
   imageUrl: "https://cdn.example.com/post.jpg",
-  imageUrls: "https://cdn.example.com/1.jpg,https://cdn.example.com/2.jpg,https://cdn.example.com/3.jpg",
+  imageUrls:
+    "https://cdn.example.com/1.jpg,https://cdn.example.com/2.jpg,https://cdn.example.com/3.jpg",
   videoUrl: "https://cdn.example.com/reel.mp4",
   coverUrl: "https://cdn.example.com/cover.jpg",
   caption: "٣ أخطاء تستهلك ميزانيتك — احفظ المنشور.",

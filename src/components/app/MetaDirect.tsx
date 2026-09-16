@@ -59,7 +59,6 @@ export function MetaDirect({
   const [results, setResults] = useState<TestResult[]>([]);
   const [authUrl, setAuthUrl] = useState<string | null>(null);
 
-
   const [text, setText] = useState("مرحباً من سِراج — منشور تجريبي عبر النشر المباشر على ميتا.");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -84,7 +83,8 @@ export function MetaDirect({
     const params = new URLSearchParams(window.location.search);
     const meta = params.get("meta");
     if (!meta) return;
-    if (meta === "failed") setError(`لم يكتمل ربط ميتا (${params.get("reason") ?? "سبب غير معروف"}).`);
+    if (meta === "failed")
+      setError(`لم يكتمل ربط ميتا (${params.get("reason") ?? "سبب غير معروف"}).`);
     window.history.replaceState({}, "", window.location.pathname);
     void refresh();
   }, [refresh]);
@@ -111,7 +111,6 @@ export function MetaDirect({
       setBusy(null);
     }
   };
-
 
   const runTest = async () => {
     if (!workspaceId) return;
@@ -256,8 +255,6 @@ export function MetaDirect({
         </div>
       ) : null}
 
-
-
       {shown.length ? (
         <ul className="mt-4 grid gap-2 sm:grid-cols-2">
           {shown.map((c) => (
@@ -270,7 +267,9 @@ export function MetaDirect({
                 <p className="truncate text-sm font-bold">{c.name ?? c.pageId}</p>
                 <p className="text-xs text-ink-soft">
                   {c.kind === "facebook" ? "صفحة فيسبوك" : "حساب إنستجرام احترافي"} ·{" "}
-                  {c.canPublish ? "جاهز للنشر" : `ينقصه: ${c.missing.join("، ") || "حساب إنستجرام"}`}
+                  {c.canPublish
+                    ? "جاهز للنشر"
+                    : `ينقصه: ${c.missing.join("، ") || "حساب إنستجرام"}`}
                 </p>
               </div>
               {c.canPublish ? (
@@ -379,7 +378,11 @@ export function MetaDirect({
                 <p className="whitespace-pre-wrap px-3 pb-3 text-sm leading-relaxed">{text}</p>
               ) : null}
               {videoUrl ? (
-                <video src={videoUrl} controls className="aspect-square w-full bg-black object-cover" />
+                <video
+                  src={videoUrl}
+                  controls
+                  className="aspect-square w-full bg-black object-cover"
+                />
               ) : imageUrl ? (
                 <img
                   src={imageUrl}

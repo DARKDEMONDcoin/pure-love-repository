@@ -88,7 +88,11 @@ async function logPublished(
 /* ------------------------------- Shopify ------------------------------- */
 
 function shopDomain(input: string): string {
-  const host = input.trim().replace(/^https?:\/\//i, "").replace(/\/.*$/, "").toLowerCase();
+  const host = input
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/, "")
+    .toLowerCase();
   if (!/^[a-z0-9-]+\.myshopify\.com$/.test(host)) {
     throw new Error("أدخل نطاق المتجر بالشكل: your-store.myshopify.com");
   }
@@ -187,7 +191,14 @@ export const publishToShopify = createServerFn({ method: "POST" })
       indexnow = result ? { submitted: result.submitted } : null;
     }
 
-    await logPublished(admin, data.workspaceId, "shopify", data.title, link, data.status === "publish");
+    await logPublished(
+      admin,
+      data.workspaceId,
+      "shopify",
+      data.title,
+      link,
+      data.status === "publish",
+    );
     return { ok: true as const, id: created.article?.id ?? null, link, indexnow };
   });
 
@@ -293,14 +304,18 @@ export const publishToWebflow = createServerFn({ method: "POST" })
         .replace(/^-|-$/g, "")
         .slice(0, 80) || `post-${Date.now()}`;
 
-    const created = (await webflowFetch(config.accessToken, `/collections/${config.collectionId}/items`, {
-      method: "POST",
-      body: JSON.stringify({
-        isArchived: false,
-        isDraft: data.status !== "publish",
-        fieldData: { name: data.title, slug, "post-body": data.content },
-      }),
-    })) as { id?: string };
+    const created = (await webflowFetch(
+      config.accessToken,
+      `/collections/${config.collectionId}/items`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          isArchived: false,
+          isDraft: data.status !== "publish",
+          fieldData: { name: data.title, slug, "post-body": data.content },
+        }),
+      },
+    )) as { id?: string };
 
     if (data.status === "publish" && created.id) {
       await webflowFetch(config.accessToken, `/collections/${config.collectionId}/items/publish`, {
@@ -309,7 +324,14 @@ export const publishToWebflow = createServerFn({ method: "POST" })
       });
     }
 
-    await logPublished(admin, data.workspaceId, "webflow", data.title, null, data.status === "publish");
+    await logPublished(
+      admin,
+      data.workspaceId,
+      "webflow",
+      data.title,
+      null,
+      data.status === "publish",
+    );
     return { ok: true as const, id: created.id ?? null };
   });
 
@@ -355,6 +377,13 @@ export const publishToGhost = createServerFn({ method: "POST" })
     const config = await loadConfig<GhostStored>(admin, data.workspaceId, "ghost");
     const { ghostPublish } = await import("./ghost.server");
     const post = await ghostPublish(config, { title: data.title, html: data.content }, data.status);
-    await logPublished(admin, data.workspaceId, "ghost", data.title, post.url, data.status === "publish");
+    await logPublished(
+      admin,
+      data.workspaceId,
+      "ghost",
+      data.title,
+      post.url,
+      data.status === "publish",
+    );
     return { ok: true as const, id: post.id, link: post.url };
   });

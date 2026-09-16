@@ -4,7 +4,14 @@
  */
 
 /** معرّفات المنصات التي يدعمها سِراج للنشر المباشر. */
-export const PUBLISHABLE = ["instagram", "facebook", "linkedin", "x", "pinterest", "youtube"] as const;
+export const PUBLISHABLE = [
+  "instagram",
+  "facebook",
+  "linkedin",
+  "x",
+  "pinterest",
+  "youtube",
+] as const;
 export type Publishable = (typeof PUBLISHABLE)[number];
 
 const ALIASES: Record<string, RegExp> = {
@@ -36,7 +43,9 @@ export function detectProviders(text: string): string[] {
 
 /** المنصات المطلوبة للنشر تحديداً (القابلة للنشر منها فقط). */
 export function requestedPublishTargets(text: string): Publishable[] {
-  return detectProviders(text).filter((p): p is Publishable => (PUBLISHABLE as readonly string[]).includes(p));
+  return detectProviders(text).filter((p): p is Publishable =>
+    (PUBLISHABLE as readonly string[]).includes(p),
+  );
 }
 
 /** يحوّل اسم قناة كتبه النموذج (بأي لغة) إلى معرّف منصة، أو null إن لم يُفهم. */

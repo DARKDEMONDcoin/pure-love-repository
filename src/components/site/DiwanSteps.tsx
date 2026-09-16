@@ -35,7 +35,9 @@ export function DiwanSteps() {
         <header className="diwan-sec-head">
           <p className="diwan-sec-kicker">مراسم الدخول</p>
           <h2 className="diwan-sec-title">من الترحيب إلى أول منشور في ثماني دقائق</h2>
-          <p className="diwan-sec-lead">أربع خطوات فقط، بلا تدريب ولا إعدادات معقّدة — ثم يبدأ المجلس عمله.</p>
+          <p className="diwan-sec-lead">
+            أربع خطوات فقط، بلا تدريب ولا إعدادات معقّدة — ثم يبدأ المجلس عمله.
+          </p>
         </header>
 
         <ol className="steps-ribbon">

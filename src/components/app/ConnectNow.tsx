@@ -78,7 +78,11 @@ export function ConnectNow({
           `inline-flex items-center gap-1.5 rounded-full bg-foreground font-bold text-background transition-transform hover:-translate-y-0.5 disabled:opacity-60 ${pad}`
         }
       >
-        {busy ? <Loader2 className="size-3.5 animate-spin" /> : <AppIcon name={provider} className="size-3.5" />}
+        {busy ? (
+          <Loader2 className="size-3.5 animate-spin" />
+        ) : (
+          <AppIcon name={provider} className="size-3.5" />
+        )}
         {label ?? `اربط ${appLabel(provider)}`}
         {!busy ? <Link2 className="size-3.5 opacity-70" /> : null}
       </button>

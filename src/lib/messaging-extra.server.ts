@@ -63,7 +63,13 @@ export async function sendWhatsappText(
 }
 
 type DriveFiles = {
-  files?: { id: string; name?: string; mimeType?: string; modifiedTime?: string; webViewLink?: string }[];
+  files?: {
+    id: string;
+    name?: string;
+    mimeType?: string;
+    modifiedTime?: string;
+    webViewLink?: string;
+  }[];
 };
 
 /** أحدث ملفات درايف — سياق لدانة وبقية الفريق. */
@@ -85,7 +91,10 @@ export async function readDrive(
   const files = res.files ?? [];
   if (!files.length) return "لا ملفات حديثة في درايف.";
   return files
-    .map((f) => `- ${f.modifiedTime?.slice(0, 10) ?? "?"} | ${f.name ?? "بلا اسم"} | ${f.mimeType ?? ""}`)
+    .map(
+      (f) =>
+        `- ${f.modifiedTime?.slice(0, 10) ?? "?"} | ${f.name ?? "بلا اسم"} | ${f.mimeType ?? ""}`,
+    )
     .join("\n");
 }
 

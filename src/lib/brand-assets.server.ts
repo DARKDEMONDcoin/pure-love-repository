@@ -15,7 +15,8 @@ const UA =
   "Mozilla/5.0 (compatible; SahlBot/1.0; +https://sahl.app) AppleWebKit/537.36 Chrome/124 Safari/537.36";
 
 /** روابط لا تصلح كصورة محتوى: أيقونات، شعارات صغيرة، بيكسل تتبّع، SVG واجهة. */
-const JUNK = /(sprite|icon|favicon|logo|placeholder|avatar|pixel|spacer|blank|loader|badge|flag|1x1)/i;
+const JUNK =
+  /(sprite|icon|favicon|logo|placeholder|avatar|pixel|spacer|blank|loader|badge|flag|1x1)/i;
 
 export function normalizeUrl(raw: string): string | null {
   const value = raw.trim();
@@ -81,7 +82,11 @@ function allTags(html: string, name: string): Record<string, string>[] {
   return (html.match(re) ?? []).map(attrs);
 }
 
-function metaContent(html: string, key: "property" | "name" | "rel", value: string): string | undefined {
+function metaContent(
+  html: string,
+  key: "property" | "name" | "rel",
+  value: string,
+): string | undefined {
   const list = key === "rel" ? allTags(html, "link") : allTags(html, "meta");
   const hit = list.find((a) => (a[key] ?? "").toLowerCase() === value.toLowerCase());
   return hit?.["content"] ?? hit?.["href"];
@@ -165,7 +170,8 @@ function internalLinks(html: string, baseUrl: string, limit: number): string[] {
   const base = new URL(baseUrl);
   const seen = new Set<string>();
   const good: string[] = [];
-  const preferred = /(product|shop|store|menu|blog|news|service|gallery|work|portfolio|about|منتج|متجر|مدونة|خدمات|أعمال)/i;
+  const preferred =
+    /(product|shop|store|menu|blog|news|service|gallery|work|portfolio|about|منتج|متجر|مدونة|خدمات|أعمال)/i;
   for (const a of allTags(html, "a")) {
     const href = a["href"];
     if (!href || href.startsWith("#")) continue;
@@ -186,7 +192,6 @@ function internalLinks(html: string, baseUrl: string, limit: number): string[] {
   }
   return good.slice(0, limit);
 }
-
 
 /** يجمع صور الموقع من الصفحة الرئيسية وحتى 5 صفحات داخلية مهمة. */
 export async function harvestSiteImages(rawUrl: string, maxPages = 6): Promise<SiteAsset[]> {
@@ -215,9 +220,47 @@ export async function harvestSiteImages(rawUrl: string, maxPages = 6): Promise<S
 }
 
 const STOP = new Set([
-  "على","في","من","عن","الى","إلى","مع","هذا","هذه","التي","الذي","يا","او","أو","و","ال",
-  "اكتب","اعمل","سوّي","سوي","منشور","بوست","صورة","صور","محتوى","لي","لنا","عن",
-  "the","a","an","for","with","and","of","to","post","image","write","make","create",
+  "على",
+  "في",
+  "من",
+  "عن",
+  "الى",
+  "إلى",
+  "مع",
+  "هذا",
+  "هذه",
+  "التي",
+  "الذي",
+  "يا",
+  "او",
+  "أو",
+  "و",
+  "ال",
+  "اكتب",
+  "اعمل",
+  "سوّي",
+  "سوي",
+  "منشور",
+  "بوست",
+  "صورة",
+  "صور",
+  "محتوى",
+  "لي",
+  "لنا",
+  "عن",
+  "the",
+  "a",
+  "an",
+  "for",
+  "with",
+  "and",
+  "of",
+  "to",
+  "post",
+  "image",
+  "write",
+  "make",
+  "create",
 ]);
 
 function tokens(text: string): string[] {

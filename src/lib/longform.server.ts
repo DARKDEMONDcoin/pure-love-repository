@@ -25,7 +25,10 @@ export function requestedWords(message: string): number {
 /** هل الطلب مقال طويل يستحق الكتابة على مراحل؟ */
 export function isLongArticleRequest(message: string): boolean {
   const words = requestedWords(message);
-  return (words >= 800 || /مقال\s*(سيو|شامل|كامل)|دليل شامل/.test(message)) && !/تغريدة|منشور قصير/.test(message);
+  return (
+    (words >= 800 || /مقال\s*(سيو|شامل|كامل)|دليل شامل/.test(message)) &&
+    !/تغريدة|منشور قصير/.test(message)
+  );
 }
 
 const SECTIONS_PER_BATCH = 3;
@@ -52,7 +55,12 @@ async function buildOutline(
     { json: true, timeoutMs: 50_000, maxTokens: 3000, budgetMs: 100_000 },
   );
   const parsed = parseJson<Outline>(raw);
-  if (!Array.isArray(parsed?.sections) || !parsed.sections.length || typeof parsed.title !== "string") return null;
+  if (
+    !Array.isArray(parsed?.sections) ||
+    !parsed.sections.length ||
+    typeof parsed.title !== "string"
+  )
+    return null;
   return parsed;
 }
 
@@ -65,7 +73,10 @@ async function writeSections(
   wordsPerSection: number,
 ): Promise<string> {
   const list = batch
-    .map((s) => `## ${String(s.h2 ?? "")}${Array.isArray(s.points) && s.points.length ? `\n   نقاط: ${s.points.map(String).join(" · ")}` : ""}`)
+    .map(
+      (s) =>
+        `## ${String(s.h2 ?? "")}${Array.isArray(s.points) && s.points.length ? `\n   نقاط: ${s.points.map(String).join(" · ")}` : ""}`,
+    )
     .join("\n");
   const text = await freeChat(
     apiKey,

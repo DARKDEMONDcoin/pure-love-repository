@@ -85,10 +85,10 @@ export async function saveWhatsappFromMeta(
       workspace_id: workspaceId,
       provider: "whatsapp",
       config: {
-        phoneNumberId: previous.phoneNumberId &&
-          params.phones.some((p) => p.id === previous.phoneNumberId)
-          ? previous.phoneNumberId
-          : chosen.id,
+        phoneNumberId:
+          previous.phoneNumberId && params.phones.some((p) => p.id === previous.phoneNumberId)
+            ? previous.phoneNumberId
+            : chosen.id,
         token: params.token,
         wabaId: chosen.wabaId,
         displayNumber: chosen.displayNumber,
@@ -148,7 +148,8 @@ async function graph<T>(
   init?: { method?: "GET" | "POST"; body?: unknown },
 ): Promise<T> {
   if (creds.accountId) {
-    const { pipedreamConfig, proxyRequest, missingConfigError } = await import("./pipedream.server");
+    const { pipedreamConfig, proxyRequest, missingConfigError } =
+      await import("./pipedream.server");
     const config = await pipedreamConfig();
     if (!config) throw missingConfigError();
     return proxyRequest<T>(config, {
@@ -175,11 +176,7 @@ async function graph<T>(
 }
 
 /** يرسل رسالة نصية عبر واتساب (داخل نافذة ٢٤ ساعة من رسالة العميل). */
-export async function sendWhatsapp(
-  creds: WhatsappCreds,
-  to: string,
-  text: string,
-): Promise<void> {
+export async function sendWhatsapp(creds: WhatsappCreds, to: string, text: string): Promise<void> {
   await graph(creds, `/${creds.phoneNumberId}/messages`, {
     method: "POST",
     body: {

@@ -56,7 +56,10 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
       rows.push(
         `**على حافة الصفحة الأولى (المركز 8–20 — أعلى عائد):**\n${d.strikingDistance
           .slice(0, 8)
-          .map((r) => `  - «${r.key}» · المركز ${r.position.toFixed(1)} · ${r.impressions} ظهور · ${r.clicks} نقرة`)
+          .map(
+            (r) =>
+              `  - «${r.key}» · المركز ${r.position.toFixed(1)} · ${r.impressions} ظهور · ${r.clicks} نقرة`,
+          )
           .join("\n")}`,
       );
     }
@@ -64,7 +67,10 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
       rows.push(
         `**ظهور عالٍ ونقر منخفض (المشكلة العنوان/الوصف لا الترتيب):**\n${d.lowCtr
           .slice(0, 6)
-          .map((r) => `  - «${r.key}» · المركز ${r.position.toFixed(1)} · ${r.impressions} ظهور · نقر ${pct(r.ctr)}`)
+          .map(
+            (r) =>
+              `  - «${r.key}» · المركز ${r.position.toFixed(1)} · ${r.impressions} ظهور · نقر ${pct(r.ctr)}`,
+          )
           .join("\n")}`,
       );
     }
@@ -72,7 +78,10 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
       rows.push(
         `**تعارض صفحات على نفس الاستعلام (ادمج أو فرّق النية):**\n${d.cannibalization
           .slice(0, 5)
-          .map((c) => `  - «${c.key}» ← ${c.pages.length} صفحات: ${c.pages.map((p) => p.url).join(" | ")}`)
+          .map(
+            (c) =>
+              `  - «${c.key}» ← ${c.pages.length} صفحات: ${c.pages.map((p) => p.url).join(" | ")}`,
+          )
           .join("\n")}`,
       );
     }
@@ -100,17 +109,28 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
       .order("captured_at", { ascending: false })
       .limit(200);
 
-    const latest = new Map<string, { position: number | null; source: string; captured_at: string }>();
+    const latest = new Map<
+      string,
+      { position: number | null; source: string; captured_at: string }
+    >();
     const previous = new Map<string, number>();
     for (const s of snaps ?? []) {
       if (!latest.has(s.keyword_id)) latest.set(s.keyword_id, s);
-      else if (!previous.has(s.keyword_id) && s.position != null) previous.set(s.keyword_id, s.position);
+      else if (!previous.has(s.keyword_id) && s.position != null)
+        previous.set(s.keyword_id, s.position);
     }
     const lines = keywords.slice(0, 15).map((k) => {
       const l = latest.get(k.id);
       if (!l || l.position == null) return `  - «${k.keyword}» (${k.market}) · لم يُقَس بعد`;
       const prev = previous.get(k.id);
-      const move = prev == null ? "" : prev === l.position ? " · ثابت" : prev > l.position ? ` · ▲ تحسّن ${prev - l.position}` : ` · ▼ تراجع ${l.position - prev}`;
+      const move =
+        prev == null
+          ? ""
+          : prev === l.position
+            ? " · ثابت"
+            : prev > l.position
+              ? ` · ▲ تحسّن ${prev - l.position}`
+              : ` · ▼ تراجع ${l.position - prev}`;
       return `  - «${k.keyword}» (${k.market}) · المركز ${l.position}${move} · المصدر ${l.source}`;
     });
     sections.push(
@@ -125,7 +145,9 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
     const pending = published.filter((t) => t.status === "review").slice(0, 6);
     const rows = [
       done.length ? `**منشور/منجز:**\n${done.map((t) => `  - ${t.title}`).join("\n")}` : "",
-      pending.length ? `**بانتظار اعتماد المستخدم:**\n${pending.map((t) => `  - ${t.title}`).join("\n")}` : "",
+      pending.length
+        ? `**بانتظار اعتماد المستخدم:**\n${pending.map((t) => `  - ${t.title}`).join("\n")}`
+        : "",
     ].filter(Boolean);
     if (rows.length)
       sections.push(
@@ -148,8 +170,12 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
   sections.push(
     [
       "### قنوات النشر والفهرسة",
-      on.length ? `مربوط فعلاً: ${on.map((c) => c.label).join("، ")} — استخدمها في خطوة النشر ولا تطلب ربطها مجدداً.` : "لا توجد قناة نشر مربوطة بعد.",
-      off.length ? `غير مربوط: ${off.map((c) => c.label).join("، ")} — اطلب الربط فقط لحظة الحاجة الفعلية وبسطر واحد.` : "",
+      on.length
+        ? `مربوط فعلاً: ${on.map((c) => c.label).join("، ")} — استخدمها في خطوة النشر ولا تطلب ربطها مجدداً.`
+        : "لا توجد قناة نشر مربوطة بعد.",
+      off.length
+        ? `غير مربوط: ${off.map((c) => c.label).join("، ")} — اطلب الربط فقط لحظة الحاجة الفعلية وبسطر واحد.`
+        : "",
       connected.has("indexnow")
         ? "بعد اعتماد أي صفحة جديدة أو محدّثة: ذكّر بإرسالها عبر IndexNow في سطر واحد ضمن «الخطوة التالية»."
         : "",
@@ -158,5 +184,7 @@ export async function nourContext(client: Client, workspaceId: string): Promise<
       .join("\n"),
   );
 
-  return sections.length ? `## سياق نور التشغيلي (بيانات حقيقية من مساحة العمل)\n${sections.join("\n\n")}` : "";
+  return sections.length
+    ? `## سياق نور التشغيلي (بيانات حقيقية من مساحة العمل)\n${sections.join("\n\n")}`
+    : "";
 }

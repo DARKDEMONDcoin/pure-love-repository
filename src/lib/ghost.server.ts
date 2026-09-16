@@ -30,9 +30,7 @@ export async function ghostToken(adminKey: string): Promise<string> {
   if (!id || !secret) throw new Error("المفتاح الإداري لـ Ghost يجب أن يكون بالشكل id:secret.");
   const now = Math.floor(Date.now() / 1000);
   const header = b64urlText(JSON.stringify({ alg: "HS256", typ: "JWT", kid: id }));
-  const payload = b64urlText(
-    JSON.stringify({ iat: now, exp: now + 300, aud: "/admin/" }),
-  );
+  const payload = b64urlText(JSON.stringify({ iat: now, exp: now + 300, aud: "/admin/" }));
   const key = await crypto.subtle.importKey(
     "raw",
     hexToBytes(secret) as unknown as ArrayBuffer,

@@ -32,7 +32,6 @@ const DROP_LINE = [
   /أرسل\s+.*(?:لأجهّزه|لأجهزه|في\s+رسالة\s+واحدة)/u,
 ];
 
-
 /**
  * ينظّف نص المنشور: يزيل صيغ الماركداون وكل ما هو موجَّه للمستخدم داخل الشات،
  * ويُبقي نص المنشور نفسه فقط. يُطبَّق في الواجهة وفي الخادم قبل الإرسال للمنصة.
@@ -44,7 +43,10 @@ export function sanitizePostBody(input: string | null | undefined): string {
     .replace(/```[\s\S]*?```/g, "")
     .replace(/`([^`]+)`/g, "$1")
     .replace(/^\s*\{[\s\S]*?\}\s*$/gm, "")
-    .replace(/^\s*["']?(?:reply|body|title|kind|channel|scheduled|image_prompt|deliverables?)["']?\s*:.*$/gim, "")
+    .replace(
+      /^\s*["']?(?:reply|body|title|kind|channel|scheduled|image_prompt|deliverables?)["']?\s*:.*$/gim,
+      "",
+    )
     // اقتباسات الحواشي («استندت إلى…»، تذييل الأدوات) كلام موظف لا منشور.
     .replace(/^\s*>.*$/gm, "")
     .replace(/^\s*—\s*استندت.*$/gm, "")
@@ -60,7 +62,6 @@ export function sanitizePostBody(input: string | null | undefined): string {
     .replace(/\*\*/g, "")
     // بقايا أقواس فارغة بعد إزالة الروابط.
     .replace(/\[\s*\]|\(\s*\)/g, "");
-
 
   const lines = text.split("\n");
   const kept: string[] = [];
@@ -82,7 +83,11 @@ export function dedupeParagraphs(input: string): string {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const block of input.split(/\n{2,}/)) {
-    const key = block.replace(/\s+/g, " ").replace(/[*_#>`]/g, "").trim().toLowerCase();
+    const key = block
+      .replace(/\s+/g, " ")
+      .replace(/[*_#>`]/g, "")
+      .trim()
+      .toLowerCase();
     if (key.length > 24) {
       if (seen.has(key)) continue;
       seen.add(key);
@@ -91,7 +96,6 @@ export function dedupeParagraphs(input: string): string {
   }
   return out.join("\n\n");
 }
-
 
 /**
  * هل الرد مجرد كلام موظف (اعتذار/رفض/سؤال/توضيح) وليس منشوراً؟
@@ -156,13 +160,13 @@ export function isNonPostReply(input: string | null | undefined): boolean {
   return text.replace(/\s+/g, " ").trim().length < 40;
 }
 
-
-
-
 /** نسخة مختصرة تناسب حدّ إكس (٢٨٠ حرفاً) وتنتهي عند جملة كاملة مع أهم هاشتاقين. */
 export function shortForX(caption: string): string {
   const tags = (caption.match(/#[\p{L}\p{N}_]+/gu) ?? []).slice(0, 2).join(" ");
-  const text = caption.replace(/#[\p{L}\p{N}_]+/gu, "").replace(/\n{2,}/g, "\n").trim();
+  const text = caption
+    .replace(/#[\p{L}\p{N}_]+/gu, "")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
   const budget = 275 - (tags ? tags.length + 1 : 0);
   if (text.length <= budget) return [text, tags].filter(Boolean).join("\n");
   const cut = text.slice(0, budget);

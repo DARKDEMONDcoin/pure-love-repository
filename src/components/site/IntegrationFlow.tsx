@@ -5,7 +5,10 @@ import { TeamOrbit } from "@/components/site/TeamOrbit";
 export function IntegrationFlow() {
   return (
     <section className="relative overflow-hidden bg-foreground py-24 text-background sm:py-28">
-      <div aria-hidden className="integration-grid integration-grid-wave absolute inset-0 opacity-70" />
+      <div
+        aria-hidden
+        className="integration-grid integration-grid-wave absolute inset-0 opacity-70"
+      />
       <div className="relative mx-auto max-w-6xl px-5">
         <Reveal>
           <div className="mx-auto max-w-3xl text-center">
@@ -17,8 +20,8 @@ export function IntegrationFlow() {
               <span className="text-amber"> وفريقك يتولّى الباقي</span>
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-background/70 sm:text-lg">
-              اربط منصاتك مرة واحدة. يفهم موظفو سهل السياق، ينسّقون العمل معاً، ثم ينفّذون داخل أدواتك
-              بعد موافقتك.
+              اربط منصاتك مرة واحدة. يفهم موظفو سهل السياق، ينسّقون العمل معاً، ثم ينفّذون داخل
+              أدواتك بعد موافقتك.
             </p>
           </div>
         </Reveal>
@@ -26,7 +29,9 @@ export function IntegrationFlow() {
         <Reveal delay={120}>
           <div className="integration-team-stage relative mx-auto mt-12 max-w-6xl" dir="rtl">
             <div className="integration-team-status">
-              <span><i /> فريقك يعمل الآن</span>
+              <span>
+                <i /> فريقك يعمل الآن
+              </span>
               <strong>كل مهمة تصل إلى المتخصص المناسب</strong>
             </div>
             <TeamOrbit compact mapCenter dark />

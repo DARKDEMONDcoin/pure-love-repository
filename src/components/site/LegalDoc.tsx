@@ -140,9 +140,7 @@ export function LegalDoc({
                 <FileText className="size-4 text-primary" />
                 المحتويات
               </span>
-              <span className="text-xs font-medium lg:hidden">
-                {sections.length} أقسام
-              </span>
+              <span className="text-xs font-medium lg:hidden">{sections.length} أقسام</span>
             </summary>
             <ol className="max-h-[52vh] space-y-1 overflow-y-auto text-sm lg:max-h-[58vh]">
               {sections.map((s, i) => (

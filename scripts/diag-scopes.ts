@@ -15,7 +15,14 @@ const tok = await fetch("https://api.pipedream.com/v1/oauth/token", {
 }).then((r) => r.json() as Promise<{ access_token: string }>);
 
 const out: Record<string, unknown> = {};
-for (const slug of ["facebook_pages", "instagram_business", "instagram", "linkedin", "twitter", "pinterest"]) {
+for (const slug of [
+  "facebook_pages",
+  "instagram_business",
+  "instagram",
+  "linkedin",
+  "twitter",
+  "pinterest",
+]) {
   const res = await fetch(`https://api.pipedream.com/v1/apps/${slug}`, {
     headers: { Authorization: `Bearer ${tok.access_token}` },
   });
@@ -25,7 +32,12 @@ for (const slug of ["facebook_pages", "instagram_business", "instagram", "linked
     continue;
   }
   const json = JSON.parse(text) as {
-    data?: { name?: string; auth_type?: string; scope_profiles?: { name?: string; scopes?: string[] }[]; custom_fields_json?: unknown };
+    data?: {
+      name?: string;
+      auth_type?: string;
+      scope_profiles?: { name?: string; scopes?: string[] }[];
+      custom_fields_json?: unknown;
+    };
   };
   out[slug] = {
     name: json.data?.name,

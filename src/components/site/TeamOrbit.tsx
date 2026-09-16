@@ -46,7 +46,15 @@ function curve(x: number, y: number, index: number) {
 const STEP_MS = 3200;
 const TRAVEL_MS = 1100;
 
-export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: { compact?: boolean; mapCenter?: boolean; dark?: boolean }) {
+export function TeamOrbit({
+  compact = false,
+  mapCenter = false,
+  dark = false,
+}: {
+  compact?: boolean;
+  mapCenter?: boolean;
+  dark?: boolean;
+}) {
   const [step, setStep] = useState(0);
   const [arrived, setArrived] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -60,7 +68,10 @@ export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: 
       next[speaker] = (prev[speaker] ?? 0) + 1;
       return next;
     });
-    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
       setArrived(true);
       return;
     }
@@ -77,16 +88,25 @@ export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: 
   const activeConnection = hovered ?? active;
   const activeMember = team[active];
   const activeCount = spoken[active] ?? 0;
-  const activeTaskIndex = activeMember && activeCount > 0 ? (activeCount - 1) % activeMember.tasks.length : 0;
+  const activeTaskIndex =
+    activeMember && activeCount > 0 ? (activeCount - 1) % activeMember.tasks.length : 0;
   const activeTask = activeMember?.tasks[activeTaskIndex];
   const activePrefix = activeMember
-    ? actionPrefixes[Math.floor((activeCount - 1) / activeMember.tasks.length + activeMember.tasks.length) % actionPrefixes.length]
+    ? actionPrefixes[
+        Math.floor((activeCount - 1) / activeMember.tasks.length + activeMember.tasks.length) %
+          actionPrefixes.length
+      ]
     : actionPrefixes[0];
   const activeIsLast = activeMember ? activeTaskIndex === activeMember.tasks.length - 1 : false;
 
   return (
     <div className={cn("team-orbit", compact && "team-orbit-compact", dark && "team-orbit-dark")}>
-      <svg className="orbit-connections" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden>
+      <svg
+        className="orbit-connections"
+        viewBox="0 0 1000 500"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
         {ROUTES.map((r, index) => (
           <path
             key={index}
@@ -96,7 +116,15 @@ export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: 
           />
         ))}
         <circle key={step} className="orbit-travel-dot" r="6">
-          <animateMotion dur={`${TRAVEL_MS}ms`} begin="0s" fill="freeze" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.4 0 0.2 1">
+          <animateMotion
+            dur={`${TRAVEL_MS}ms`}
+            begin="0s"
+            fill="freeze"
+            keyPoints="0;1"
+            keyTimes="0;1"
+            calcMode="spline"
+            keySplines="0.4 0 0.2 1"
+          >
             <mpath href={`#orbit-route-${activeConnection}`} />
           </animateMotion>
         </circle>
@@ -105,7 +133,10 @@ export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: 
       {mapCenter ? (
         <div className="orbit-map-center">
           <MenaMap orbit />
-          <small><b>من قلب المنطقة</b><span>يفهم فريقك السوق، ثم يسلّم كل مهمة لمتخصصها</span></small>
+          <small>
+            <b>من قلب المنطقة</b>
+            <span>يفهم فريقك السوق، ثم يسلّم كل مهمة لمتخصصها</span>
+          </small>
         </div>
       ) : (
         <LiquidGlass className="orbit-user">
@@ -128,11 +159,21 @@ export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: 
             >
               <LiquidGlass
                 className={cn("orbit-employee", isActive && arrived && "is-lit")}
-                style={{ "--employee-tone": member.tint, "--float-delay": `${index * -0.7}s` } as React.CSSProperties}
+                style={
+                  {
+                    "--employee-tone": member.tint,
+                    "--float-delay": `${index * -0.7}s`,
+                  } as React.CSSProperties
+                }
                 tabIndex={0}
               >
                 <span className="orbit-portrait">
-                  <Portrait memberId={member.id} name={member.name} eager={index < 3} className="size-full" />
+                  <Portrait
+                    memberId={member.id}
+                    name={member.name}
+                    eager={index < 3}
+                    className="size-full"
+                  />
                   <i aria-hidden />
                 </span>
                 <span className="orbit-copy">
@@ -168,13 +209,23 @@ export function TeamOrbit({ compact = false, mapCenter = false, dark = false }: 
               {activePrefix} {activeTask}
             </span>
           ) : (
-            <span className="orbit-bubble-typing" aria-label="يكتب الآن"><i /><i /><i /></span>
+            <span className="orbit-bubble-typing" aria-label="يكتب الآن">
+              <i />
+              <i />
+              <i />
+            </span>
           )}
           <span className="orbit-bubble-foot">
             <span className="orbit-bubble-progress" aria-hidden>
-              {activeMember.tasks.map((_, dot) => <i key={dot} className={cn(dot <= activeTaskIndex && "is-on")} />)}
+              {activeMember.tasks.map((_, dot) => (
+                <i key={dot} className={cn(dot <= activeTaskIndex && "is-on")} />
+              ))}
             </span>
-            <em>{activeIsLast && arrived ? "أنهيت عرض ما أقدّمه" : `${activeTaskIndex + 1} من ${activeMember.tasks.length}`}</em>
+            <em>
+              {activeIsLast && arrived
+                ? "أنهيت عرض ما أقدّمه"
+                : `${activeTaskIndex + 1} من ${activeMember.tasks.length}`}
+            </em>
           </span>
         </div>
       ) : null}

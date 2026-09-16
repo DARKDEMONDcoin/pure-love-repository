@@ -44,13 +44,7 @@ export const Route = createFileRoute("/app/integrations")({
 });
 
 /** المنصات المربوطة ربطاً مباشراً من داخل المنصة (بدون وسيط). */
-const realProviders = new Set([
-  "wordpress",
-  "indexnow",
-  "shopify",
-  "webflow",
-  "ghost",
-]);
+const realProviders = new Set(["wordpress", "indexnow", "shopify", "webflow", "ghost"]);
 
 /** فيسبوك وإنستجرام لهما لوحة ربط مباشرة مستقلة لكل منهما. */
 const isMeta = (provider: string) => provider === "facebook" || provider === "instagram";
@@ -151,9 +145,7 @@ function IntegrationsPage() {
 
   const all = integrations ?? [];
   // تطبيق واحد يظهر مرة واحدة فقط حتى لو استخدمه أكثر من موظف.
-  const unique = all.filter(
-    (i, idx) => all.findIndex((x) => x.provider === i.provider) === idx,
-  );
+  const unique = all.filter((i, idx) => all.findIndex((x) => x.provider === i.provider) === idx);
   const connected = unique.filter((i) => i.status === "connected").length;
   const broken = unique.filter((i) => i.status === "error");
   const detailRow = unique.find((i) => i.provider === detail) ?? null;
@@ -261,8 +253,6 @@ function IntegrationsPage() {
     }
   };
 
-
-
   // جاء المستخدم من زر «اربط X» داخل المحادثة: نفتح ربط نفس المنصة فوراً.
   useEffect(() => {
     if (!autoConnect || !workspace || isLoading) return;
@@ -272,7 +262,6 @@ function IntegrationsPage() {
     void toggle(row.id, row.status, row.provider);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoConnect, workspace, isLoading, integrations]);
-
 
   return (
     <AppShell
@@ -306,7 +295,6 @@ function IntegrationsPage() {
       {ghostOpen && workspace ? (
         <GhostConnect workspaceId={workspace.id} onClose={() => setGhostOpen(false)} />
       ) : null}
-
 
       {error ? (
         <p className="mb-6 rounded-2xl bg-coral/12 px-4 py-3 text-sm font-semibold text-coral">
@@ -395,7 +383,12 @@ function IntegrationsPage() {
                 <div className="flex items-center gap-3">
                   <span
                     className="grid size-11 shrink-0 overflow-hidden rounded-2xl ring-2"
-                    style={{ background: m.tintSoft, "--tw-ring-color": m.tintSoft } as React.CSSProperties}
+                    style={
+                      {
+                        background: m.tintSoft,
+                        "--tw-ring-color": m.tintSoft,
+                      } as React.CSSProperties
+                    }
                   >
                     <Portrait memberId={m.id} name={m.name} className="size-full" />
                   </span>
@@ -474,10 +467,10 @@ function IntegrationsPage() {
                   {detailRow.provider === "whatsapp"
                     ? "اربط رقم واتساب للأعمال من هنا دون إدخال معرّف الحساب أو توكن يدوي."
                     : isMeta(detailRow.provider)
-                    ? "ربط مباشر عبر تطبيق ميتا الخاص بنا — أذونات نشر كاملة."
-                    : realProviders.has(detailRow.provider)
-                      ? "ربط مباشر بالمنصة عبر OAuth الرسمي."
-                      : "ربط آمن عبر وسيط التكاملات — لا نحتفظ بكلمات مرورك."}
+                      ? "ربط مباشر عبر تطبيق ميتا الخاص بنا — أذونات نشر كاملة."
+                      : realProviders.has(detailRow.provider)
+                        ? "ربط مباشر بالمنصة عبر OAuth الرسمي."
+                        : "ربط آمن عبر وسيط التكاملات — لا نحتفظ بكلمات مرورك."}
                 </p>
               </div>
               <button

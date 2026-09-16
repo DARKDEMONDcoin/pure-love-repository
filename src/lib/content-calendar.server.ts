@@ -47,7 +47,14 @@ const BEST_HOURS: Record<string, number[]> = {
   "google-business": [9, 12, 17],
 };
 
-const PILLARS = ["تعليمي", "خلف الكواليس", "إثبات اجتماعي", "عرض/دعوة", "ترفيهي/تفاعلي", "قصة العلامة"];
+const PILLARS = [
+  "تعليمي",
+  "خلف الكواليس",
+  "إثبات اجتماعي",
+  "عرض/دعوة",
+  "ترفيهي/تفاعلي",
+  "قصة العلامة",
+];
 
 export function extractJson<T>(raw: string): T | null {
   const s = raw.indexOf("{");
@@ -69,7 +76,8 @@ export function extractJson<T>(raw: string): T | null {
  */
 export function extractJsonList<T extends object>(raw: string, requiredKey: keyof T): T[] {
   const parsed = extractJson<unknown>(raw);
-  const isItem = (x: unknown): x is T => Boolean(x) && typeof x === "object" && requiredKey in (x as object);
+  const isItem = (x: unknown): x is T =>
+    Boolean(x) && typeof x === "object" && requiredKey in (x as object);
   if (Array.isArray(parsed)) return parsed.filter(isItem);
   if (parsed && typeof parsed === "object") {
     if (isItem(parsed)) return [parsed];
@@ -97,7 +105,11 @@ async function workspaceContext(admin: Admin, workspaceId: string) {
   const [{ data: ws }, { data: brain }, { data: linked }, { data: recent }] = await Promise.all([
     admin.from("workspaces").select("*").eq("id", workspaceId).maybeSingle(),
     admin.from("brain_items").select("title, body, kind").eq("workspace_id", workspaceId),
-    admin.from("pipedream_accounts").select("provider").eq("workspace_id", workspaceId).eq("status", "connected"),
+    admin
+      .from("pipedream_accounts")
+      .select("provider")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "connected"),
     admin
       .from("social_posts")
       .select("body, provider, status, meta, metrics")
@@ -106,23 +118,43 @@ async function workspaceContext(admin: Admin, workspaceId: string) {
       .limit(30),
   ]);
   if (!ws) throw new Error("مساحة العمل غير موجودة.");
-  const w = ws as typeof ws & { website?: string | null; country?: string | null; profile?: unknown };
+  const w = ws as typeof ws & {
+    website?: string | null;
+    country?: string | null;
+    profile?: unknown;
+  };
   const learning = (brain ?? []).find((b) => b.kind === "learning");
   return {
     ws: w,
     brain: (brain ?? []).filter((b) => b.kind !== "learning"),
     learning: learning?.body ?? null,
     connected: (linked ?? []).map((l) => l.provider),
-    recent: (recent ?? []) as unknown as { body: string; provider: string; status: string; meta: PostMeta; metrics: PostMetrics | null }[],
+    recent: (recent ?? []) as unknown as {
+      body: string;
+      provider: string;
+      status: string;
+      meta: PostMeta;
+      metrics: PostMetrics | null;
+    }[],
   };
 }
 
-function systemFor(ctx: Awaited<ReturnType<typeof workspaceContext>>, dialect: string, query: string): string {
+function systemFor(
+  ctx: Awaited<ReturnType<typeof workspaceContext>>,
+  dialect: string,
+  query: string,
+): string {
   const p = personas["sonny"]!;
   return [
     `أنت ${p.name} — ${p.role}`,
     `## معايير الحرفة\n${craft["sonny"] ?? ""}`,
-    ...sharedSystemBlocks({ employeeId: "sonny", connected: ctx.connected, profile: ctx.ws.profile, website: ctx.ws.website, country: ctx.ws.country }),
+    ...sharedSystemBlocks({
+      employeeId: "sonny",
+      connected: ctx.connected,
+      profile: ctx.ws.profile,
+      website: ctx.ws.website,
+      country: ctx.ws.country,
+    }),
     `## العلامة\nالاسم: ${ctx.ws.name} · المجال: ${ctx.ws.industry} · النبرة: ${ctx.ws.tone} · اللهجة المطلوبة: ${dialect}` +
       (ctx.ws.banned_words?.length ? `\nكلمات ممنوعة: ${ctx.ws.banned_words.join("، ")}` : ""),
     ctx.brain.length ? `## عقل العلامة\n${memoryBlock(ctx.brain as never, query, 8)}` : "",
@@ -132,28 +164,71 @@ function systemFor(ctx: Awaited<ReturnType<typeof workspaceContext>>, dialect: s
     .join("\n\n");
 }
 
-
 const COUNTRY_DIALECT: Record<string, string> = {
-  EG: "مصرية", SA: "خليجية", AE: "خليجية", KW: "خليجية", QA: "خليجية", BH: "خليجية", OM: "خليجية",
-  JO: "شامية", LB: "شامية", SY: "شامية", PS: "شامية", IQ: "عراقية", YE: "يمنية",
-  MA: "مغربية", DZ: "جزائرية", TN: "تونسية", LY: "ليبية", SD: "سودانية", MR: "موريتانية",
-  مصر: "مصرية", السعودية: "خليجية", الإمارات: "خليجية", الكويت: "خليجية", قطر: "خليجية", البحرين: "خليجية", عمان: "خليجية",
-  الأردن: "شامية", لبنان: "شامية", سوريا: "شامية", فلسطين: "شامية", العراق: "عراقية", اليمن: "يمنية",
-  المغرب: "مغربية", الجزائر: "جزائرية", تونس: "تونسية", ليبيا: "ليبية", السودان: "سودانية",
+  EG: "مصرية",
+  SA: "خليجية",
+  AE: "خليجية",
+  KW: "خليجية",
+  QA: "خليجية",
+  BH: "خليجية",
+  OM: "خليجية",
+  JO: "شامية",
+  LB: "شامية",
+  SY: "شامية",
+  PS: "شامية",
+  IQ: "عراقية",
+  YE: "يمنية",
+  MA: "مغربية",
+  DZ: "جزائرية",
+  TN: "تونسية",
+  LY: "ليبية",
+  SD: "سودانية",
+  MR: "موريتانية",
+  مصر: "مصرية",
+  السعودية: "خليجية",
+  الإمارات: "خليجية",
+  الكويت: "خليجية",
+  قطر: "خليجية",
+  البحرين: "خليجية",
+  عمان: "خليجية",
+  الأردن: "شامية",
+  لبنان: "شامية",
+  سوريا: "شامية",
+  فلسطين: "شامية",
+  العراق: "عراقية",
+  اليمن: "يمنية",
+  المغرب: "مغربية",
+  الجزائر: "جزائرية",
+  تونس: "تونسية",
+  ليبيا: "ليبية",
+  السودان: "سودانية",
 };
 
 /**
  * لهجة الكتابة الفعلية لمساحة العمل: اختيار المالك عند التسجيل ← لهجة موقعه المكتشفة ← دولته ← مصرية (سوق «سهل» الأول).
  * لا نفترض الخليجية أبداً كقيمة صامتة.
  */
-export async function resolveDialect(admin: Admin, workspaceId: string, explicit?: string | null): Promise<string> {
+export async function resolveDialect(
+  admin: Admin,
+  workspaceId: string,
+  explicit?: string | null,
+): Promise<string> {
   if (explicit && explicit.trim()) return explicit.trim();
-  const { data: ws } = await admin.from("workspaces").select("owner_id, country, profile").eq("id", workspaceId).maybeSingle();
+  const { data: ws } = await admin
+    .from("workspaces")
+    .select("owner_id, country, profile")
+    .eq("id", workspaceId)
+    .maybeSingle();
   if (!ws) return "مصرية";
-  const { data: prof } = await admin.from("profiles").select("dialect").eq("id", ws.owner_id).maybeSingle();
+  const { data: prof } = await admin
+    .from("profiles")
+    .select("dialect")
+    .eq("id", ws.owner_id)
+    .maybeSingle();
   if (prof?.dialect?.trim()) return prof.dialect.trim();
   const p = (ws as { profile?: { dialect?: string } | null }).profile;
-  if (p && typeof p === "object" && typeof p.dialect === "string" && p.dialect.trim()) return p.dialect.trim();
+  if (p && typeof p === "object" && typeof p.dialect === "string" && p.dialect.trim())
+    return p.dialect.trim();
   const c = (ws as { country?: string | null }).country?.trim();
   if (c && COUNTRY_DIALECT[c.toUpperCase()]) return COUNTRY_DIALECT[c.toUpperCase()]!;
   if (c && COUNTRY_DIALECT[c]) return COUNTRY_DIALECT[c]!;
@@ -183,9 +258,21 @@ function slotDates(input: PlanInput): { at: Date; provider: string }[] {
   for (let d = 0; d < input.days; d += 1) {
     for (let i = 0; i < input.perDay; i += 1) {
       const hour = hours[i % hours.length]!;
-      const local = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate() + 1 + d, hour, 0, 0));
+      const local = new Date(
+        Date.UTC(
+          start.getUTCFullYear(),
+          start.getUTCMonth(),
+          start.getUTCDate() + 1 + d,
+          hour,
+          0,
+          0,
+        ),
+      );
       const utc = new Date(local.getTime() - offsetMin * 60_000);
-      out.push({ at: utc, provider: input.providers[(d * input.perDay + i) % input.providers.length] ?? primary });
+      out.push({
+        at: utc,
+        provider: input.providers[(d * input.perDay + i) % input.providers.length] ?? primary,
+      });
     }
   }
   return out;
@@ -193,7 +280,10 @@ function slotDates(input: PlanInput): { at: Date; provider: string }[] {
 
 function tzOffsetMinutes(tz: string, at: Date): number {
   try {
-    const parts = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "shortOffset" }).formatToParts(at);
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      timeZoneName: "shortOffset",
+    }).formatToParts(at);
     const name = parts.find((p) => p.type === "timeZoneName")?.value ?? "GMT+3";
     const m = name.match(/([+-])(\d{1,2})(?::?(\d{2}))?/);
     if (!m) return /^(GMT|UTC)$/i.test(name.trim()) ? 0 : 180;
@@ -204,7 +294,10 @@ function tzOffsetMinutes(tz: string, at: Date): number {
   }
 }
 
-export async function planCalendar(admin: Admin, input: PlanInput): Promise<{ created: number; batch: string }> {
+export async function planCalendar(
+  admin: Admin,
+  input: PlanInput,
+): Promise<{ created: number; batch: string }> {
   const slots = slotDates(input).slice(0, 45);
   const ctx = await workspaceContext(admin, input.workspaceId);
   const { freeChat } = await import("./nour-research.server");
@@ -218,7 +311,9 @@ export async function planCalendar(admin: Admin, input: PlanInput): Promise<{ cr
   const system = systemFor(ctx, dialect, input.topic ?? ctx.ws.industry);
   const user = [
     `خطّط ${slots.length} فكرة منشور لتقويم محتوى ${input.days} يوماً على: ${input.providers.join("، ")}.`,
-    input.topic ? `المحور المطلوب من المالك: ${input.topic}` : "بلا محور محدد — استند إلى نشاط العلامة وجمهورها.",
+    input.topic
+      ? `المحور المطلوب من المالك: ${input.topic}`
+      : "بلا محور محدد — استند إلى نشاط العلامة وجمهورها.",
     `وزّع الأفكار على أعمدة المحتوى: ${PILLARS.join("، ")} — بلا تكرار، وبتنويع الهدف (وصول/تفاعل/رسائل/مبيعات).`,
     recentTitles.length ? `تجنّب تكرار ما نُشر مؤخراً: ${recentTitles.join(" | ")}` : "",
     `أخرج JSON فقط بهذا الشكل بالضبط — كائن فيه مفتاح "items" يحوي مصفوفة بطول ${slots.length} (لا تُرجع عنصراً واحداً أبداً): {"items":[ ... ]} وكل عنصر بهذا الشكل:\n{"title":"عنوان قصير بالعربية","pillar":"أحد الأعمدة","angle":"زاوية المنشور بجملة","hook":"أول سطر يوقف التمرير (≤ 12 كلمة)","goal":"وصول|تفاعل|رسائل|مبيعات","imageIdea":"وصف بصري إنجليزي دقيق للصورة (مشهد، إضاءة، زاوية، بلا نص)"}`,
@@ -226,11 +321,18 @@ export async function planCalendar(admin: Admin, input: PlanInput): Promise<{ cr
     .filter(Boolean)
     .join("\n");
 
-  const raw = await freeChat("", [{ role: "system", content: system }, { role: "user", content: user }], {
-    json: true,
-    timeoutMs: 60_000,
-    maxTokens: 3500,
-  });
+  const raw = await freeChat(
+    "",
+    [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+    {
+      json: true,
+      timeoutMs: 60_000,
+      maxTokens: 3500,
+    },
+  );
   let ideas = extractJsonList<PostMeta>(raw, "title");
   if (ideas.length && ideas.length < slots.length) {
     // النموذج أعاد أقل من المطلوب: نكمل بجولة ثانية بدل أن نكرّر الفكرة نفسها على الأيام.
@@ -241,7 +343,10 @@ export async function planCalendar(admin: Admin, input: PlanInput): Promise<{ cr
           { role: "system", content: system },
           { role: "user", content: user },
           { role: "assistant", content: JSON.stringify({ items: ideas }) },
-          { role: "user", content: `ممتاز. أكمل ${slots.length - ideas.length} فكرة إضافية مختلفة تماماً عن السابقة بنفس الشكل {"items":[...]}.` },
+          {
+            role: "user",
+            content: `ممتاز. أكمل ${slots.length - ideas.length} فكرة إضافية مختلفة تماماً عن السابقة بنفس الشكل {"items":[...]}.`,
+          },
         ],
         { json: true, timeoutMs: 60_000, maxTokens: 3500 },
       );
@@ -290,7 +395,12 @@ export async function generateCalendarPost(
   postId: string,
   opts: { withImage: boolean; dialect?: string | undefined },
 ): Promise<{ id: string; body: string; imageUrl: string | null }> {
-  const { data: post } = await admin.from("social_posts").select("*").eq("id", postId).eq("workspace_id", workspaceId).maybeSingle();
+  const { data: post } = await admin
+    .from("social_posts")
+    .select("*")
+    .eq("id", postId)
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
   if (!post) throw new Error("المنشور غير موجود.");
   const meta = ((post as { meta?: PostMeta }).meta ?? {}) as PostMeta;
   const ctx = await workspaceContext(admin, workspaceId);
@@ -306,17 +416,28 @@ export async function generateCalendarPost(
     meta.pillar ? `عمود المحتوى: ${meta.pillar}` : "",
     meta.goal ? `الهدف: ${meta.goal}` : "",
     "القواعد: فكرة واحدة، جمل قصيرة، دعوة فعل واحدة، هاشتاقات بطبقات (5-10) في آخر سطر، بلا مقدمات وبلا شرح. لا أرقام مختلقة ولا وعود.",
-    post.provider === "x" ? "الحد 270 حرفاً شاملاً الهاشتاقات." : post.provider === "linkedin" ? "نبرة مهنية دافئة، 900-1300 حرف، أسطر قصيرة." : "1200-1800 حرف كحد أقصى.",
+    post.provider === "x"
+      ? "الحد 270 حرفاً شاملاً الهاشتاقات."
+      : post.provider === "linkedin"
+        ? "نبرة مهنية دافئة، 900-1300 حرف، أسطر قصيرة."
+        : "1200-1800 حرف كحد أقصى.",
     `أخرج JSON فقط: {"caption":"نص المنشور الكامل بالعربية","image_prompt":"English visual prompt, one paragraph, on-brand, no text in image"}`,
   ]
     .filter(Boolean)
     .join("\n");
 
-  const raw = await freeChat("", [{ role: "system", content: system }, { role: "user", content: user }], {
-    json: true,
-    timeoutMs: 60_000,
-    maxTokens: 1400,
-  });
+  const raw = await freeChat(
+    "",
+    [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ],
+    {
+      json: true,
+      timeoutMs: 60_000,
+      maxTokens: 1400,
+    },
+  );
   const out = extractJson<{ caption?: string; image_prompt?: string }>(raw);
   const caption = (out?.caption ?? "").trim();
   if (!caption) throw new Error("لم يخرج نص منشور صالح.");
@@ -335,7 +456,11 @@ export async function generateCalendarPost(
         draft: out?.image_prompt || meta.imageIdea,
       });
       const prompt = `${brief} Square 1:1 composition, premium commercial photography.`;
-      imageUrl = await ownedHeroImage(admin as unknown as Parameters<typeof ownedHeroImage>[0], workspaceId, prompt);
+      imageUrl = await ownedHeroImage(
+        admin as unknown as Parameters<typeof ownedHeroImage>[0],
+        workspaceId,
+        prompt,
+      );
     } catch (e) {
       console.error("[calendar] image failed:", e);
     }
@@ -356,12 +481,27 @@ export async function generateCalendarPost(
 
 /* ---------------- 3) التعلّم من الأداء ---------------- */
 
-type MetaAccounts = { data?: { id: string; name?: string; instagram_business_account?: { id: string } }[] };
+type MetaAccounts = {
+  data?: { id: string; name?: string; instagram_business_account?: { id: string } }[];
+};
 type MetaPosts = {
-  data?: { id: string; caption?: string; message?: string; timestamp?: string; created_time?: string; permalink?: string; like_count?: number; comments_count?: number }[];
+  data?: {
+    id: string;
+    caption?: string;
+    message?: string;
+    timestamp?: string;
+    created_time?: string;
+    permalink?: string;
+    like_count?: number;
+    comments_count?: number;
+  }[];
 };
 
-async function readMetaPerformance(admin: Admin, workspaceId: string, provider: "instagram" | "facebook") {
+async function readMetaPerformance(
+  admin: Admin,
+  workspaceId: string,
+  provider: "instagram" | "facebook",
+) {
   const { pipedreamConfig, proxyRequest } = await import("./pipedream.server");
   const config = await pipedreamConfig();
   if (!config) return [];
@@ -385,13 +525,23 @@ async function readMetaPerformance(admin: Admin, workspaceId: string, provider: 
     provider === "instagram"
       ? `https://graph.facebook.com/v23.0/${target}/media?fields=id,caption,timestamp,permalink,like_count,comments_count&limit=25`
       : `https://graph.facebook.com/v23.0/${target}/posts?fields=id,message,created_time,permalink_url,likes.summary(true),comments.summary(true)&limit=25`;
-  const posts = await proxyRequest<MetaPosts & { data?: { likes?: { summary?: { total_count?: number } }; comments?: { summary?: { total_count?: number } } }[] }>(config, {
+  const posts = await proxyRequest<
+    MetaPosts & {
+      data?: {
+        likes?: { summary?: { total_count?: number } };
+        comments?: { summary?: { total_count?: number } };
+      }[];
+    }
+  >(config, {
     workspaceId,
     accountId: acc.account_id,
     url,
   });
   return (posts.data ?? []).map((p) => {
-    const x = p as typeof p & { likes?: { summary?: { total_count?: number } }; comments?: { summary?: { total_count?: number } } };
+    const x = p as typeof p & {
+      likes?: { summary?: { total_count?: number } };
+      comments?: { summary?: { total_count?: number } };
+    };
     return {
       id: p.id,
       provider,
@@ -403,7 +553,10 @@ async function readMetaPerformance(admin: Admin, workspaceId: string, provider: 
   });
 }
 
-export async function learnFromPerformance(admin: Admin, workspaceId: string): Promise<{ analyzed: number; summary: string; source: "live" | "internal" | "none" }> {
+export async function learnFromPerformance(
+  admin: Admin,
+  workspaceId: string,
+): Promise<{ analyzed: number; summary: string; source: "live" | "internal" | "none" }> {
   const live = (
     await Promise.all([
       readMetaPerformance(admin, workspaceId, "instagram").catch(() => []),
@@ -421,25 +574,58 @@ export async function learnFromPerformance(admin: Admin, workspaceId: string): P
       .not("remote_ref", "is", null)
       .limit(100);
     for (const o of ours ?? []) {
-      const hit = live.find((l) => o.remote_ref && (l.id === o.remote_ref || o.remote_ref.includes(l.id)));
+      const hit = live.find(
+        (l) => o.remote_ref && (l.id === o.remote_ref || o.remote_ref.includes(l.id)),
+      );
       if (hit) {
-        const metrics: PostMetrics = { likes: hit.likes, comments: hit.comments, score: hit.likes + hit.comments * 3, fetchedAt: new Date().toISOString() };
-        await admin.from("social_posts").update({ metrics } as never).eq("id", o.id);
+        const metrics: PostMetrics = {
+          likes: hit.likes,
+          comments: hit.comments,
+          score: hit.likes + hit.comments * 3,
+          fetchedAt: new Date().toISOString(),
+        };
+        await admin
+          .from("social_posts")
+          .update({ metrics } as never)
+          .eq("id", o.id);
       }
     }
   }
 
-  let sample: { text: string; likes: number; comments: number; provider: string; at: string }[] = live.map((l) => ({ text: l.text, likes: l.likes, comments: l.comments, provider: l.provider as string, at: l.at }));
+  let sample: { text: string; likes: number; comments: number; provider: string; at: string }[] =
+    live.map((l) => ({
+      text: l.text,
+      likes: l.likes,
+      comments: l.comments,
+      provider: l.provider as string,
+      at: l.at,
+    }));
   let source: "live" | "internal" | "none" = live.length ? "live" : "none";
   if (!sample.length) {
-    const { data: internal } = await (admin.from("social_posts") as unknown as { select: (s: string) => any }).select("body, provider, published_at, metrics")
+    const { data: internal } = await (
+      admin.from("social_posts") as unknown as { select: (s: string) => any }
+    )
+      .select("body, provider, published_at, metrics")
       .eq("workspace_id", workspaceId)
       .eq("status", "published")
       .not("metrics", "is", null)
       .limit(40);
-    sample = ((internal ?? []) as unknown as { body: string; provider: string; published_at: string | null; metrics?: PostMetrics }[]).map((p) => {
+    sample = (
+      (internal ?? []) as unknown as {
+        body: string;
+        provider: string;
+        published_at: string | null;
+        metrics?: PostMetrics;
+      }[]
+    ).map((p) => {
       const m = (p as { metrics?: PostMetrics }).metrics ?? {};
-      return { text: p.body.slice(0, 400), likes: m.likes ?? 0, comments: m.comments ?? 0, provider: p.provider, at: p.published_at ?? "" };
+      return {
+        text: p.body.slice(0, 400),
+        likes: m.likes ?? 0,
+        comments: m.comments ?? 0,
+        provider: p.provider,
+        at: p.published_at ?? "",
+      };
     });
     if (sample.length) source = "internal";
   }
@@ -447,7 +633,8 @@ export async function learnFromPerformance(admin: Admin, workspaceId: string): P
     return {
       analyzed: sample.length,
       source,
-      summary: "لا توجد بيانات أداء كافية بعد — اربط إنستجرام أو فيسبوك وسنقرأ أداء آخر 25 منشوراً ونتعلّم منها تلقائياً.",
+      summary:
+        "لا توجد بيانات أداء كافية بعد — اربط إنستجرام أو فيسبوك وسنقرأ أداء آخر 25 منشوراً ونتعلّم منها تلقائياً.",
     };
   }
 
@@ -467,7 +654,9 @@ export async function learnFromPerformance(admin: Admin, workspaceId: string): P
         role: "user",
         content: `الأفضل أداءً:\n${top.map((t) => `- [${t.provider} · ${t.at.slice(0, 10)} · ${t.likes}❤ ${t.comments}💬] ${t.text}`).join("\n")}\n\nالأضعف:\n${bottom
           .map((t) => `- [${t.provider} · ${t.likes}❤ ${t.comments}💬] ${t.text}`)
-          .join("\n")}\n\nاكتب 6-9 قواعد عملية قصيرة بصيغة أوامر يطبّقها كاتب المحتوى في المنشورات القادمة، كل قاعدة في سطر يبدأ بـ«-». ثم سطر أخير يبدأ بـ«أفضل توقيت:» إن كان واضحاً من التواريخ.`,
+          .join(
+            "\n",
+          )}\n\nاكتب 6-9 قواعد عملية قصيرة بصيغة أوامر يطبّقها كاتب المحتوى في المنشورات القادمة، كل قاعدة في سطر يبدأ بـ«-». ثم سطر أخير يبدأ بـ«أفضل توقيت:» إن كان واضحاً من التواريخ.`,
       },
     ],
     { timeoutMs: 45_000, maxTokens: 700 },
@@ -475,7 +664,12 @@ export async function learnFromPerformance(admin: Admin, workspaceId: string): P
   const summary = raw.trim().slice(0, 2500);
 
   const title = "ما نجح في منشوراتك — تعلّم سِراج";
-  const { data: existing } = await admin.from("brain_items").select("id").eq("workspace_id", workspaceId).eq("kind", "learning").maybeSingle();
+  const { data: existing } = await admin
+    .from("brain_items")
+    .select("id")
+    .eq("workspace_id", workspaceId)
+    .eq("kind", "learning")
+    .maybeSingle();
   const payload = {
     workspace_id: workspaceId,
     kind: "learning",
@@ -492,11 +686,19 @@ export async function learnFromPerformance(admin: Admin, workspaceId: string): P
 
 /* ---------------- 4) أفكار اليوم ---------------- */
 
-export async function dailyIdeas(admin: Admin, workspaceId: string, dialectHint?: string | null): Promise<{ title: string; hook: string; provider: string; prompt: string }[]> {
+export async function dailyIdeas(
+  admin: Admin,
+  workspaceId: string,
+  dialectHint?: string | null,
+): Promise<{ title: string; hook: string; provider: string; prompt: string }[]> {
   const ctx = await workspaceContext(admin, workspaceId);
   const dialect = await resolveDialect(admin, workspaceId, dialectHint);
   const { freeChat } = await import("./nour-research.server");
-  const day = new Date().toLocaleDateString("ar-EG", { weekday: "long", day: "numeric", month: "long" });
+  const day = new Date().toLocaleDateString("ar-EG", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
   const raw = await freeChat(
     "",
     [
@@ -511,10 +713,13 @@ export async function dailyIdeas(admin: Admin, workspaceId: string, dialectHint?
   type Idea = { title: string; hook: string; provider: string };
   const ideas: Idea[] = extractJsonList<Idea>(raw, "title");
   if (!ideas.length) console.warn("[dailyIdeas] empty result; raw:", String(raw).slice(0, 300));
-  return ideas.filter((i) => i && (i.title || i.hook)).slice(0, 3).map((i) => ({
-    title: String(i.title ?? "").slice(0, 100),
-    hook: String(i.hook ?? "").slice(0, 160),
-    provider: String(i.provider ?? "instagram"),
-    prompt: `اكتب لي منشور ${i.provider ?? "إنستجرام"} عن: ${i.title} — ابدأ بهوك: «${i.hook}» مع صورة مناسبة.`,
-  }));
+  return ideas
+    .filter((i) => i && (i.title || i.hook))
+    .slice(0, 3)
+    .map((i) => ({
+      title: String(i.title ?? "").slice(0, 100),
+      hook: String(i.hook ?? "").slice(0, 160),
+      provider: String(i.provider ?? "instagram"),
+      prompt: `اكتب لي منشور ${i.provider ?? "إنستجرام"} عن: ${i.title} — ابدأ بهوك: «${i.hook}» مع صورة مناسبة.`,
+    }));
 }

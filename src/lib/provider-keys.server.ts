@@ -12,7 +12,12 @@ export function resetProviderKeys(): void {
 }
 
 export async function providerKeys(): Promise<Keys> {
-  const found = await getSecrets(["LOVABLE_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY", "OPENROUTER_API_KEY"] as const);
+  const found = await getSecrets([
+    "LOVABLE_API_KEY",
+    "GEMINI_API_KEY",
+    "GOOGLE_API_KEY",
+    "OPENROUTER_API_KEY",
+  ] as const);
   return {
     lovable: found.LOVABLE_API_KEY,
     gemini: found.GEMINI_API_KEY || found.GOOGLE_API_KEY,

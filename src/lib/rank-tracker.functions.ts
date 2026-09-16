@@ -61,7 +61,7 @@ export const listTrackedKeywords = createServerFn({ method: "POST" })
       competitors?: unknown;
     };
     // أعمدة source/clicks/impressions/competitors أضيفت بترحيل لاحق ولم تُحدَّث الأنواع المولّدة بعد.
-    for (const snap of ((snapshots ?? []) as unknown as Snap[])) {
+    for (const snap of (snapshots ?? []) as unknown as Snap[]) {
       (history[snap.keyword_id] ??= []).push({
         position: snap.position,
         url: snap.url,
@@ -100,9 +100,7 @@ export const addTrackedKeyword = createServerFn({ method: "POST" })
 
 export const removeTrackedKeyword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ ...ws, id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ ...ws, id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("tracked_keywords")
@@ -138,7 +136,8 @@ export const refreshRankings = createServerFn({ method: "POST" })
         .maybeSingle(),
     ]);
     if (error) throw new Error(error.message);
-    if (!keywords?.length) return { checked: 0, sources: {} as Record<string, number>, gscConnected: Boolean(gsc) };
+    if (!keywords?.length)
+      return { checked: 0, sources: {} as Record<string, number>, gscConnected: Boolean(gsc) };
 
     const { checkRank } = await import("./rank-check.server");
     const now = new Date().toISOString();

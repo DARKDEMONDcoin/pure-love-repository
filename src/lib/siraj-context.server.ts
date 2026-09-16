@@ -70,11 +70,18 @@ export async function sirajContext(client: Client, workspaceId: string): Promise
   /* ٢) ما تعلّمه سِراج من أداء منشوراتك. */
   const learning = brain.find((b) => b.kind === "learning");
   if (learning?.body) {
-    sections.push(`### قواعد مستخلصة من أداء حسابك الحقيقي (تُقدَّم على أي عُرف عام)\n${clip(learning.body, 1400)}`);
+    sections.push(
+      `### قواعد مستخلصة من أداء حسابك الحقيقي (تُقدَّم على أي عُرف عام)\n${clip(learning.body, 1400)}`,
+    );
   }
 
   /* ٣) أمثلة رابحة بأرقامها — تعلّم بالقدوة من حساب العميل نفسه. */
-  type Row = { body: string; provider: string; published_at: string | null; metrics: Metrics | null };
+  type Row = {
+    body: string;
+    provider: string;
+    published_at: string | null;
+    metrics: Metrics | null;
+  };
   const published = ((publishedRes.data ?? []) as unknown as Row[]).filter(
     (p) => engagement(p.metrics) > 0,
   );
@@ -112,7 +119,8 @@ export async function sirajContext(client: Client, workspaceId: string): Promise
       [
         "### مجدول خلال ٧ أيام (لا تكرّر الفكرة ولا تزاحم الموعد)",
         ...scheduled.map(
-          (s) => `- ${dayAr(s.scheduled_at)} · ${s.provider}: ${clip(s.body.replace(/\s+/g, " "), 110)}`,
+          (s) =>
+            `- ${dayAr(s.scheduled_at)} · ${s.provider}: ${clip(s.body.replace(/\s+/g, " "), 110)}`,
         ),
       ].join("\n"),
     );

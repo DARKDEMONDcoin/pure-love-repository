@@ -2,7 +2,16 @@ import { Fragment, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Plus, RefreshCw, ShieldCheck, Swords, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  RefreshCw,
+  ShieldCheck,
+  Swords,
+  Trash2,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 
 import { AppShell } from "@/components/app/AppShell";
 import { GoogleConnectButton } from "@/components/app/GoogleConnect";
@@ -14,14 +23,14 @@ import {
   removeTrackedKeyword,
 } from "@/lib/rank-tracker.functions";
 
-
 export const Route = createFileRoute("/app/rankings")({
   head: () => ({
     meta: [
       { title: "تتبّع الترتيب | سهل" },
       {
         name: "description",
-        content: "لوحة تاريخية لترتيب كلماتك المفتاحية في نتائج البحث الحية — أرقام حقيقية بلا تقدير.",
+        content:
+          "لوحة تاريخية لترتيب كلماتك المفتاحية في نتائج البحث الحية — أرقام حقيقية بلا تقدير.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -97,7 +106,11 @@ const sourceMeta: Record<string, { label: string; cls: string; title: string }> 
     cls: "bg-jade/12 text-jade-deep",
     title: "متوسط الترتيب الفعلي من بيانات جوجل لموقعك خلال 28 يوماً",
   },
-  google: { label: "جوجل", cls: "bg-amber/15 text-amber", title: "موقعك في صفحة نتائج جوجل الحقيقية لهذا السوق (أول 100 نتيجة)" },
+  google: {
+    label: "جوجل",
+    cls: "bg-amber/15 text-amber",
+    title: "موقعك في صفحة نتائج جوجل الحقيقية لهذا السوق (أول 100 نتيجة)",
+  },
   "search-engines": {
     label: "تقدير",
     cls: "bg-secondary text-muted-foreground",
@@ -134,7 +147,14 @@ function RankingsPage() {
 
   const addMutation = useMutation({
     mutationFn: () =>
-      add({ data: { workspaceId: workspace!.id, keyword, domain: effectiveDomain, market: effectiveMarket } }),
+      add({
+        data: {
+          workspaceId: workspace!.id,
+          keyword,
+          domain: effectiveDomain,
+          market: effectiveMarket,
+        },
+      }),
     onSuccess: () => {
       setKeyword("");
       invalidate();
@@ -152,7 +172,9 @@ function RankingsPage() {
   });
 
   const rows = data?.keywords ?? [];
-  const anyGsc = Object.values(data?.history ?? {}).some((pts) => pts.some((p) => p.source === "search-console"));
+  const anyGsc = Object.values(data?.history ?? {}).some((pts) =>
+    pts.some((p) => p.source === "search-console"),
+  );
 
   return (
     <AppShell
@@ -164,7 +186,11 @@ function RankingsPage() {
           disabled={!workspace || refreshMutation.isPending || !rows.length}
           className="inline-flex items-center gap-1.5 rounded-xl bg-foreground px-3.5 py-2.5 text-sm font-bold text-background disabled:opacity-50"
         >
-          {refreshMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+          {refreshMutation.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <RefreshCw className="size-4" />
+          )}
           {refreshMutation.isPending ? "نفحص جوجل…" : "حدّث الترتيب الآن"}
         </button>
       }
@@ -173,11 +199,10 @@ function RankingsPage() {
         <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-jade/30 bg-jade/6 p-4 text-sm">
           <ShieldCheck className="size-5 shrink-0 text-jade-deep" />
           <p className="min-w-0 flex-1 leading-relaxed">
-            <b>للأرقام الرسمية من جوجل:</b> اربط Google Search Console مرة واحدة — سنعرض متوسط ترتيبك الفعلي والنقرات
-            والظهور لكل كلمة بدل الاعتماد على قراءة صفحة النتائج.
+            <b>للأرقام الرسمية من جوجل:</b> اربط Google Search Console مرة واحدة — سنعرض متوسط
+            ترتيبك الفعلي والنقرات والظهور لكل كلمة بدل الاعتماد على قراءة صفحة النتائج.
           </p>
           <GoogleConnectButton workspaceId={workspace?.id} kind="search-console" size="sm" />
-
         </div>
       ) : null}
 
@@ -189,7 +214,9 @@ function RankingsPage() {
         className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4"
       >
         <label className="min-w-48 flex-1">
-          <span className="mb-1 block text-xs font-bold text-muted-foreground">الكلمة المفتاحية</span>
+          <span className="mb-1 block text-xs font-bold text-muted-foreground">
+            الكلمة المفتاحية
+          </span>
           <input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
@@ -236,8 +263,9 @@ function RankingsPage() {
         </p>
       ) : rows.length === 0 ? (
         <p className="mt-6 rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-          أضف كلماتك المهمة ونطاق موقعك والسوق، ثم اضغط «حدّث الترتيب الآن» — نور تلتقط ترتيبك من جوجل نفسها
-          (أو Search Console إن كان مربوطاً) وتحفظ لك السجل يوماً بيوم مع أسماء المنافسين الذين يسبقونك.
+          أضف كلماتك المهمة ونطاق موقعك والسوق، ثم اضغط «حدّث الترتيب الآن» — نور تلتقط ترتيبك من
+          جوجل نفسها (أو Search Console إن كان مربوطاً) وتحفظ لك السجل يوماً بيوم مع أسماء المنافسين
+          الذين يسبقونك.
         </p>
       ) : (
         <div className="mt-6 overflow-x-auto rounded-2xl border border-border">
@@ -266,10 +294,14 @@ function RankingsPage() {
                       <td className="max-w-[18rem] p-3">
                         <p className="truncate font-semibold">{row.keyword}</p>
                         <p className="truncate text-xs text-muted-foreground" dir="ltr">
-                          {latest?.url ? latest.url.replace(/^https?:\/\/(www\.)?/, "") : row.domain}
+                          {latest?.url
+                            ? latest.url.replace(/^https?:\/\/(www\.)?/, "")
+                            : row.domain}
                         </p>
                       </td>
-                      <td className="p-3 text-xs font-bold">{markets.find((m) => m.code === row.market)?.label ?? row.market}</td>
+                      <td className="p-3 text-xs font-bold">
+                        {markets.find((m) => m.code === row.market)?.label ?? row.market}
+                      </td>
                       <td className="p-3">
                         {!latest ? (
                           <span className="text-xs text-muted-foreground">لم يُفحص بعد</span>
@@ -286,7 +318,10 @@ function RankingsPage() {
                       </td>
                       <td className="p-3">
                         {src ? (
-                          <span title={src.title} className={`rounded-full px-2 py-0.5 text-[0.68rem] font-bold ${src.cls}`}>
+                          <span
+                            title={src.title}
+                            className={`rounded-full px-2 py-0.5 text-[0.68rem] font-bold ${src.cls}`}
+                          >
                             {src.label}
                           </span>
                         ) : (
@@ -300,7 +335,9 @@ function RankingsPage() {
                         <Sparkline points={points} />
                       </td>
                       <td className="p-3 text-xs text-muted-foreground">
-                        {row.last_checked_at ? new Date(row.last_checked_at).toLocaleDateString("ar-EG") : "—"}
+                        {row.last_checked_at
+                          ? new Date(row.last_checked_at).toLocaleDateString("ar-EG")
+                          : "—"}
                       </td>
                       <td className="p-3">
                         <div className="flex items-center gap-1">
@@ -327,7 +364,9 @@ function RankingsPage() {
                     {isOpen && latest?.competitors?.length ? (
                       <tr className="border-t border-border/40 bg-secondary/30">
                         <td colSpan={8} className="p-3">
-                          <p className="mb-2 text-xs font-bold text-muted-foreground">أول 5 نتائج لهذه الكلمة الآن:</p>
+                          <p className="mb-2 text-xs font-bold text-muted-foreground">
+                            أول 5 نتائج لهذه الكلمة الآن:
+                          </p>
                           <ol className="flex flex-wrap gap-2">
                             {latest.competitors.map((c) => (
                               <li key={c.url}>

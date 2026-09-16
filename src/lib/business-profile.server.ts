@@ -146,7 +146,13 @@ function collectSignals(html: string, base: string, headers: Headers): Signals {
   const contacts = new Set<string>();
   for (const a of Array.from(document.querySelectorAll("a[href]"))) {
     const href = a.getAttribute("href") ?? "";
-    if (/^mailto:/i.test(href)) contacts.add(href.replace(/^mailto:/i, "").split("?")[0]!.trim());
+    if (/^mailto:/i.test(href))
+      contacts.add(
+        href
+          .replace(/^mailto:/i, "")
+          .split("?")[0]!
+          .trim(),
+      );
     else if (/^tel:/i.test(href)) contacts.add(href.replace(/^tel:/i, "").replace(/\s/g, ""));
     else {
       for (const [rx, key] of SOCIAL_HOSTS) {
@@ -168,7 +174,8 @@ function collectSignals(html: string, base: string, headers: Headers): Signals {
     const list = Array.isArray(same) ? same : typeof same === "string" ? [same] : [];
     for (const s of list) {
       if (typeof s !== "string") continue;
-      for (const [rx, key] of SOCIAL_HOSTS) if (rx.test(s)) socials.add(`${key}:${s.replace(/\/$/, "")}`);
+      for (const [rx, key] of SOCIAL_HOSTS)
+        if (rx.test(s)) socials.add(`${key}:${s.replace(/\/$/, "")}`);
     }
     const tel = obj["telephone"];
     if (typeof tel === "string") contacts.add(tel.replace(/\s/g, ""));
@@ -246,7 +253,11 @@ function extractJson<T>(text: string): T | null {
 
 const str = (v: unknown, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const arr = (v: unknown, max = 8) =>
-  Array.isArray(v) ? (v.filter((x) => typeof x === "string" && x.trim()) as string[]).map((s) => s.trim().slice(0, 80)).slice(0, max) : [];
+  Array.isArray(v)
+    ? (v.filter((x) => typeof x === "string" && x.trim()) as string[])
+        .map((s) => s.trim().slice(0, 80))
+        .slice(0, max)
+    : [];
 
 /** يبني ملف العلامة كاملاً من رابط الموقع. */
 export async function profileWebsite(rawUrl: string): Promise<BusinessProfile> {
@@ -264,19 +275,33 @@ export async function profileWebsite(rawUrl: string): Promise<BusinessProfile> {
   try {
     const { serpSearch } = await import("./seo-research.server");
     const ownHost = new URL(home).hostname.replace(/^www\./, "");
-    const q = [signals.ogSiteName || signals.title.split(/[|\-–—]/)[0]?.trim(), signals.country ?? ""]
+    const q = [
+      signals.ogSiteName || signals.title.split(/[|\-–—]/)[0]?.trim(),
+      signals.country ?? "",
+    ]
       .filter(Boolean)
       .join(" ");
     if (q.length > 3) {
       const rows = await serpSearch(`${q} بديل OR منافس OR مثل`);
-      serpCompetitors = [...new Set(rows.map((r) => {
-        try {
-          return new URL(r.url).hostname.replace(/^www\./, "");
-        } catch {
-          return "";
-        }
-      }))]
-        .filter((h) => h && h !== ownHost && !/wikipedia|facebook|instagram|youtube|linkedin|twitter|tiktok|google|amazon|noon\.com/.test(h))
+      serpCompetitors = [
+        ...new Set(
+          rows.map((r) => {
+            try {
+              return new URL(r.url).hostname.replace(/^www\./, "");
+            } catch {
+              return "";
+            }
+          }),
+        ),
+      ]
+        .filter(
+          (h) =>
+            h &&
+            h !== ownHost &&
+            !/wikipedia|facebook|instagram|youtube|linkedin|twitter|tiktok|google|amazon|noon\.com/.test(
+              h,
+            ),
+        )
         .slice(0, 6);
     }
   } catch {
@@ -345,24 +370,49 @@ export async function profileWebsite(rawUrl: string): Promise<BusinessProfile> {
     console.error("[profile] llm failed:", error);
   }
 
-  const name = str(ai?.name, 80) || signals.ogSiteName || signals.title.split(/[|\-–—]/)[0]?.trim() || new URL(home).hostname;
+  const name =
+    str(ai?.name, 80) ||
+    signals.ogSiteName ||
+    signals.title.split(/[|\-–—]/)[0]?.trim() ||
+    new URL(home).hostname;
   const tasks = Array.isArray(ai?.firstTasks)
     ? (ai!.firstTasks as unknown[])
         .filter((t): t is { employeeId: string; title: string; prompt: string } =>
-          Boolean(t && typeof t === "object" && typeof (t as Record<string, unknown>)["prompt"] === "string"),
+          Boolean(
+            t &&
+            typeof t === "object" &&
+            typeof (t as Record<string, unknown>)["prompt"] === "string",
+          ),
         )
-        .map((t) => ({ employeeId: str(t.employeeId, 10), title: str(t.title, 90), prompt: str(t.prompt, 400) }))
+        .map((t) => ({
+          employeeId: str(t.employeeId, 10),
+          title: str(t.title, 90),
+          prompt: str(t.prompt, 400),
+        }))
         .filter((t) => ["nour", "sonny", "dana", "eva", "sam", "adam"].includes(t.employeeId))
         .slice(0, 6)
     : [];
   const integrations = Array.isArray(ai?.recommendedIntegrations)
     ? (ai!.recommendedIntegrations as unknown[])
-        .filter((i): i is { provider: string; why: string } => Boolean(i && typeof i === "object" && typeof (i as Record<string, unknown>)["provider"] === "string"))
+        .filter((i): i is { provider: string; why: string } =>
+          Boolean(
+            i &&
+            typeof i === "object" &&
+            typeof (i as Record<string, unknown>)["provider"] === "string",
+          ),
+        )
         .map((i) => ({ provider: str(i.provider, 30), why: str(i.why, 100) }))
         .slice(0, 5)
     : [];
-  if (signals.platform && ["wordpress", "shopify", "webflow", "ghost"].includes(signals.platform.provider) && !integrations.some((i) => i.provider === signals.platform!.provider)) {
-    integrations.unshift({ provider: signals.platform.provider, why: `موقعك مبني على ${signals.platform.label} — نور تنشر عليه مباشرة` });
+  if (
+    signals.platform &&
+    ["wordpress", "shopify", "webflow", "ghost"].includes(signals.platform.provider) &&
+    !integrations.some((i) => i.provider === signals.platform!.provider)
+  ) {
+    integrations.unshift({
+      provider: signals.platform.provider,
+      why: `موقعك مبني على ${signals.platform.label} — نور تنشر عليه مباشرة`,
+    });
   }
 
   return {
@@ -378,11 +428,14 @@ export async function profileWebsite(rawUrl: string): Promise<BusinessProfile> {
     socials: signals.socials,
     contacts: signals.contacts,
     platform: signals.platform?.label ?? null,
-    competitors: arr(ai?.competitors, 5).length ? arr(ai?.competitors, 5) : serpCompetitors.slice(0, 4),
+    competitors: arr(ai?.competitors, 5).length
+      ? arr(ai?.competitors, 5)
+      : serpCompetitors.slice(0, 4),
     suggestedTone: str(ai?.suggestedTone, 60),
     firstTasks: tasks,
     recommendedIntegrations: integrations,
     pagesRead: site.urls.length ? site.urls : [home],
-    confidence: ai?.confidence === "high" || ai?.confidence === "low" ? ai.confidence : ai ? "medium" : "low",
+    confidence:
+      ai?.confidence === "high" || ai?.confidence === "low" ? ai.confidence : ai ? "medium" : "low",
   };
 }

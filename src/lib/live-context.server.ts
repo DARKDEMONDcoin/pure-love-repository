@@ -30,8 +30,18 @@ export function nowBlock(timeZone = "Africa/Cairo"): string {
   const iso = `${get("year")}-${get("month")}-${get("day")}`;
   const clock = `${get("hour")}:${get("minute")}`;
   const weekday = WEEK[new Date(`${iso}T12:00:00Z`).getUTCDay()] ?? "";
-  const hijri = fmt(now, timeZone, { day: "numeric", month: "long", year: "numeric" }, "ar-SA-u-ca-islamic");
-  const long = fmt(now, timeZone, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const hijri = fmt(
+    now,
+    timeZone,
+    { day: "numeric", month: "long", year: "numeric" },
+    "ar-SA-u-ca-islamic",
+  );
+  const long = fmt(now, timeZone, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   return [
     "## اللحظة الحالية (حقيقة مؤكدة — لا تخمّن الزمن أبداً)",
@@ -53,7 +63,10 @@ export function needsLiveFacts(text: string): boolean {
 function queryOf(text: string): string {
   return text
     .replace(/^(يا\s+\w+[،,]?\s*)/u, "")
-    .replace(/(اكتب|اكتبلي|اعملي|اعمل|جهّز|جهز|منشور|بوست|بوستات|من فضلك|لو سمحت|عايز|عاوز|أريد)/gu, " ")
+    .replace(
+      /(اكتب|اكتبلي|اعملي|اعمل|جهّز|جهز|منشور|بوست|بوستات|من فضلك|لو سمحت|عايز|عاوز|أريد)/gu,
+      " ",
+    )
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 140);
@@ -62,8 +75,34 @@ function queryOf(text: string): string {
 export type LiveRow = { title: string; url: string; snippet: string };
 
 const STOP = new Set([
-  "على","في","من","عن","الى","إلى","مع","هذا","هذه","اللي","التي","الذي","كان","اليوم","امس","أمس",
-  "ماتش","نتيجة","اخر","آخر","أحدث","احدث","the","and","for","with","what","when",
+  "على",
+  "في",
+  "من",
+  "عن",
+  "الى",
+  "إلى",
+  "مع",
+  "هذا",
+  "هذه",
+  "اللي",
+  "التي",
+  "الذي",
+  "كان",
+  "اليوم",
+  "امس",
+  "أمس",
+  "ماتش",
+  "نتيجة",
+  "اخر",
+  "آخر",
+  "أحدث",
+  "احدث",
+  "the",
+  "and",
+  "for",
+  "with",
+  "what",
+  "when",
 ]);
 
 function norm(text: string) {
@@ -136,7 +175,6 @@ export async function liveFactsBlock(message: string, budgetMs = 13_000): Promis
   const seen = new Set<string>();
   const unique = rows.filter((r) => r.url && !seen.has(r.url) && seen.add(r.url)).slice(0, 8);
 
-
   if (!unique.length)
     return [
       "## حقائق لحظية",
@@ -146,7 +184,9 @@ export async function liveFactsBlock(message: string, budgetMs = 13_000): Promis
 
   return [
     `## حقائق لحظية من بحث حيّ نُفّذ الآن عن «${q}» (استخدمها كمصدر وحيد لأي حدث جارٍ)`,
-    ...unique.map((r) => `- ${r.title}${r.snippet ? ` — ${r.snippet}` : ""} (${new URL(r.url).hostname})`),
+    ...unique.map(
+      (r) => `- ${r.title}${r.snippet ? ` — ${r.snippet}` : ""} (${new URL(r.url).hostname})`,
+    ),
     "اعتمد هذه النتائج حرفياً. إن تعارضت المصادر فاذكر الأرجح وقل إن التفاصيل قيد التأكيد. لا تضف أسماء أو أرقاماً غير موجودة هنا.",
   ].join("\n");
 }

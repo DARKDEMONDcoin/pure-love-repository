@@ -18,7 +18,8 @@ export type ChatToolResult = {
   tool: string;
 };
 
-const URL_RE = /https?:\/\/[^\s)»"']+|(?:^|\s)((?:[a-z0-9-]+\.)+(?:com|net|org|sa|ae|eg|kw|qa|om|bh|jo|ma|dz|tn|ly|iq|ye|sd|lb|ps|sy|ps|co|io|me|shop|store))(?:\/\S*)?/i;
+const URL_RE =
+  /https?:\/\/[^\s)»"']+|(?:^|\s)((?:[a-z0-9-]+\.)+(?:com|net|org|sa|ae|eg|kw|qa|om|bh|jo|ma|dz|tn|ly|iq|ye|sd|lb|ps|sy|ps|co|io|me|shop|store))(?:\/\S*)?/i;
 
 function urlIn(text: string, fallback?: string | null): string | null {
   const m = URL_RE.exec(text);
@@ -42,7 +43,10 @@ function hostOf(u: string | null): string | null {
 function keywordIn(text: string): string | null {
   const quoted = /[«"“']([^»"”']{2,60})[»"”']/.exec(text);
   if (quoted?.[1]) return quoted[1].trim();
-  const m = /(?:كلمة|كلمه|لكلمة|keyword|rank for)\s*[:：]?\s*(.{2,60}?)(?:\s+(?:في|على|علي|ب|بجوجل|on)\b|[؟?.!\n]|$)/i.exec(text);
+  const m =
+    /(?:كلمة|كلمه|لكلمة|keyword|rank for)\s*[:：]?\s*(.{2,60}?)(?:\s+(?:في|على|علي|ب|بجوجل|on)\b|[؟?.!\n]|$)/i.exec(
+      text,
+    );
   return m?.[1]?.trim() ?? null;
 }
 
@@ -67,8 +71,18 @@ const STOP =
   /^(عايز|عاوز|أريد|اريد|من|في|على|علي|إلى|الى|عن|مع|هذا|هذه|ذلك|اللي|الذي|التي|كل|كام|إيه|ايه|ازاي|إزاي|كيف|ليه|لماذا|هو|هي|أنا|انا|لي|لك|موقعي|موقع|خلال|يوم|شهر|سنة|جوجل|google|seo|سيو|خطة|واكتبلي|اكتبلي|هات|شوف|افحص|قارني|قارن|حدد|بحث|و|أو|او|ثم)$/i;
 
 const COUNTRY_WORD: Record<string, string> = {
-  EG: "مصر", SA: "السعودية", AE: "الإمارات", KW: "الكويت", QA: "قطر", OM: "عمان",
-  BH: "البحرين", JO: "الأردن", MA: "المغرب", DZ: "الجزائر", TN: "تونس", IQ: "العراق",
+  EG: "مصر",
+  SA: "السعودية",
+  AE: "الإمارات",
+  KW: "الكويت",
+  QA: "قطر",
+  OM: "عمان",
+  BH: "البحرين",
+  JO: "الأردن",
+  MA: "المغرب",
+  DZ: "الجزائر",
+  TN: "تونس",
+  IQ: "العراق",
 };
 function countryWord(code?: string | null): string {
   return code ? (COUNTRY_WORD[code.toUpperCase()] ?? "") : "";
@@ -87,7 +101,6 @@ function topicSeed(text: string): string | null {
   return words.slice(0, 5).join(" ");
 }
 
-
 const WEEKDAYS = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
 /** إزاحة منطقة زمنية بالدقائق مقارنةً بـUTC الآن. */
@@ -97,11 +110,22 @@ function tzOffsetMinutes(timeZone: string): number {
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone,
       hour12: false,
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     }).formatToParts(now);
     const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
-    const asUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
+    const asUtc = Date.UTC(
+      get("year"),
+      get("month") - 1,
+      get("day"),
+      get("hour"),
+      get("minute"),
+      get("second"),
+    );
     return Math.round((asUtc - now.getTime()) / 60_000);
   } catch {
     return 180;
@@ -133,9 +157,14 @@ export async function runChatTools(
   // ---------- نور (SEO) ----------
   if (params.employeeId === "nour") {
     const ownHost = hostOf(urlIn("", params.website));
-    const rivalHosts = domainsIn(text).filter((d) => d !== ownHost).slice(0, 2);
+    const rivalHosts = domainsIn(text)
+      .filter((d) => d !== ownHost)
+      .slice(0, 2);
     const explicitUrl = urlIn(text, null);
-    const url = explicitUrl && hostOf(explicitUrl) === ownHost ? explicitUrl : (params.website ?? explicitUrl);
+    const url =
+      explicitUrl && hostOf(explicitUrl) === ownHost
+        ? explicitUrl
+        : (params.website ?? explicitUrl);
     // ترتيب ذكي للبذرة: كلمة صريحة من المستخدم ← نشاط العلامة وسوقها ← نص الرسالة ← النطاق.
     const marketWord = countryWord(params.country);
     const topic =
@@ -151,15 +180,24 @@ export async function runChatTools(
       );
 
     const wantsAudit =
-      bigAsk || /فحص|افحص|تدقيق|audit|مشاكل (السيو|الصفحة)|سرعة الموقع|تحليل (الموقع|الصفحة|صفحة)/i.test(text);
+      bigAsk ||
+      /فحص|افحص|تدقيق|audit|مشاكل (السيو|الصفحة)|سرعة الموقع|تحليل (الموقع|الصفحة|صفحة)/i.test(
+        text,
+      );
     const wantsRank = /ترتيب|رانك|rank|موقعي في جوجل|الصفحة الأولى|أي صفحة/i.test(text);
     const wantsKeywords =
-      bigAsk || /كلمات? مفتاحية|كلمات بحث|بحث كلمات|أفكار كلمات|keyword|الناس بتدور|الناس يبحثون|استعلامات/i.test(text);
+      bigAsk ||
+      /كلمات? مفتاحية|كلمات بحث|بحث كلمات|أفكار كلمات|keyword|الناس بتدور|الناس يبحثون|استعلامات/i.test(
+        text,
+      );
     const wantsBrief =
       /موجز محتوى|خطة مقال|أكتب مقال|اكتب مقال|اكتبلي|كيف أتفوق|هيكل مقال|outline|content brief|ماذا يحتوي المقال/i.test(
         text,
       );
-    const wantsCompetitor = bigAsk || rivalHosts.length > 0 || /منافس|المنافسين|competitor|من يتفوق علي|قارن موقعي/i.test(text);
+    const wantsCompetitor =
+      bigAsk ||
+      rivalHosts.length > 0 ||
+      /منافس|المنافسين|competitor|من يتفوق علي|قارن موقعي/i.test(text);
     const wantsGsc =
       bigAsk ||
       /سيرش كونسول|search console|أداء (الموقع|السيو|الصفحات)|نقرات|ظهور|impressions|أكثر (الكلمات|الصفحات)|بياناتي في جوجل|تآكل|تتآكل|تتنافس|cannibal/i.test(
@@ -182,7 +220,10 @@ export async function runChatTools(
               block: [
                 `### نتيجة فحص سيو حقيقي للصفحة ${a.finalUrl} (نُفّذ الآن)`,
                 `الدرجة: ${a.score}/100 · زمن الاستجابة: ${a.fetchedMs}ms · العنوان: «${a.page.title || "—"}» (${a.page.title.length} حرف) · الوصف: ${a.page.description ? `${a.page.description.length} حرف` : "مفقود"} · H1: ${a.page.h1.length} · الكلمات: ${a.page.wordCount} · صور بلا alt: ${a.page.imagesMissingAlt}/${a.page.images} · اللغة: ${a.page.lang || "—"}`,
-                ...fails.map((c) => `- [${c.status === "fail" ? "خطأ" : "تحذير"}] ${c.label}: ${c.detail}${c.fix ? ` → الحل: ${c.fix}` : ""}`),
+                ...fails.map(
+                  (c) =>
+                    `- [${c.status === "fail" ? "خطأ" : "تحذير"}] ${c.label}: ${c.detail}${c.fix ? ` → الحل: ${c.fix}` : ""}`,
+                ),
                 "اعرض هذه النتائج للمستخدم كما هي (أرقام حقيقية) مرتبة حسب الأثر، مع خطوات إصلاح عملية.",
               ].join("\n"),
               footer: "التقرير الكامل بالـ16 فحصاً في قسم «التقارير».",
@@ -214,9 +255,15 @@ export async function runChatTools(
               tool: "rank-check",
               block: [
                 `### ترتيب حقيقي لكلمة «${kw}» للنطاق ${domain} (المصدر: ${r.source})`,
-                r.position ? `الموقع يظهر في المركز ${r.position}${r.url ? ` عبر ${r.url}` : ""}.` : "الموقع لا يظهر في أول 100 نتيجة لهذه الكلمة.",
-                r.clicks !== undefined ? `نقرات: ${r.clicks} · ظهور: ${r.impressions ?? 0} (Search Console)` : "",
-                r.competitors.length ? `من يتصدّر: ${r.competitors.map((c) => `#${c.position} ${c.host}`).join("، ")}` : "",
+                r.position
+                  ? `الموقع يظهر في المركز ${r.position}${r.url ? ` عبر ${r.url}` : ""}.`
+                  : "الموقع لا يظهر في أول 100 نتيجة لهذه الكلمة.",
+                r.clicks !== undefined
+                  ? `نقرات: ${r.clicks} · ظهور: ${r.impressions ?? 0} (Search Console)`
+                  : "",
+                r.competitors.length
+                  ? `من يتصدّر: ${r.competitors.map((c) => `#${c.position} ${c.host}`).join("، ")}`
+                  : "",
                 r.note ?? "",
                 "لا تخترع أرقاماً أخرى؛ ابنِ التوصيات على هذه النتيجة فقط.",
               ]
@@ -225,7 +272,11 @@ export async function runChatTools(
               footer: "تابع هذه الكلمة أسبوعياً من قسم «الترتيب».",
             };
           } catch (e) {
-            return { tool: "rank-check", block: `تعذّر فحص الترتيب: ${e instanceof Error ? e.message : "خطأ"}.`, footer: "" };
+            return {
+              tool: "rank-check",
+              block: `تعذّر فحص الترتيب: ${e instanceof Error ? e.message : "خطأ"}.`,
+              footer: "",
+            };
           }
         })(),
       );
@@ -235,7 +286,8 @@ export async function runChatTools(
       jobs.push(
         (async () => {
           try {
-            const { keywordExpansion, keywordMetrics, withBudget } = await import("./seo-research.server");
+            const { keywordExpansion, keywordMetrics, withBudget } =
+              await import("./seo-research.server");
             const [exp, metric] = await Promise.all([
               withBudget(keywordExpansion(topic), 18_000, null as never),
               withBudget(keywordMetrics(topic), 18_000, null as never),
@@ -264,7 +316,11 @@ export async function runChatTools(
               footer: "تابع أي كلمة أسبوعياً من قسم «الترتيب».",
             };
           } catch (e) {
-            return { tool: "keyword-research", block: `تعذّر بحث الكلمات: ${e instanceof Error ? e.message : "خطأ"}.`, footer: "" };
+            return {
+              tool: "keyword-research",
+              block: `تعذّر بحث الكلمات: ${e instanceof Error ? e.message : "خطأ"}.`,
+              footer: "",
+            };
           }
         })(),
       );
@@ -275,17 +331,32 @@ export async function runChatTools(
         (async () => {
           try {
             const { contentBrief, withBudget } = await import("./seo-research.server");
-            const b = await withBudget(contentBrief((kw ?? topic)!, params.website ?? undefined), 22_000, null as never);
+            const b = await withBudget(
+              contentBrief((kw ?? topic)!, params.website ?? undefined),
+              22_000,
+              null as never,
+            );
             if (!b || !b.analyzed) return null;
             return {
               tool: "content-brief",
               block: [
                 `### موجز محتوى حقيقي لـ«${b.query}» (حُلّل ${b.analyzed} من المتصدرين الآن)`,
                 `متوسط الطول: ${b.medianWordCount} كلمة · الطول المستهدف: ${b.targetWordCount} كلمة · تغطية البيانات المنظمة: ${b.schemaCoverage}%`,
-                b.headingIdeas.length ? `عناوين فرعية متكررة: ${b.headingIdeas.slice(0, 12).join(" | ")}` : "",
-                b.commonTerms.length ? `مصطلحات لازمة: ${b.commonTerms.slice(0, 15).map((t) => t.term).join("، ")}` : "",
-                b.entityGaps.length ? `فجوات لا يغطيها المنافسون: ${b.entityGaps.slice(0, 10).join("، ")}` : "",
-                b.competitors.map((c) => `- ${c.title} (${c.words} كلمة · ${c.h2} عنوان) ${c.url}`).join("\n"),
+                b.headingIdeas.length
+                  ? `عناوين فرعية متكررة: ${b.headingIdeas.slice(0, 12).join(" | ")}`
+                  : "",
+                b.commonTerms.length
+                  ? `مصطلحات لازمة: ${b.commonTerms
+                      .slice(0, 15)
+                      .map((t) => t.term)
+                      .join("، ")}`
+                  : "",
+                b.entityGaps.length
+                  ? `فجوات لا يغطيها المنافسون: ${b.entityGaps.slice(0, 10).join("، ")}`
+                  : "",
+                b.competitors
+                  .map((c) => `- ${c.title} (${c.words} كلمة · ${c.h2} عنوان) ${c.url}`)
+                  .join("\n"),
                 "ابنِ الهيكل على هذه الأرقام الحقيقية، ثم اكتب المقال كاملاً إن طلبه المستخدم.",
               ]
                 .filter(Boolean)
@@ -306,7 +377,8 @@ export async function runChatTools(
         jobs.push(
           (async () => {
             try {
-              const { competitorInventory, serpSearch, withBudget } = await import("./seo-research.server");
+              const { competitorInventory, serpSearch, withBudget } =
+                await import("./seo-research.server");
               const inv = await withBudget(competitorInventory(target), 18_000, null as never);
               const serp = kw ? await withBudget(serpSearch(kw), 12_000, []) : [];
               const mine = target === ownHost;
@@ -314,10 +386,22 @@ export async function runChatTools(
                 tool: `inventory:${target}`,
                 block: [
                   `### جرد حقيقي لـ${target} ${mine ? "(موقع المستخدم)" : "(منافس)"} — من robots.txt وخرائط الموقع`,
-                  inv ? `عدد الروابط المكتشفة: ${inv.urlCount} · خرائط: ${inv.sitemaps.slice(0, 3).join("، ") || "—"}` : "لم نستطع قراءة خرائط الموقع.",
+                  inv
+                    ? `عدد الروابط المكتشفة: ${inv.urlCount} · خرائط: ${inv.sitemaps.slice(0, 3).join("، ") || "—"}`
+                    : "لم نستطع قراءة خرائط الموقع.",
                   inv?.topics.length ? `أبرز المحاور: ${inv.topics.slice(0, 15).join("، ")}` : "",
-                  inv?.samples.length ? inv.samples.slice(0, 10).map((s) => `- ${s.slug}`).join("\n") : "",
-                  serp.length ? `المتصدرون للاستعلام: ${serp.slice(0, 8).map((r) => `#${r.rank} ${r.url}`).join(" | ")}` : "",
+                  inv?.samples.length
+                    ? inv.samples
+                        .slice(0, 10)
+                        .map((s) => `- ${s.slug}`)
+                        .join("\n")
+                    : "",
+                  serp.length
+                    ? `المتصدرون للاستعلام: ${serp
+                        .slice(0, 8)
+                        .map((r) => `#${r.rank} ${r.url}`)
+                        .join(" | ")}`
+                    : "",
                   mine
                     ? "استخدم هذا كخط أساس لموقع المستخدم."
                     : "قارن هذا الجرد بجرد موقع المستخدم، واستخرج فجوات المحتوى الفعلية واقترح صفحات محددة نكسب بها.",
@@ -345,15 +429,28 @@ export async function runChatTools(
               block: g.snapshot
                 ? [
                     `### أداء حقيقي من Search Console (${g.snapshot.site} · ${g.snapshot.range.start} → ${g.snapshot.range.end})`,
-                    `أكثر الكلمات: ${g.snapshot.queries.slice(0, 10).map((q) => `${q.key} (${q.clicks} نقرة · ${q.impressions} ظهور · مركز ${q.position.toFixed(1)})`).join(" | ")}`,
-                    `أكثر الصفحات: ${g.snapshot.pages.slice(0, 8).map((p) => `${p.key} (${p.clicks} نقرة)`).join(" | ")}`,
+                    `أكثر الكلمات: ${g.snapshot.queries
+                      .slice(0, 10)
+                      .map(
+                        (q) =>
+                          `${q.key} (${q.clicks} نقرة · ${q.impressions} ظهور · مركز ${q.position.toFixed(1)})`,
+                      )
+                      .join(" | ")}`,
+                    `أكثر الصفحات: ${g.snapshot.pages
+                      .slice(0, 8)
+                      .map((p) => `${p.key} (${p.clicks} نقرة)`)
+                      .join(" | ")}`,
                     "ابنِ توصياتك على هذه الأرقام فقط.",
                   ].join("\n")
                 : `Search Console: ${g.status.message} — أخبر المستخدم بصراحة، واعرض عليه ربطه الآن بضغطة من «الترتيب» أو «التقارير»، ثم أكمل الخطة بما هو متاح بدون بيانات جوجل.`,
               footer: g.snapshot ? "التفاصيل الكاملة في «التقارير»." : "",
             };
           } catch (e) {
-            return { tool: "gsc", block: `تعذّر جلب بيانات Search Console: ${e instanceof Error ? e.message : "خطأ"}.`, footer: "" };
+            return {
+              tool: "gsc",
+              block: `تعذّر جلب بيانات Search Console: ${e instanceof Error ? e.message : "خطأ"}.`,
+              footer: "",
+            };
           }
         })(),
       );
@@ -366,7 +463,8 @@ export async function runChatTools(
             const o = await gscOpportunities(params.workspaceId, 28);
             if (!o.data) return null;
             const d = o.data;
-            if (!d.strikingDistance.length && !d.lowCtr.length && !d.cannibalization.length) return null;
+            if (!d.strikingDistance.length && !d.lowCtr.length && !d.cannibalization.length)
+              return null;
             return {
               tool: "gsc-opportunities",
               block: [
@@ -396,7 +494,9 @@ export async function runChatTools(
     // زيارات الموقع الحقيقية من Google Analytics 4 (مربوط باسم analytics).
     const wantsTraffic =
       bigAsk ||
-      /زيارات|زوار|ترافيك|traffic|جمهور|مصادر (الزيارات|الترافيك)|جلسات|analytics|تحليلات/i.test(text);
+      /زيارات|زوار|ترافيك|traffic|جمهور|مصادر (الزيارات|الترافيك)|جلسات|analytics|تحليلات/i.test(
+        text,
+      );
     if (wantsTraffic) {
       jobs.push(
         (async () => {
@@ -417,9 +517,14 @@ export async function runChatTools(
               block: [
                 `### زيارات حقيقية من Google Analytics 4 (${s.range.start} → ${s.range.end})`,
                 `الجلسات: ${s.totals.sessions} · المستخدمون: ${s.totals.users} · الجلسات المتفاعلة: ${s.totals.engagedSessions}`,
-                s.channels.length ? `مصادر الزيارات: ${s.channels.map((c) => `${c.channel} (${c.sessions})`).join(" | ")}` : "",
+                s.channels.length
+                  ? `مصادر الزيارات: ${s.channels.map((c) => `${c.channel} (${c.sessions})`).join(" | ")}`
+                  : "",
                 s.organicLandingPages.length
-                  ? `أفضل صفحات الدخول من البحث: ${s.organicLandingPages.slice(0, 8).map((p) => `${p.page} (${p.sessions})`).join(" | ")}`
+                  ? `أفضل صفحات الدخول من البحث: ${s.organicLandingPages
+                      .slice(0, 8)
+                      .map((p) => `${p.page} (${p.sessions})`)
+                      .join(" | ")}`
                   : "",
                 "اربط هذه الأرقام بتوصياتك: أي قناة تنمو، وأي صفحة تستحق التقوية. لا تخترع أرقاماً أخرى.",
               ]
@@ -437,25 +542,33 @@ export async function runChatTools(
     // كل أدوات نور تعمل بالتوازي داخل سقف زمني واحد — لا تُلغى أداة لأن سابقتها تأخّرت.
     const settled = await Promise.race([
       Promise.all(jobs),
-      new Promise<(ChatToolResult | null)[]>((resolve) => setTimeout(() => resolve([]), Math.max(left(), 30_000))),
+      new Promise<(ChatToolResult | null)[]>((resolve) =>
+        setTimeout(() => resolve([]), Math.max(left(), 30_000)),
+      ),
     ]);
     for (const r of settled) if (r) out.push(r);
   }
 
-
-
-
   // ---------- سِراج (سوشيال) ----------
   if (params.employeeId === "sonny") {
-    const wantsCalendar = /تقويم|خطة (محتوى|منشورات|أسبوع|شهر)|جدول (منشورات|محتوى)|كالندر|calendar|محتوى (أسبوع|شهر)/i.test(text);
+    const wantsCalendar =
+      /تقويم|خطة (محتوى|منشورات|أسبوع|شهر)|جدول (منشورات|محتوى)|كالندر|calendar|محتوى (أسبوع|شهر)/i.test(
+        text,
+      );
     if (wantsCalendar && left() > 15_000) {
       const providers = params.targets.length
         ? params.targets
-        : params.connected.filter((p) => ["instagram", "facebook", "linkedin", "x", "pinterest", "youtube"].includes(p));
+        : params.connected.filter((p) =>
+            ["instagram", "facebook", "linkedin", "x", "pinterest", "youtube"].includes(p),
+          );
       const prov = providers.length ? providers : ["instagram"];
       try {
         const { planCalendar } = await import("./content-calendar.server");
-        const { data: ws } = await admin.from("workspaces").select("timezone").eq("id", params.workspaceId).maybeSingle();
+        const { data: ws } = await admin
+          .from("workspaces")
+          .select("timezone")
+          .eq("id", params.workspaceId)
+          .maybeSingle();
         const days = daysIn(text);
         const r = await planCalendar(admin, {
           workspaceId: params.workspaceId,
@@ -485,11 +598,18 @@ export async function runChatTools(
           footer: "افتح «التقويم» لتوليد النصوص والصور واعتمادها ونشرها.",
         });
       } catch (e) {
-        out.push({ tool: "calendar-plan", block: `تعذّر إنشاء التقويم: ${e instanceof Error ? e.message : "خطأ"}.`, footer: "" });
+        out.push({
+          tool: "calendar-plan",
+          block: `تعذّر إنشاء التقويم: ${e instanceof Error ? e.message : "خطأ"}.`,
+          footer: "",
+        });
       }
     }
 
-    const wantsIdeas = /أفكار (اليوم|النهاردة|منشورات)|فكرة (منشور|بوست)|اقترح (منشور|بوست|أفكار)|انشر إيه|أنشر ماذا/i.test(text);
+    const wantsIdeas =
+      /أفكار (اليوم|النهاردة|منشورات)|فكرة (منشور|بوست)|اقترح (منشور|بوست|أفكار)|انشر إيه|أنشر ماذا/i.test(
+        text,
+      );
     if (wantsIdeas && !wantsCalendar && left() > 12_000) {
       try {
         const { dailyIdeas } = await import("./content-calendar.server");
@@ -510,7 +630,10 @@ export async function runChatTools(
       }
     }
 
-    const wantsLearning = /(إيه|ماذا|ايه|ما) (اللي|الذي) (نجح|اشتغل)|أداء (المنشورات|البوستات)|تعلم من|أفضل منشور|insights|الأكثر تفاعلاً/i.test(text);
+    const wantsLearning =
+      /(إيه|ماذا|ايه|ما) (اللي|الذي) (نجح|اشتغل)|أداء (المنشورات|البوستات)|تعلم من|أفضل منشور|insights|الأكثر تفاعلاً/i.test(
+        text,
+      );
     if (wantsLearning && left() > 10_000) {
       try {
         const { learnFromPerformance } = await import("./content-calendar.server");
@@ -520,7 +643,9 @@ export async function runChatTools(
           block: [
             `### تحليل أداء حقيقي (${r.source === "live" ? "من إنستجرام/فيسبوك مباشرة" : r.source === "internal" ? "من سجل منشوراتنا" : "لا توجد بيانات كافية بعد"}) — ${r.analyzed} منشور:`,
             r.summary,
-            r.source === "none" ? "أخبر المستخدم بصراحة أنه لا توجد بيانات أداء بعد، واقترح ربط إنستجرام/فيسبوك أو النشر لأسبوع أولاً." : "",
+            r.source === "none"
+              ? "أخبر المستخدم بصراحة أنه لا توجد بيانات أداء بعد، واقترح ربط إنستجرام/فيسبوك أو النشر لأسبوع أولاً."
+              : "",
           ]
             .filter(Boolean)
             .join("\n"),
@@ -532,7 +657,9 @@ export async function runChatTools(
     }
 
     // أفضل وقت نشر محسوب من جمهور الحساب المربوط أو من سجل النشر.
-    const wantsBestTime = /أفضل (وقت|توقيت|ميعاد)|امتى أنشر|إمتى أنشر|متى أنشر|best time/i.test(text);
+    const wantsBestTime = /أفضل (وقت|توقيت|ميعاد)|امتى أنشر|إمتى أنشر|متى أنشر|best time/i.test(
+      text,
+    );
     if (wantsBestTime && left() > 10_000) {
       try {
         const { computeBestTimes } = await import("./best-time.server");
@@ -553,7 +680,8 @@ export async function runChatTools(
           block: [
             `### أفضل مواعيد نشر حقيقية على ${prov} (المصدر: ${r.source === "audience" ? "ساعات تواجد متابعيك فعلياً" : r.source === "history" ? "سجل نشرك وتفاعله" : "قاعدة عامة — لا بيانات كافية بعد"} · ${r.samples} عينة)`,
             ...r.slots.map(
-              (s) => `- ${WEEKDAYS[s.weekday] ?? ""} الساعة ${String(s.hour).padStart(2, "0")}:00 بتوقيت ${tz}`,
+              (s) =>
+                `- ${WEEKDAYS[s.weekday] ?? ""} الساعة ${String(s.hour).padStart(2, "0")}:00 بتوقيت ${tz}`,
             ),
             r.note ?? "",
             "اقترح جدولة المنشور القادم في أول موعد منها بضغطة من «التقويم».",
@@ -573,7 +701,9 @@ export async function runChatTools(
     const { employeeDirectory } = await import("./team-knowledge");
     const { providerLabel } = await import("./platforms");
     const mine =
-      employeeDirectory[params.employeeId as keyof typeof employeeDirectory]?.integrations.map((i) => i.provider) ?? [];
+      employeeDirectory[params.employeeId as keyof typeof employeeDirectory]?.integrations.map(
+        (i) => i.provider,
+      ) ?? [];
     const on = mine.filter((p) => params.connected.includes(p));
     const off = mine.filter((p) => !params.connected.includes(p));
     const others = params.connected.filter((p) => !mine.includes(p));
@@ -581,11 +711,13 @@ export async function runChatTools(
       tool: "integrations-status",
       block: [
         "### حالة تكاملاتك الحقيقية الآن",
-        on.length ? `مربوط ويعمل ضمن اختصاصك: ${on.map(providerLabel).join("، ")}` : "لا توجد منصة مربوطة بعد ضمن اختصاصك.",
+        on.length
+          ? `مربوط ويعمل ضمن اختصاصك: ${on.map(providerLabel).join("، ")}`
+          : "لا توجد منصة مربوطة بعد ضمن اختصاصك.",
         off.length ? `غير مربوط: ${off.map(providerLabel).join("، ")}` : "",
-      others.length
-        ? `مربوط في مساحة العمل لدى زملائك (يمكنك الإحالة إليه لا ادّعاء استخدامه): ${others.map(providerLabel).join("، ")}`
-        : "",
+        others.length
+          ? `مربوط في مساحة العمل لدى زملائك (يمكنك الإحالة إليه لا ادّعاء استخدامه): ${others.map(providerLabel).join("، ")}`
+          : "",
         "اذكر المربوط فقط كقدرات جاهزة الآن، واعرض ربط الناقص بضغطة من «التكاملات» دون إلحاح.",
       ]
         .filter(Boolean)
@@ -593,7 +725,6 @@ export async function runChatTools(
       footer: "إدارة الربط من صفحة «التكاملات».",
     });
   }
-
 
   return out;
 }

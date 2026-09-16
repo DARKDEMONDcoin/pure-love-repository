@@ -8,10 +8,7 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 /** تنسيق داخل السطر: **عريض** و*مائل* و[نص](رابط). */
 export function inline(text: string) {
   return esc(text)
-    .replace(
-      /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g,
-      '<img src="$2" alt="$1" loading="lazy" />',
-    )
+    .replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|\s)\*([^*]+)\*/g, "$1<em>$2</em>");
@@ -19,7 +16,10 @@ export function inline(text: string) {
 
 export function toArticle(body: string): { title: string; html: string } {
   const lines = body.trim().split("\n");
-  const first = (lines[0] ?? "").replace(/^#+\s*/, "").replace(/^\*+|\*+$/g, "").trim();
+  const first = (lines[0] ?? "")
+    .replace(/^#+\s*/, "")
+    .replace(/^\*+|\*+$/g, "")
+    .trim();
   const hasTitle = first.length >= 3;
   const title = (hasTitle ? first : "مقال من نور").slice(0, 180);
 

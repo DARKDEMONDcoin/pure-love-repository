@@ -91,7 +91,11 @@ export const pipedreamApps: PipedreamApp[] = [
     publishComponent: "pinterest-create-pin",
     accountProp: "pinterest",
     actions: {
-      createPin: { component: "pinterest-create-pin", accountProp: "pinterest", label: "إنشاء بِن" },
+      createPin: {
+        component: "pinterest-create-pin",
+        accountProp: "pinterest",
+        label: "إنشاء بِن",
+      },
     },
   },
   {
@@ -285,8 +289,16 @@ export const pipedreamApps: PipedreamApp[] = [
     slug: "stripe",
     label: "سترايب",
     actions: {
-      createCustomer: { component: "stripe-create-customer", accountProp: "app", label: "إضافة عميل" },
-      createInvoice: { component: "stripe-create-invoice", accountProp: "app", label: "إنشاء فاتورة" },
+      createCustomer: {
+        component: "stripe-create-customer",
+        accountProp: "app",
+        label: "إضافة عميل",
+      },
+      createInvoice: {
+        component: "stripe-create-invoice",
+        accountProp: "app",
+        label: "إنشاء فاتورة",
+      },
       createPayment: {
         component: "stripe-create-payment-intent",
         accountProp: "app",
@@ -313,7 +325,11 @@ export const pipedreamApps: PipedreamApp[] = [
     slug: "figma",
     label: "فيجما",
     actions: {
-      comment: { component: "figma-post-a-comment", accountProp: "figmaApp", label: "تعليق على تصميم" },
+      comment: {
+        component: "figma-post-a-comment",
+        accountProp: "figmaApp",
+        label: "تعليق على تصميم",
+      },
       listComments: {
         component: "figma-list-comments",
         accountProp: "figmaApp",
@@ -326,9 +342,17 @@ export const pipedreamApps: PipedreamApp[] = [
     slug: "canva",
     label: "كانفا",
     actions: {
-      createDesign: { component: "canva-create-design", accountProp: "canva", label: "إنشاء تصميم" },
+      createDesign: {
+        component: "canva-create-design",
+        accountProp: "canva",
+        label: "إنشاء تصميم",
+      },
       listDesigns: { component: "canva-list-designs", accountProp: "canva", label: "عرض التصاميم" },
-      exportDesign: { component: "canva-export-design", accountProp: "canva", label: "تصدير تصميم" },
+      exportDesign: {
+        component: "canva-export-design",
+        accountProp: "canva",
+        label: "تصدير تصميم",
+      },
     },
   },
   {
@@ -342,7 +366,11 @@ export const pipedreamApps: PipedreamApp[] = [
     slug: "google_ads",
     label: "إعلانات جوجل",
     actions: {
-      report: { component: "google_ads-create-report", accountProp: "googleAds", label: "تقرير أداء" },
+      report: {
+        component: "google_ads-create-report",
+        accountProp: "googleAds",
+        label: "تقرير أداء",
+      },
     },
   },
   {
@@ -418,7 +446,11 @@ export const pipedreamApps: PipedreamApp[] = [
     slug: "zoom",
     label: "زوم",
     actions: {
-      createMeeting: { component: "zoom-create-meeting", accountProp: "zoom", label: "إنشاء اجتماع" },
+      createMeeting: {
+        component: "zoom-create-meeting",
+        accountProp: "zoom",
+        label: "إنشاء اجتماع",
+      },
     },
   },
   {
@@ -426,7 +458,11 @@ export const pipedreamApps: PipedreamApp[] = [
     slug: "pipedrive",
     label: "بايبدرايف",
     actions: {
-      addDeal: { component: "pipedrive-add-deal", accountProp: "pipedriveApp", label: "إنشاء صفقة" },
+      addDeal: {
+        component: "pipedrive-add-deal",
+        accountProp: "pipedriveApp",
+        label: "إنشاء صفقة",
+      },
       addPerson: {
         component: "pipedrive-add-person",
         accountProp: "pipedriveApp",
@@ -494,9 +530,6 @@ export function isPipedreamProvider(provider: string): boolean {
 }
 
 /** إجراء محدد على منصة محددة (إن كان مدعوماً). */
-export function pipedreamAction(
-  provider: string,
-  action: string,
-): PipedreamAction | undefined {
+export function pipedreamAction(provider: string, action: string): PipedreamAction | undefined {
   return byProvider.get(provider)?.actions?.[action];
 }
