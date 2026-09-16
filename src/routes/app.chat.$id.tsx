@@ -56,7 +56,7 @@ import { askEmployee, runSkill } from "@/lib/ai.functions";
 import { SkillPalette } from "@/components/app/SkillPalette";
 import { Thinking } from "@/components/app/Thinking";
 import { Markdown } from "@/components/app/Markdown";
-import { PublishPanel } from "@/components/app/PublishPanel";
+import { PostCards } from "@/components/app/PostCards";
 import { requestedPublishTargets } from "@/lib/platforms";
 import { askedForPublishableOutput, extractPostText, isNonPostReply } from "@/lib/post-format";
 import { detectHandoff } from "@/lib/handoff";
@@ -959,6 +959,7 @@ function ChatView({
     if (!body || !workspace || busy) return;
     setError(null);
     setSavedTask(null);
+    setStickToBottom(true);
 
     cancelledRef.current = false;
     setDraft("");
@@ -1206,9 +1207,10 @@ function ChatView({
                         !m.body.includes("(/app/tasks)") &&
                         askedForPublishableOutput(lastUserBefore(arr, idx)) &&
                         looksPostable(m.body) ? (
-                          <PublishPanel
+                          <PostCards
                             workspaceId={workspace.id}
                             employeeId="sonny"
+                            taskId={savedTask}
                             channel={
                               requestedPublishTargets(lastUserBefore(arr, idx))[0] ?? "instagram"
                             }
