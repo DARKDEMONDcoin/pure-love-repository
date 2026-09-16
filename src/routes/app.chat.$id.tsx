@@ -469,6 +469,7 @@ const WORK_TOOLS: WorkTool[] = [
   },
 ];
 
+/** كل ما يمكن فتحه داخل المحادثة — بلا استثناء ولا موظف محجوب. */
 /** بقية أقسام المنصة — تُفتح كذلك داخل المحادثة عند ذكر رابطها. */
 const ALL_APP_TOOLS: WorkTool[] = [
   {
@@ -515,6 +516,9 @@ const ALL_APP_TOOLS: WorkTool[] = [
   },
   { id: "discovery", title: "الاكتشاف", description: "فرص جديدة", to: "/app/discovery", icon: Bot },
 ];
+
+/** كل الأقسام متاحة لكل موظف داخل المحادثة نفسها. */
+const ALL_CHAT_TOOLS: WorkTool[] = [...WORK_TOOLS, ...ALL_APP_TOOLS];
 
 const EMPLOYEE_COPY: Record<string, { prompts: string[]; greetings: string[] }> = {
   sonny: {
@@ -1405,17 +1409,35 @@ function ChatView({
                   >
                     <TextCursorInput className="size-4" /> الطول
                   </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveTool((value) => (value === "sections" ? null : "sections"))
+                    }
+                    className={cn("chat-tool-choice", activeTool === "sections" && "is-active")}
+                    aria-expanded={activeTool === "sections"}
+                  >
+                    <LayoutDashboard className="size-4" /> الأقسام
+                  </button>
                 </div>
               ) : null}
               {activeTool ? (
                 <div className="chat-tool-popover">
                   <div className="chat-tool-popover-head">
                     <div>
-                      <p>{activeTool === "media" ? "الوسائط" : "طول المحتوى"}</p>
+                      <p>
+                        {activeTool === "media"
+                          ? "الوسائط"
+                          : activeTool === "length"
+                            ? "طول المحتوى"
+                            : "أقسام المنصة"}
+                      </p>
                       <span>
                         {activeTool === "media"
                           ? "أرفق أو أنشئ ما يحتاجه الطلب"
-                          : "اختر الحجم الأنسب لهذه النتيجة"}
+                          : activeTool === "length"
+                            ? "اختر الحجم الأنسب لهذه النتيجة"
+                            : "افتح أي قسم داخل هذه المحادثة — بلا مغادرة"}
                       </span>
                     </div>
                     <button type="button" onClick={() => setActiveTool(null)} aria-label="إغلاق">
@@ -1437,6 +1459,29 @@ function ChatView({
                       defaultOpen
                       hideTrigger
                     />
+                  ) : activeTool === "sections" ? (
+                    <div className="chat-length-options">
+                      {ALL_CHAT_TOOLS.map((tool) => {
+                        const Icon = tool.icon;
+                        return (
+                          <button
+                            key={tool.id}
+                            type="button"
+                            onClick={() => {
+                              openAppInChat(tool.to);
+                              setActiveTool(null);
+                              setToolsOpen(false);
+                            }}
+                            className="chat-length-option"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Icon className="size-4" /> {tool.title}
+                            </span>
+                            <small>{tool.description}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <div className="chat-length-options">
                       {(
