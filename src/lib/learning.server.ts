@@ -16,7 +16,7 @@ export async function learningBlock(client: Client, workspaceId: string, employe
 
   const { data } = await client
     .from("employee_lessons")
-    .select("id, title, instruction, confidence, evidence_count")
+    .select("id, title, instruction, confidence, evidence_count, status")
     .eq("workspace_id", workspaceId)
     .eq("employee_id", employeeId)
     .in("status", ["active", "approved"])
@@ -183,14 +183,13 @@ export async function buildLearningCandidates(client: Client, workspaceId: strin
         confidence,
         evidence_count: count,
         evidence: group.evidence?.slice(0, 8) as unknown as Json,
-        activated_at: status === "active" ? new Date().toISOString() : null,
+        activated_at: null,
         expires_at: new Date(Date.now() + 120 * 86_400_000).toISOString(),
       })
       .select("id")
       .single();
     if (!lesson) continue;
     created += 1;
-    if (status === "active") promoted += 1;
   }
   return { created, promoted };
 }
