@@ -486,6 +486,14 @@ export async function runEmployeeTurn(
       }
     }
 
+    let learning = { block: "", lessonIds: [] as string[] };
+    try {
+      const { learningBlock } = await import("./learning.server");
+      learning = await learningBlock(supabase as never, data.workspaceId, data.employeeId);
+    } catch (error) {
+      console.warn("[learning] context skipped:", error instanceof Error ? error.message : error);
+    }
+
     const system = [
       `أنت ${persona.name}، ${persona.role}`,
       `تعمل داخل منصة «سهل» لصالح العلامة: ${workspace.name} (${workspace.industry}).`,
@@ -514,6 +522,7 @@ export async function runEmployeeTurn(
       sirajMemory,
       nourMemory,
       decisionsMemory,
+      learning.block,
       qualityCriteria[data.employeeId]?.length
         ? `## معايير قبول الرد\n${(qualityCriteria[data.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
         : "",
@@ -895,6 +904,7 @@ export async function runEmployeeTurn(
 
     // حَكَم الجودة يعمل بالتوازي مع توليد الصورة: مراجعة إلزامية للمخرجات الطويلة
     // وإصلاح واحد موجّه عند الرسوب، بلا إضافة أي انتظار فوق زمن الصورة.
+    const originalReply = reply;
     const shouldJudge = intent === "work" && reply.length > 900;
     if (shouldJudge) emit({ type: "step", label: "أراجع جودة المخرج قبل تسليمه لك" });
     const judgeTask = !shouldJudge
@@ -1096,6 +1106,27 @@ export async function runEmployeeTurn(
     const { data: assistantRow, error: assistantError } = messageInsert;
     if (assistantError) throw new Error(assistantError.message);
     const createdTaskId = taskRows.find((id): id is string => Boolean(id)) ?? null;
+
+    try {
+      const { recordEmployeeRun } = await import("./learning.server");
+      await recordEmployeeRun(supabase as never, {
+        workspaceId: data.workspaceId,
+        employeeId: data.employeeId,
+        conversationId: data.conversationId,
+        messageId: assistantRow.id,
+        taskId: createdTaskId,
+        capability: intent,
+        request: data.message,
+        originalOutput: originalReply,
+        finalOutput: reply,
+        qualityScore,
+        issues: verdict?.issues ?? [],
+        revised: verdict?.revised ?? false,
+        lessonIds: learning.lessonIds,
+      });
+    } catch (error) {
+      console.warn("[learning] run skipped:", error instanceof Error ? error.message : error);
+    }
 
     return {
       qualityScore,

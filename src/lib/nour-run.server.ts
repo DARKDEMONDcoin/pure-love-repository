@@ -781,6 +781,13 @@ export async function executeSkill(
     website?: string | null;
     country?: string | null;
   };
+  let learning = { block: "", lessonIds: [] as string[] };
+  try {
+    const { learningBlock } = await import("./learning.server");
+    learning = await learningBlock(client, params.workspaceId, params.employeeId);
+  } catch (error) {
+    console.warn("[learning] skill context skipped:", error instanceof Error ? error.message : error);
+  }
   const system = [
     `أنت ${persona.name}، ${persona.role}`,
     `تعمل داخل منصة «سهل» لصالح العلامة: ${workspace.name} (${workspace.industry}).`,
@@ -800,6 +807,7 @@ export async function executeSkill(
     sirajMemory,
     nourMemory,
     decisionsMemory,
+    learning.block,
     ...sharedSystemBlocks({
       employeeId: params.employeeId,
       connected,
@@ -877,8 +885,10 @@ export async function executeSkill(
 
   // حَكَم الجودة: لا يخرج أي مخرج للمالك قبل أن يُقاس على معايير قبول القدرة،
   // ويُعاد كتابته مرة واحدة عند رسوبه.
+  const originalOutput = output;
   let qualityScore: number | null = null;
   let qualityRevised = false;
+  let qualityIssues: string[] = [];
   try {
     const { judgeAndImprove } = await import("./quality-judge.server");
     const verdict = await judgeAndImprove({
@@ -890,6 +900,7 @@ export async function executeSkill(
     });
     qualityScore = verdict.score || null;
     qualityRevised = verdict.revised;
+    qualityIssues = verdict.issues;
     output = verdict.output;
   } catch (error) {
     console.warn("[judge] skill skipped:", error instanceof Error ? error.message : error);
@@ -981,6 +992,27 @@ export async function executeSkill(
     })
     .select("id")
     .single();
+
+  try {
+    const { recordEmployeeRun } = await import("./learning.server");
+    await recordEmployeeRun(client, {
+      workspaceId: params.workspaceId,
+      employeeId: params.employeeId,
+      conversationId: params.conversationId ?? null,
+      messageId: assistantRow?.id ?? null,
+      taskId: task?.id ?? null,
+      capability: params.skillId,
+      request: `${skill.title} — ${requestSummary}`,
+      originalOutput,
+      finalOutput: output,
+      qualityScore,
+      issues: qualityIssues,
+      revised: qualityRevised,
+      lessonIds: learning.lessonIds,
+    });
+  } catch (error) {
+    console.warn("[learning] skill run skipped:", error instanceof Error ? error.message : error);
+  }
 
   // ذاكرة القرارات: نحفظ ما حُسم في هذا المخرج كي يبقى ملزماً لكل الفريق.
   try {
