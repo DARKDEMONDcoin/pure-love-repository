@@ -1128,7 +1128,8 @@ function ChatView({
                                 text={body}
                                 disabled={busy}
                                 onEdit={() => {
-                                  setDraft(body);
+                                  // التعديل اليدوي لمنشور = نص المنشور فقط، بلا شرح الموظف.
+                                  setDraft(looksPostable(body) ? extractPostText(body) : body);
                                   inputRef.current?.focus();
                                 }}
                                 onRegenerate={
