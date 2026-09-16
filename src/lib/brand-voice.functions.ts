@@ -1,0 +1,90 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { BrandVoiceResult } from "@/lib/brand-voice.server";
+
+const input = z
+  .object({
+    workspaceId: z.string().uuid(),
+    url: z.string().trim().max(300).optional(),
+    samples: z.string().trim().max(20_000).optional(),
+    save: z.boolean().default(true),
+  })
+  .refine((v) => (v.url && v.url.length > 3) || (v.samples && v.samples.length > 80), {
+    message: "أدخل رابط موقعك أو الصق عينات نصية كافية (٨٠ حرفًا على الأقل).",
+  });
+
+/**
+ * استخراج صوت العلامة من موقع أو عينات نصية، وحفظه كقاعدة نبرة إلزامية
+ * في عقل العلامة حتى يلتزم بها كل الموظفين فورًا.
+ */
+export const extractBrandVoice = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => input.parse(data))
+  .handler(async ({ data, context }): Promise<BrandVoiceResult & { savedId: string | null }> => {
+    const supabase = context.supabase;
+    const { data: workspace, error } = await supabase
+      .from("workspaces")
+      .select("id, name, industry")
+      .eq("id", data.workspaceId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!workspace) throw new Error("مساحة العمل غير موجودة.");
+
+    const { collectSiteText, analyzeStyle, synthesizeVoice, voiceRuleText } = await import(
+      "./brand-voice.server"
+    );
+
+    let text = data.samples ?? "";
+    let urls: string[] = [];
+    let headings: string[] = [];
+    let taglines: string[] = [];
+
+    if (data.url) {
+      const site = await collectSiteText(data.url);
+      urls = site.urls;
+      headings = site.headings;
+      taglines = site.taglines;
+      text = [site.text, data.samples ?? ""].filter(Boolean).join("\n\n");
+      if (!site.text && !data.samples) {
+        throw new Error(
+          "تعذّر قراءة الموقع (قد يكون محميًا أو يعتمد على جافاسكريبت بالكامل). الصق بعض النصوص من موقعك أو حساباتك بدلًا من ذلك.",
+        );
+      }
+    }
+
+    if (text.trim().split(/\s+/).length < 40) {
+      throw new Error("النص قليل جدًا لاستخراج صوت موثوق — نحتاج ٤٠ كلمة على الأقل.");
+    }
+
+    const stats = analyzeStyle(text, taglines);
+    const profile = await synthesizeVoice({ name: workspace.name, industry: workspace.industry }, stats, text, headings);
+    const rule = voiceRuleText(profile, stats);
+
+    let savedId: string | null = null;
+    if (data.save) {
+      // نستبدل أي دليل سابق حتى لا تتضارب القواعد
+      await supabase
+        .from("brain_items")
+        .delete()
+        .eq("workspace_id", workspace.id)
+        .eq("title", "دليل صوت العلامة");
+      const { data: row, error: insErr } = await supabase
+        .from("brain_items")
+        .insert({
+          workspace_id: workspace.id,
+          kind: "note",
+          title: "دليل صوت العلامة",
+          meta: `قاعدة نبرة إلزامية · استُخرج ${urls.length ? `من ${urls.length} صفحات` : "من عينات نصية"} · ${new Date().toLocaleDateString("ar-EG")}`,
+          body: rule,
+          used_by: ["sonny", "eva", "sam", "nour", "dana", "adam"],
+        })
+        .select("id")
+        .single();
+      if (insErr) throw new Error(insErr.message);
+      savedId = row.id;
+    }
+
+    return { sourceUrls: urls, stats, profile, rule, savedId };
+  });
