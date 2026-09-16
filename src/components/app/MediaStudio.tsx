@@ -283,9 +283,17 @@ export function MediaStudio({
             >
               {a.type === "image" ? (
                 <img src={a.url} alt="مرفق" className="size-16 object-cover" loading="lazy" />
-              ) : (
+              ) : a.type === "video" ? (
                 <span className="grid size-16 place-items-center text-[0.65rem] font-bold">
                   فيديو
+                </span>
+              ) : (
+                <span
+                  className="grid size-16 place-items-center gap-0.5 px-1 text-center text-[0.6rem] font-bold leading-tight"
+                  title={`${a.alt ?? "ملف"}${a.size ? ` · ${humanSize(a.size)}` : ""}`}
+                >
+                  <FileText className="mx-auto size-4" />
+                  <span className="line-clamp-2 break-all">{a.alt ?? "ملف"}</span>
                 </span>
               )}
               <button
