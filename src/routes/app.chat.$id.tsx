@@ -469,6 +469,7 @@ const WORK_TOOLS: WorkTool[] = [
   },
 ];
 
+/** كل ما يمكن فتحه داخل المحادثة — بلا استثناء ولا موظف محجوب. */
 /** بقية أقسام المنصة — تُفتح كذلك داخل المحادثة عند ذكر رابطها. */
 const ALL_APP_TOOLS: WorkTool[] = [
   {
@@ -515,6 +516,9 @@ const ALL_APP_TOOLS: WorkTool[] = [
   },
   { id: "discovery", title: "الاكتشاف", description: "فرص جديدة", to: "/app/discovery", icon: Bot },
 ];
+
+/** كل الأقسام متاحة لكل موظف داخل المحادثة نفسها. */
+const ALL_CHAT_TOOLS: WorkTool[] = [...WORK_TOOLS, ...ALL_APP_TOOLS];
 
 const EMPLOYEE_COPY: Record<string, { prompts: string[]; greetings: string[] }> = {
   sonny: {
@@ -604,8 +608,6 @@ const EMPLOYEE_COPY: Record<string, { prompts: string[]; greetings: string[] }> 
 };
 
 /** أزرار الشريط العلوي المناسبة لكل موظف. */
-const BAR_BRAND = new Set(["sonny", "nour", "dana"]);
-const BAR_WORK = new Set(["sonny", "eva", "sam", "nour", "adam", "dana"]);
 
 function useTypewriter(lines: string[], pause = 1700) {
   const [line, setLine] = useState(0);
@@ -717,7 +719,7 @@ function ChatView({
     setBarPanel(null);
     return true;
   };
-  const [activeTool, setActiveTool] = useState<"media" | "length" | null>(null);
+  const [activeTool, setActiveTool] = useState<"media" | "length" | "sections" | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   /** يصير true عند إيقاف الطلب بعد الإرسال — فنتجاهل نتيجته. */
@@ -1015,36 +1017,32 @@ function ChatView({
               </small>
             </button>
           ) : null}
-          {BAR_BRAND.has(member.id) ? (
-            <button
-              ref={(button) => {
-                barPanelButtonRefs.current.brand = button;
-              }}
-              type="button"
-              onClick={() => toggleBarPanel("brand")}
-              aria-expanded={barPanel === "brand"}
-              title="عقل وصوت العلامة"
-              className={cn("topbar-pill", barPanel === "brand" && "is-active")}
-            >
-              <Fingerprint className="size-4 shrink-0" />
-              <span>العلامة</span>
-            </button>
-          ) : null}
-          {BAR_WORK.has(member.id) ? (
-            <button
-              ref={(button) => {
-                barPanelButtonRefs.current.work = button;
-              }}
-              type="button"
-              onClick={() => toggleBarPanel("work")}
-              aria-expanded={barPanel === "work"}
-              title={`تشغيل ومتابعة ${member.name}`}
-              className={cn("topbar-pill", barPanel === "work" && "is-active")}
-            >
-              <Bot className="size-4 shrink-0" />
-              <span>تشغيل ومتابعة</span>
-            </button>
-          ) : null}
+          <button
+            ref={(button) => {
+              barPanelButtonRefs.current.brand = button;
+            }}
+            type="button"
+            onClick={() => toggleBarPanel("brand")}
+            aria-expanded={barPanel === "brand"}
+            title="عقل وصوت العلامة"
+            className={cn("topbar-pill", barPanel === "brand" && "is-active")}
+          >
+            <Fingerprint className="size-4 shrink-0" />
+            <span>العلامة</span>
+          </button>
+          <button
+            ref={(button) => {
+              barPanelButtonRefs.current.work = button;
+            }}
+            type="button"
+            onClick={() => toggleBarPanel("work")}
+            aria-expanded={barPanel === "work"}
+            title={`تشغيل ومتابعة ${member.name}`}
+            className={cn("topbar-pill", barPanel === "work" && "is-active")}
+          >
+            <Bot className="size-4 shrink-0" />
+            <span>تشغيل ومتابعة</span>
+          </button>
           <button
             ref={(button) => {
               barPanelButtonRefs.current.chats = button;
@@ -1411,17 +1409,35 @@ function ChatView({
                   >
                     <TextCursorInput className="size-4" /> الطول
                   </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveTool((value) => (value === "sections" ? null : "sections"))
+                    }
+                    className={cn("chat-tool-choice", activeTool === "sections" && "is-active")}
+                    aria-expanded={activeTool === "sections"}
+                  >
+                    <LayoutDashboard className="size-4" /> الأقسام
+                  </button>
                 </div>
               ) : null}
               {activeTool ? (
                 <div className="chat-tool-popover">
                   <div className="chat-tool-popover-head">
                     <div>
-                      <p>{activeTool === "media" ? "الوسائط" : "طول المحتوى"}</p>
+                      <p>
+                        {activeTool === "media"
+                          ? "الوسائط"
+                          : activeTool === "length"
+                            ? "طول المحتوى"
+                            : "أقسام المنصة"}
+                      </p>
                       <span>
                         {activeTool === "media"
                           ? "أرفق أو أنشئ ما يحتاجه الطلب"
-                          : "اختر الحجم الأنسب لهذه النتيجة"}
+                          : activeTool === "length"
+                            ? "اختر الحجم الأنسب لهذه النتيجة"
+                            : "افتح أي قسم داخل هذه المحادثة — بلا مغادرة"}
                       </span>
                     </div>
                     <button type="button" onClick={() => setActiveTool(null)} aria-label="إغلاق">
@@ -1443,6 +1459,29 @@ function ChatView({
                       defaultOpen
                       hideTrigger
                     />
+                  ) : activeTool === "sections" ? (
+                    <div className="chat-length-options">
+                      {ALL_CHAT_TOOLS.map((tool) => {
+                        const Icon = tool.icon;
+                        return (
+                          <button
+                            key={tool.id}
+                            type="button"
+                            onClick={() => {
+                              openAppInChat(tool.to);
+                              setActiveTool(null);
+                              setToolsOpen(false);
+                            }}
+                            className="chat-length-option"
+                          >
+                            <span className="flex items-center gap-2">
+                              <Icon className="size-4" /> {tool.title}
+                            </span>
+                            <small>{tool.description}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <div className="chat-length-options">
                       {(
@@ -1755,7 +1794,7 @@ function ChatView({
               ) : (
                 <div className="chat-work-sheet">
                   <div className="chat-work-links" aria-label="أدوات التشغيل الأساسية">
-                    {WORK_TOOLS.filter((tool) => !tool.sonnyOnly || id === "sonny").map((tool) => {
+                    {ALL_CHAT_TOOLS.map((tool) => {
                       const Icon = tool.icon;
                       return (
                         <article key={tool.id} className="chat-work-card">
