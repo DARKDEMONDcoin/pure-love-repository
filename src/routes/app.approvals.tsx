@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Check, X, PartyPopper, Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app/AppShell";
@@ -10,6 +11,7 @@ import { useTasks, useUpdateTask, useWorkspace } from "@/lib/data";
 import { sanitizePostBody } from "@/lib/post-format";
 import { BrandLoader } from "@/components/site/BrandLoader";
 import { Portrait } from "@/components/site/Portrait";
+import { saveLearningFeedback } from "@/lib/learning.functions";
 
 export const Route = createFileRoute("/app/approvals")({
   head: () => ({
@@ -26,7 +28,10 @@ function ApprovalsPage() {
   const { data: workspace } = useWorkspace();
   const { data: tasks, isLoading } = useTasks(workspace?.id);
   const update = useUpdateTask(workspace?.id);
+  const saveFeedback = useServerFn(saveLearningFeedback);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
 
   const pending = (tasks ?? []).filter((t) => t.status === "review");
 
@@ -43,6 +48,10 @@ function ApprovalsPage() {
         : undefined;
     try {
       await update.mutateAsync({ id, patch: steps ? { status, steps } : { status } });
+      if (status === "rejected" && workspace?.id) {
+        const task = pending.find((item) => item.id === id);
+        if (task) await saveFeedback({ data: { workspaceId: workspace.id, taskId: id, employeeId: task.employee_id, kind: "rejected", reason: reason.trim() || "رفض المالك المخرج" } });
+      }
     } finally {
       setBusyId(null);
     }
@@ -139,13 +148,29 @@ function ApprovalsPage() {
                     اعتماد بدون نشر
                   </button>
                   <button
-                    onClick={() => void act(a.id, "rejected")}
+                    onClick={() => {
+                      if (rejecting === a.id) void act(a.id, "rejected");
+                      else setRejecting(a.id);
+                    }}
                     disabled={busyId === a.id}
                     className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-60"
                   >
                     <X className="size-4" /> رفض
                   </button>
                 </div>
+                {rejecting === a.id ? (
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                    <input
+                      value={reason}
+                      onChange={(event) => setReason(event.target.value)}
+                      placeholder="ما الذي تريد أن يتعلمه من هذا الرفض؟"
+                      className="min-h-10 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    />
+                    <button type="button" onClick={() => void act(a.id, "rejected")} className="min-h-10 rounded-lg bg-coral px-4 text-sm font-bold text-background">
+                      تأكيد الرفض
+                    </button>
+                  </div>
+                ) : null}
               </article>
             );
           })}

@@ -2,7 +2,7 @@ import { LogoMark } from "@/components/site/LogoMark";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Portrait } from "@/components/site/Portrait";
-import { Bell, Menu, X, User, LogOut } from "lucide-react";
+import { Bell, Menu, X, User, LogOut, TrendingUp } from "lucide-react";
 
 import { team } from "@/data/team";
 import { COUNTRIES } from "@/data/team-portraits";
@@ -88,6 +88,16 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
           ))}
         </div>
       </div>
+      <Link
+        to="/app/learning"
+        onClick={onNavigate}
+        className={cn(
+          "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold hover:bg-secondary",
+          pathname === "/app/learning" && "bg-primary/10 text-primary",
+        )}
+      >
+        <TrendingUp className="size-4" /> تطور الفريق
+      </Link>
       <Link to="/pricing" onClick={onNavigate} className="app-sidebar-pricing">
         <span>
           <small>الخطط والسعة</small>

@@ -41,6 +41,7 @@ import { Route as AppCalendarRouteImport } from './routes/app.calendar'
 import { Route as AppDecisionsRouteImport } from './routes/app.decisions'
 import { Route as AppDiscoveryRouteImport } from './routes/app.discovery'
 import { Route as AppIntegrationsRouteImport } from './routes/app.integrations'
+import { Route as AppLearningRouteImport } from './routes/app.learning'
 import { Route as AppProposalsRouteImport } from './routes/app.proposals'
 import { Route as AppQueueRouteImport } from './routes/app.queue'
 import { Route as AppRankingsRouteImport } from './routes/app.rankings'
@@ -227,6 +228,11 @@ const AppIntegrationsRoute = AppIntegrationsRouteImport.update({
   path: '/integrations',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLearningRoute = AppLearningRouteImport.update({
+  id: '/learning',
+  path: '/learning',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProposalsRoute = AppProposalsRouteImport.update({
   id: '/proposals',
   path: '/proposals',
@@ -390,6 +396,7 @@ export interface FileRoutesByFullPath {
   '/app/decisions': typeof AppDecisionsRoute
   '/app/discovery': typeof AppDiscoveryRoute
   '/app/integrations': typeof AppIntegrationsRoute
+  '/app/learning': typeof AppLearningRoute
   '/app/proposals': typeof AppProposalsRoute
   '/app/queue': typeof AppQueueRoute
   '/app/rankings': typeof AppRankingsRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/app/decisions': typeof AppDecisionsRoute
   '/app/discovery': typeof AppDiscoveryRoute
   '/app/integrations': typeof AppIntegrationsRoute
+  '/app/learning': typeof AppLearningRoute
   '/app/proposals': typeof AppProposalsRoute
   '/app/queue': typeof AppQueueRoute
   '/app/rankings': typeof AppRankingsRoute
@@ -508,6 +516,7 @@ export interface FileRoutesById {
   '/app/decisions': typeof AppDecisionsRoute
   '/app/discovery': typeof AppDiscoveryRoute
   '/app/integrations': typeof AppIntegrationsRoute
+  '/app/learning': typeof AppLearningRoute
   '/app/proposals': typeof AppProposalsRoute
   '/app/queue': typeof AppQueueRoute
   '/app/rankings': typeof AppRankingsRoute
@@ -569,6 +578,7 @@ export interface FileRouteTypes {
     | '/app/decisions'
     | '/app/discovery'
     | '/app/integrations'
+    | '/app/learning'
     | '/app/proposals'
     | '/app/queue'
     | '/app/rankings'
@@ -627,6 +637,7 @@ export interface FileRouteTypes {
     | '/app/decisions'
     | '/app/discovery'
     | '/app/integrations'
+    | '/app/learning'
     | '/app/proposals'
     | '/app/queue'
     | '/app/rankings'
@@ -686,6 +697,7 @@ export interface FileRouteTypes {
     | '/app/decisions'
     | '/app/discovery'
     | '/app/integrations'
+    | '/app/learning'
     | '/app/proposals'
     | '/app/queue'
     | '/app/rankings'
@@ -983,6 +995,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIntegrationsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/learning': {
+      id: '/app/learning'
+      path: '/learning'
+      fullPath: '/app/learning'
+      preLoaderRoute: typeof AppLearningRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/proposals': {
       id: '/app/proposals'
       path: '/proposals'
@@ -1170,6 +1189,7 @@ interface AppRouteChildren {
   AppDecisionsRoute: typeof AppDecisionsRoute
   AppDiscoveryRoute: typeof AppDiscoveryRoute
   AppIntegrationsRoute: typeof AppIntegrationsRoute
+  AppLearningRoute: typeof AppLearningRoute
   AppProposalsRoute: typeof AppProposalsRoute
   AppQueueRoute: typeof AppQueueRoute
   AppRankingsRoute: typeof AppRankingsRoute
@@ -1190,6 +1210,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDecisionsRoute: AppDecisionsRoute,
   AppDiscoveryRoute: AppDiscoveryRoute,
   AppIntegrationsRoute: AppIntegrationsRoute,
+  AppLearningRoute: AppLearningRoute,
   AppProposalsRoute: AppProposalsRoute,
   AppQueueRoute: AppQueueRoute,
   AppRankingsRoute: AppRankingsRoute,
