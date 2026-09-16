@@ -273,7 +273,9 @@ export async function runEmployeeTurn(
       .map((a) =>
         a.type === "video"
           ? `\n\n🎬 [${a.alt ?? "فيديو مرفق"}](${a.url})`
-          : `\n\n![${a.alt ?? "صورة مرفقة"}](${a.url})`,
+          : a.type === "file"
+            ? `\n\n📎 [${a.alt ?? "ملف مرفق"}](${a.url})`
+            : `\n\n![${a.alt ?? "صورة مرفقة"}](${a.url})`,
       )
       .join("");
 
