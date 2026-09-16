@@ -1013,36 +1013,32 @@ function ChatView({
               </small>
             </button>
           ) : null}
-          {true ? (
-            <button
-              ref={(button) => {
-                barPanelButtonRefs.current.brand = button;
-              }}
-              type="button"
-              onClick={() => toggleBarPanel("brand")}
-              aria-expanded={barPanel === "brand"}
-              title="عقل وصوت العلامة"
-              className={cn("topbar-pill", barPanel === "brand" && "is-active")}
-            >
-              <Fingerprint className="size-4 shrink-0" />
-              <span>العلامة</span>
-            </button>
-          ) : null}
-          {true ? (
-            <button
-              ref={(button) => {
-                barPanelButtonRefs.current.work = button;
-              }}
-              type="button"
-              onClick={() => toggleBarPanel("work")}
-              aria-expanded={barPanel === "work"}
-              title={`تشغيل ومتابعة ${member.name}`}
-              className={cn("topbar-pill", barPanel === "work" && "is-active")}
-            >
-              <Bot className="size-4 shrink-0" />
-              <span>تشغيل ومتابعة</span>
-            </button>
-          ) : null}
+          <button
+            ref={(button) => {
+              barPanelButtonRefs.current.brand = button;
+            }}
+            type="button"
+            onClick={() => toggleBarPanel("brand")}
+            aria-expanded={barPanel === "brand"}
+            title="عقل وصوت العلامة"
+            className={cn("topbar-pill", barPanel === "brand" && "is-active")}
+          >
+            <Fingerprint className="size-4 shrink-0" />
+            <span>العلامة</span>
+          </button>
+          <button
+            ref={(button) => {
+              barPanelButtonRefs.current.work = button;
+            }}
+            type="button"
+            onClick={() => toggleBarPanel("work")}
+            aria-expanded={barPanel === "work"}
+            title={`تشغيل ومتابعة ${member.name}`}
+            className={cn("topbar-pill", barPanel === "work" && "is-active")}
+          >
+            <Bot className="size-4 shrink-0" />
+            <span>تشغيل ومتابعة</span>
+          </button>
           <button
             ref={(button) => {
               barPanelButtonRefs.current.chats = button;
