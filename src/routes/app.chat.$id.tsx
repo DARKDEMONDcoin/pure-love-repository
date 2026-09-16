@@ -38,6 +38,7 @@ import {
 import { AppShell } from "@/components/app/AppShell";
 import { AppIcon, appLabel } from "@/components/site/AppIcon";
 import { ConnectNow } from "@/components/app/ConnectNow";
+import { InlineApproval } from "@/components/app/InlineApproval";
 import { getMember } from "@/data/team";
 import {
   useAddBrainItem,
@@ -666,6 +667,17 @@ function ChatView({
     mode: "inline" | "expanded";
   } | null>(null);
   const [toolsOpen, setToolsOpen] = useState(false);
+  /** كل مسار داخلي يُفتح داخل المحادثة نفسها بدل مغادرتها. */
+  const openAppInChat = (path: string) => {
+    const clean = path.split("?")[0]!.replace(/\/$/, "");
+    const tool =
+      WORK_TOOLS.find((item) => item.to.replace(/\/$/, "") === clean) ??
+      ALL_APP_TOOLS.find((item) => item.to.replace(/\/$/, "") === clean);
+    if (!tool) return false;
+    setEmbeddedTool({ tool, mode: "inline" });
+    setBarPanel(null);
+    return true;
+  };
   const [activeTool, setActiveTool] = useState<"media" | "length" | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
