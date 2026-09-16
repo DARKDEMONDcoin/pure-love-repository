@@ -604,7 +604,7 @@ export async function learnFromPerformance(
   if (!sample.length) {
     type Chain = {
       eq: (c: string, v: string) => Chain;
-      not: (c: string, op: string, v: string) => Chain;
+      not: (c: string, op: string, v: unknown) => Chain;
       limit: (n: number) => PromiseLike<{ data: unknown[] | null }>;
     };
     const { data: internal } = await (
