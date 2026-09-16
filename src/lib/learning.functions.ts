@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
-async function owns(supabase: any, workspaceId: string) {
+async function owns(supabase: SupabaseClient<Database>, workspaceId: string) {
   const { data, error } = await supabase.rpc("owns_workspace", { _workspace_id: workspaceId });
   if (error || data !== true) throw new Error("غير مصرح لك بهذه المساحة.");
 }

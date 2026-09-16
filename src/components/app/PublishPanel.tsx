@@ -30,6 +30,7 @@ import {
 } from "@/lib/social-queue.functions";
 import { generateMedia } from "@/lib/media.functions";
 import { bestPostingTimes } from "@/lib/best-time.functions";
+import { saveLearningFeedback } from "@/lib/learning.functions";
 
 type BestTimes = {
   source: "audience" | "history" | "baseline";
@@ -89,6 +90,7 @@ export function PublishPanel({
 }: Props) {
   const qc = useQueryClient();
   const upload = useServerFn(uploadSocialMedia);
+  const saveFeedback = useServerFn(saveLearningFeedback);
   const { data: accounts, isLoading } = useConnectedAccounts(workspaceId);
   const { data: workspace } = useWorkspace();
 
@@ -292,6 +294,24 @@ export function PublishPanel({
     }
     setBusy(mode);
     setNote(null);
+
+    const originalText = cleanBody(body);
+    if (taskId && text.trim() !== originalText.trim()) {
+      try {
+        await saveFeedback({
+          data: {
+            workspaceId,
+            taskId,
+            employeeId,
+            kind: "edited",
+            originalText,
+            editedText: text.trim(),
+          },
+        });
+      } catch (error) {
+        console.warn("[learning] edit feedback skipped:", error);
+      }
+    }
 
     const dates = mode === "later" ? slots.map((s) => new Date(s)) : [null];
     if (dates.some((d) => d && Number.isNaN(d.getTime()))) {
