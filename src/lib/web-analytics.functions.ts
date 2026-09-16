@@ -57,7 +57,9 @@ async function assertOwner(
 export const saveWebAnalytics = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({ workspaceId: z.string().uuid(), url: z.string().trim().min(3).max(300) }).parse(data),
+    z
+      .object({ workspaceId: z.string().uuid(), url: z.string().trim().min(3).max(300) })
+      .parse(data),
   )
   .handler(async ({ data, context }) => {
     await assertOwner(context.supabase as never, data.workspaceId);
@@ -86,7 +88,10 @@ export const saveWebAnalytics = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     }
 
-    await supabaseAdmin.from("workspaces").update({ website: `https://${host}` }).eq("id", data.workspaceId);
+    await supabaseAdmin
+      .from("workspaces")
+      .update({ website: `https://${host}` })
+      .eq("id", data.workspaceId);
     return { host };
   });
 
@@ -109,13 +114,23 @@ export const disconnectWebAnalytics = createServerFn({ method: "POST" })
 export const visitorsSnapshot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({ workspaceId: z.string().uuid(), days: z.number().int().min(1).max(365).default(30) }).parse(data),
+    z
+      .object({
+        workspaceId: z.string().uuid(),
+        days: z.number().int().min(1).max(365).default(30),
+      })
+      .parse(data),
   )
   .handler(
     async ({
       data,
       context,
-    }): Promise<{ connected: boolean; host: string | null; snapshot: VisitorsSnapshot | null; error: string | null }> => {
+    }): Promise<{
+      connected: boolean;
+      host: string | null;
+      snapshot: VisitorsSnapshot | null;
+      error: string | null;
+    }> => {
       await assertOwner(context.supabase as never, data.workspaceId);
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

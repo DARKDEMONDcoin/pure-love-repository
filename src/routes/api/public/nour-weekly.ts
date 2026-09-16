@@ -27,7 +27,6 @@ export const Route = createFileRoute("/api/public/nour-weekly")({
         }
         if (!authorized) return new Response("unauthorized", { status: 401 });
 
-
         const { data: connected, error } = await supabaseAdmin
           .from("integrations")
           .select("workspace_id")

@@ -35,7 +35,12 @@ function uniq(list: string[], max: number): string[] {
  */
 export async function socialEvidence(
   topic: string,
-  opts: { city?: string | undefined; platform?: string | undefined; rivals?: string | undefined; budgetMs?: number } = {},
+  opts: {
+    city?: string | undefined;
+    platform?: string | undefined;
+    rivals?: string | undefined;
+    budgetMs?: number;
+  } = {},
 ): Promise<SocialEvidence> {
   const seed = topic.trim().slice(0, 80);
   if (seed.length < 3) return EMPTY;
@@ -43,10 +48,7 @@ export async function socialEvidence(
   const platform = (opts.platform ?? "").trim();
   const city = (opts.city ?? "").trim();
 
-  const handles = uniq(
-    (opts.rivals ?? "").match(/@[A-Za-z0-9._]{2,30}/g) ?? [],
-    3,
-  );
+  const handles = uniq((opts.rivals ?? "").match(/@[A-Za-z0-9._]{2,30}/g) ?? [], 3);
 
   const key = `${seed}|${platform}|${city}|${handles.join(",")}`;
   const hit = cache.get(key);

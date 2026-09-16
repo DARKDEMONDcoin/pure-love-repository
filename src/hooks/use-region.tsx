@@ -1,6 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-import { COUNTRIES, DEFAULT_COUNTRY, countryOf, type Country, type Region } from "@/data/team-portraits";
+import {
+  COUNTRIES,
+  DEFAULT_COUNTRY,
+  countryOf,
+  type Country,
+  type Region,
+} from "@/data/team-portraits";
 
 const STORAGE_KEY = "sahl.country";
 

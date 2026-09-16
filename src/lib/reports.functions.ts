@@ -35,7 +35,9 @@ export type ReportPayload = {
 export const buildReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ workspaceId: z.string().uuid(), days: z.number().int().min(7).max(90).default(28) }).parse(input),
+    z
+      .object({ workspaceId: z.string().uuid(), days: z.number().int().min(7).max(90).default(28) })
+      .parse(input),
   )
   .handler(async ({ data, context }): Promise<ReportPayload> => {
     const { data: workspace, error: wsError } = await context.supabase
@@ -97,7 +99,12 @@ export const buildReport = createServerFn({ method: "POST" })
       range: gsc?.range ?? ga4?.range ?? null,
       search:
         gsc && totals
-          ? { site: gsc.site, totals, queries: gsc.queries.slice(0, 15), pages: gsc.pages.slice(0, 15) }
+          ? {
+              site: gsc.site,
+              totals,
+              queries: gsc.queries.slice(0, 15),
+              pages: gsc.pages.slice(0, 15),
+            }
           : null,
       analytics: ga4
         ? {

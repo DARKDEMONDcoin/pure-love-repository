@@ -56,7 +56,12 @@ async function wpFetch(config: WordPressConfig, path: string, init?: RequestInit
 
 /** يتحقق أن المستخدم يملك مساحة العمل ثم يعيد عميل الخدمة. */
 async function assertOwner(
-  supabase: { rpc: (fn: "owns_workspace", args: { _workspace_id: string }) => PromiseLike<{ data: unknown; error: { message: string } | null }> },
+  supabase: {
+    rpc: (
+      fn: "owns_workspace",
+      args: { _workspace_id: string },
+    ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  },
   workspaceId: string,
 ) {
   const { data, error } = await supabase.rpc("owns_workspace", { _workspace_id: workspaceId });
@@ -168,7 +173,11 @@ export const testWordPress = createServerFn({ method: "POST" })
     const admin = await assertOwner(context.supabase, data.workspaceId);
     const config = await loadWordPressConfig(admin, data.workspaceId);
     const me = (await wpFetch(config, "/users/me?context=edit")) as { name?: string };
-    return { ok: true as const, site: new URL(config.siteUrl).host, user: me.name ?? config.username };
+    return {
+      ok: true as const,
+      site: new URL(config.siteUrl).host,
+      user: me.name ?? config.username,
+    };
   });
 
 /** نشر أو حفظ مسودة مقال على ووردبريس. */
@@ -210,7 +219,8 @@ export const publishToWordPress = createServerFn({ method: "POST" })
     await admin.from("tasks").insert({
       workspace_id: data.workspaceId,
       employee_id: "nour",
-      title: data.status === "publish" ? `نُشر: ${data.title}` : `مسودة على ووردبريس: ${data.title}`,
+      title:
+        data.status === "publish" ? `نُشر: ${data.title}` : `مسودة على ووردبريس: ${data.title}`,
       detail: post.link ?? null,
       channel: "wordpress",
       kind: "مقال",

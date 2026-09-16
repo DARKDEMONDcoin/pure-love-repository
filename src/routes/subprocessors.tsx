@@ -82,7 +82,6 @@ const sections: LegalSection[] = [
       "> نحتفظ بأرشيف الإصدارات السابقة من هذه القائمة ونتيحه لعملاء المؤسسات عند الطلب.",
     ],
   },
-
 ];
 
 function SubprocessorsPage() {

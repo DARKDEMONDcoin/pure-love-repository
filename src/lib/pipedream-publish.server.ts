@@ -130,12 +130,13 @@ export async function publishToPlatform(
   const app = pipedreamApp(params.provider);
   const metaProxy = params.provider === "instagram" || params.provider === "facebook";
 
-  const allMedia = (params.media?.length
-    ? params.media
-    : [
-        ...(params.imageUrl ? [{ url: params.imageUrl, kind: "image" as const }] : []),
-        ...(params.videoUrl ? [{ url: params.videoUrl, kind: "video" as const }] : []),
-      ]
+  const allMedia = (
+    params.media?.length
+      ? params.media
+      : [
+          ...(params.imageUrl ? [{ url: params.imageUrl, kind: "image" as const }] : []),
+          ...(params.videoUrl ? [{ url: params.videoUrl, kind: "video" as const }] : []),
+        ]
   ).slice(0, 10);
   const firstImage = allMedia.find((m) => m.kind === "image")?.url;
   const firstVideo = allMedia.find((m) => m.kind === "video")?.url;
@@ -160,8 +161,6 @@ export async function publishToPlatform(
     throw new Error(`النشر المباشر غير متاح بعد على ${app?.label ?? params.provider}.`);
   }
 
-
-
   const config = await pipedreamConfig();
   if (!config) throw missingConfigError();
 
@@ -184,7 +183,6 @@ export async function publishToPlatform(
       )
     : candidates[0]!;
   const account = { account_id: accountId };
-
 
   // ميتا (إنستجرام/فيسبوك): ننشر عبر Graph API مباشرة من خلال وكيل Pipedream،
   // لأن الإجراءات الجاهزة لا تدعم النص الكامل مع الصورة على إنستجرام.
@@ -230,7 +228,6 @@ export async function publishToPlatform(
     ...textProps(params.provider, params.text),
   };
   if (firstImage) Object.assign(props, imageProps(params.provider, firstImage));
-
 
   const result = await runAction(config, {
     workspaceId: params.workspaceId,
@@ -298,7 +295,8 @@ async function publishDirect(
       url: "https://api.pinterest.com/v5/boards?page_size=1",
     });
     const boardId = boards.items?.[0]?.id;
-    if (!boardId) throw new Error("لا يوجد لوح (Board) في حساب بينترست — أنشئ لوحاً ثم أعد المحاولة.");
+    if (!boardId)
+      throw new Error("لا يوجد لوح (Board) في حساب بينترست — أنشئ لوحاً ثم أعد المحاولة.");
     return proxyRequest(config, {
       workspaceId,
       accountId,
@@ -374,7 +372,9 @@ async function publishMeta(
       });
       if (st.status_code === "FINISHED") return;
       if (st.status_code === "ERROR")
-        throw new Error("إنستجرام رفض الوسائط — استخدم MP4 عمودياً (9:16) أقل من ٩٠ ثانية أو صوراً JPG.");
+        throw new Error(
+          "إنستجرام رفض الوسائط — استخدم MP4 عمودياً (9:16) أقل من ٩٠ ثانية أو صوراً JPG.",
+        );
     }
   };
 
@@ -469,7 +469,8 @@ async function publishMeta(
   let creationId: string;
   if (items.length > 1) {
     const children: string[] = [];
-    for (const item of items) children.push(await makeContainer(item, { is_carousel_item: "true" }));
+    for (const item of items)
+      children.push(await makeContainer(item, { is_carousel_item: "true" }));
     const carousel = await proxyRequest<{ id?: string }>(config, {
       workspaceId,
       accountId,
@@ -502,7 +503,6 @@ async function publishMeta(
     }).toString()}`,
   });
 }
-
 
 /** اسم حقل النص يختلف بين إجراءات كل منصة. */
 function textProps(provider: string, text: string): Record<string, string> {

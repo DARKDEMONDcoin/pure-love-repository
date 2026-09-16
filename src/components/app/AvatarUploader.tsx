@@ -86,7 +86,13 @@ export function AvatarUploader({
 
       <div className="space-y-2">
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" className="gap-2" disabled={busy} onClick={() => input.current?.click()}>
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2"
+            disabled={busy}
+            onClick={() => input.current?.click()}
+          >
             <Camera className="size-4" />
             {path ? "تغيير الصورة" : "رفع صورة"}
           </Button>
@@ -113,7 +119,9 @@ export function AvatarUploader({
             </Button>
           ) : null}
         </div>
-        <p className="text-xs text-muted-foreground">PNG أو JPG حتى ٥ ميجابايت. تظهر لك وحدك داخل حسابك.</p>
+        <p className="text-xs text-muted-foreground">
+          PNG أو JPG حتى ٥ ميجابايت. تظهر لك وحدك داخل حسابك.
+        </p>
       </div>
 
       <input

@@ -22,7 +22,11 @@ export const planContentCalendar = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { data: own } = await context.supabase.from("workspaces").select("id").eq("id", data.workspaceId).maybeSingle();
+    const { data: own } = await context.supabase
+      .from("workspaces")
+      .select("id")
+      .eq("id", data.workspaceId)
+      .maybeSingle();
     if (!own) throw new Error("غير مصرّح.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { planCalendar } = await import("./content-calendar.server");
@@ -41,15 +45,30 @@ export const planContentCalendar = createServerFn({ method: "POST" })
 export const generateCalendarPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ ...ws, id: z.string().uuid(), withImage: z.boolean().default(true), dialect: z.string().max(30).optional() }).parse(input),
+    z
+      .object({
+        ...ws,
+        id: z.string().uuid(),
+        withImage: z.boolean().default(true),
+        dialect: z.string().max(30).optional(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { data: own } = await context.supabase.from("social_posts").select("id").eq("id", data.id).eq("workspace_id", data.workspaceId).maybeSingle();
+    const { data: own } = await context.supabase
+      .from("social_posts")
+      .select("id")
+      .eq("id", data.id)
+      .eq("workspace_id", data.workspaceId)
+      .maybeSingle();
     if (!own) throw new Error("غير مصرّح.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { generateCalendarPost: gen } = await import("./content-calendar.server");
     try {
-      return await gen(supabaseAdmin, data.workspaceId, data.id, { withImage: data.withImage, dialect: data.dialect });
+      return await gen(supabaseAdmin, data.workspaceId, data.id, {
+        withImage: data.withImage,
+        dialect: data.dialect,
+      });
     } catch (e) {
       const message = e instanceof Error ? e.message : "فشل التوليد";
       await supabaseAdmin
@@ -78,14 +97,23 @@ export const updateCalendarPost = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const q = context.supabase.from("social_posts");
     if (data.action === "delete") {
-      const { error } = await q.delete().eq("id", data.id).eq("workspace_id", data.workspaceId).neq("status", "published");
+      const { error } = await q
+        .delete()
+        .eq("id", data.id)
+        .eq("workspace_id", data.workspaceId)
+        .neq("status", "published");
       if (error) throw new Error(error.message);
       return { ok: true as const };
     }
     const patch: Record<string, unknown> = {};
     if (data.action === "approve") {
-      const { data: row } = await context.supabase.from("social_posts").select("provider, image_url, scheduled_at").eq("id", data.id).maybeSingle();
-      if (row?.provider === "instagram" && !row.image_url) throw new Error("إنستجرام يتطلب صورة — ولّد صورة أولاً.");
+      const { data: row } = await context.supabase
+        .from("social_posts")
+        .select("provider, image_url, scheduled_at")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (row?.provider === "instagram" && !row.image_url)
+        throw new Error("إنستجرام يتطلب صورة — ولّد صورة أولاً.");
       const { data: acc } = await context.supabase
         .from("pipedream_accounts")
         .select("id")
@@ -93,17 +121,25 @@ export const updateCalendarPost = createServerFn({ method: "POST" })
         .eq("provider", row?.provider ?? "")
         .eq("status", "connected")
         .maybeSingle();
-      if (!acc) throw new Error(`اربط حساب ${row?.provider ?? "المنصة"} من صفحة التكاملات حتى يُنشر في موعده.`);
+      if (!acc)
+        throw new Error(
+          `اربط حساب ${row?.provider ?? "المنصة"} من صفحة التكاملات حتى يُنشر في موعده.`,
+        );
       patch["status"] = "scheduled";
       patch["locked_at"] = null;
       patch["attempts"] = 0;
-      if (row && new Date(row.scheduled_at) < new Date()) patch["scheduled_at"] = new Date(Date.now() + 5 * 60_000).toISOString();
+      if (row && new Date(row.scheduled_at) < new Date())
+        patch["scheduled_at"] = new Date(Date.now() + 5 * 60_000).toISOString();
     }
     if (data.action === "unapprove") patch["status"] = "draft";
     if (data.body !== undefined) patch["body"] = data.body;
     if (data.scheduledAt) patch["scheduled_at"] = data.scheduledAt;
     if (data.imageUrl !== undefined) patch["image_url"] = data.imageUrl;
-    const { error } = await q.update(patch as never).eq("id", data.id).eq("workspace_id", data.workspaceId).neq("status", "published");
+    const { error } = await q
+      .update(patch as never)
+      .eq("id", data.id)
+      .eq("workspace_id", data.workspaceId)
+      .neq("status", "published");
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
@@ -113,11 +149,24 @@ export const publishCalendarPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ ...ws, id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { data: own } = await context.supabase.from("social_posts").select("id, provider, image_url").eq("id", data.id).eq("workspace_id", data.workspaceId).maybeSingle();
+    const { data: own } = await context.supabase
+      .from("social_posts")
+      .select("id, provider, image_url")
+      .eq("id", data.id)
+      .eq("workspace_id", data.workspaceId)
+      .maybeSingle();
     if (!own) throw new Error("غير مصرّح.");
     if (own.provider === "instagram" && !own.image_url) throw new Error("إنستجرام يتطلب صورة.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("social_posts").update({ status: "scheduled", attempts: 0, locked_at: new Date().toISOString(), last_error: null }).eq("id", data.id);
+    await supabaseAdmin
+      .from("social_posts")
+      .update({
+        status: "scheduled",
+        attempts: 0,
+        locked_at: new Date().toISOString(),
+        last_error: null,
+      })
+      .eq("id", data.id);
     const { publishQueuedPost } = await import("./social-queue.server");
     const result = await publishQueuedPost(supabaseAdmin, data.id);
     if (result.status !== "published") throw new Error(result.error ?? "تعذّر النشر.");
@@ -129,7 +178,11 @@ export const learnFromPerformanceNow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object(ws).parse(input))
   .handler(async ({ data, context }) => {
-    const { data: own } = await context.supabase.from("workspaces").select("id").eq("id", data.workspaceId).maybeSingle();
+    const { data: own } = await context.supabase
+      .from("workspaces")
+      .select("id")
+      .eq("id", data.workspaceId)
+      .maybeSingle();
     if (!own) throw new Error("غير مصرّح.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { learnFromPerformance } = await import("./content-calendar.server");

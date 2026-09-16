@@ -43,13 +43,23 @@ export const saveBusinessProfile = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    await saveProfile(context.supabase, data.workspaceId, data.url, data.profile as unknown as BusinessProfile);
+    await saveProfile(
+      context.supabase,
+      data.workspaceId,
+      data.url,
+      data.profile as unknown as BusinessProfile,
+    );
     return { ok: true as const };
   });
 
 type Client = SupabaseClient<Database>;
 
-async function saveProfile(supabase: Client, workspaceId: string, url: string, profile: BusinessProfile) {
+async function saveProfile(
+  supabase: Client,
+  workspaceId: string,
+  url: string,
+  profile: BusinessProfile,
+) {
   const website = url ? (/^https?:\/\//i.test(url) ? url : `https://${url}`) : null;
   const patch: Record<string, unknown> = {
     profile,
@@ -77,7 +87,11 @@ async function saveProfile(supabase: Client, workspaceId: string, url: string, p
   ]
     .filter(Boolean)
     .join("\n");
-  await supabase.from("brain_items").delete().eq("workspace_id", workspaceId).eq("title", "ملف العلامة");
+  await supabase
+    .from("brain_items")
+    .delete()
+    .eq("workspace_id", workspaceId)
+    .eq("title", "ملف العلامة");
   await supabase.from("brain_items").insert({
     workspace_id: workspaceId,
     kind: "note",

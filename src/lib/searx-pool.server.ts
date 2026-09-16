@@ -98,7 +98,11 @@ async function askInstance(base: string, query: string, ms: number): Promise<Sea
   };
   const rows = (json.results ?? [])
     .filter((r) => r.url && r.title)
-    .map((r) => ({ title: r.title!.slice(0, 200), url: r.url!, snippet: (r.content ?? "").slice(0, 300) }));
+    .map((r) => ({
+      title: r.title!.slice(0, 200),
+      url: r.url!,
+      snippet: (r.content ?? "").slice(0, 300),
+    }));
   if (!rows.length) throw new Error(`${base} empty`);
   return rows;
 }

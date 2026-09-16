@@ -95,7 +95,9 @@ export function ReelStudio({ workspaceId, images, aspect, onAttach, attached }: 
               onClick={() => setSeconds(d)}
               className={cn(
                 "rounded-lg px-2 py-1 text-[0.66rem] font-bold transition-colors",
-                seconds === d ? "bg-foreground text-background" : "text-muted-foreground hover:bg-secondary",
+                seconds === d
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-secondary",
               )}
             >
               {d} ث/مشهد
@@ -119,7 +121,12 @@ export function ReelStudio({ workspaceId, images, aspect, onAttach, attached }: 
                     order >= 0 ? "border-jade" : "border-border hover:-translate-y-0.5",
                   )}
                 >
-                  <img src={url} alt="مشهد" className="aspect-square w-full object-cover" loading="lazy" />
+                  <img
+                    src={url}
+                    alt="مشهد"
+                    className="aspect-square w-full object-cover"
+                    loading="lazy"
+                  />
                   {order >= 0 ? (
                     <span className="absolute end-1 top-1 grid size-5 place-items-center rounded-full bg-foreground text-[0.6rem] font-bold text-background">
                       {order + 1}
@@ -150,7 +157,11 @@ export function ReelStudio({ workspaceId, images, aspect, onAttach, attached }: 
                 onClick={() => void build()}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-foreground px-3.5 py-2 text-xs font-bold text-background disabled:opacity-40"
               >
-                {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Film className="size-3.5" />}
+                {busy ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Film className="size-3.5" />
+                )}
                 {busy ? `جارٍ البناء ${Math.round(progress * 100)}%` : "ابنِ الفيديو"}
               </button>
             </div>
@@ -168,7 +179,12 @@ export function ReelStudio({ workspaceId, images, aspect, onAttach, attached }: 
 
       {preview ? (
         <div className="mt-3 space-y-2">
-          <video src={preview.url} controls playsInline className="max-h-72 w-full rounded-xl border border-border bg-black object-contain" />
+          <video
+            src={preview.url}
+            controls
+            playsInline
+            className="max-h-72 w-full rounded-xl border border-border bg-black object-contain"
+          />
           <div className="flex flex-wrap items-center gap-2">
             <a
               href={preview.url}
@@ -183,7 +199,11 @@ export function ReelStudio({ workspaceId, images, aspect, onAttach, attached }: 
               onClick={() => void attachVideo()}
               className="inline-flex items-center gap-1.5 rounded-xl bg-foreground px-3 py-2 text-xs font-bold text-background disabled:opacity-40"
             >
-              {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
+              {busy ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Check className="size-3.5" />
+              )}
               {uploaded ? "مُرفق ✓" : "أرفقه بالمنشور"}
             </button>
           </div>

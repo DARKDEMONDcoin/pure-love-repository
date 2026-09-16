@@ -11,7 +11,6 @@ import { BrandLoader } from "@/components/site/BrandLoader";
 import { useWorkspace } from "@/lib/data";
 import { buildReport } from "@/lib/reports.functions";
 
-
 export const Route = createFileRoute("/app/reports")({
   head: () => ({
     meta: [
@@ -88,7 +87,9 @@ function SourceCard({
   const Icon = ok ? CheckCircle2 : status.state === "error" ? AlertTriangle : PlugZap;
   return (
     <div className={`flex items-start gap-3 rounded-2xl border p-4 ${tone}`}>
-      <Icon className={`mt-0.5 size-5 shrink-0 ${ok ? "text-jade" : status.state === "error" ? "text-coral" : "text-muted-foreground"}`} />
+      <Icon
+        className={`mt-0.5 size-5 shrink-0 ${ok ? "text-jade" : status.state === "error" ? "text-coral" : "text-muted-foreground"}`}
+      />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-black">{label}</p>
         <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{status.message}</p>
@@ -108,13 +109,9 @@ function SourceCard({
   );
 }
 
-
 function ReportsPage() {
   const { data: workspace } = useWorkspace();
   const build = useServerFn(buildReport);
-
-
-
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["report", workspace?.id],
@@ -161,9 +158,18 @@ function ReportsPage() {
           </header>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2 print:hidden">
-            <SourceCard label="Google Search Console" status={data.sources.search} workspaceId={workspace?.id} kind="search-console" />
-            <SourceCard label="Google Analytics 4" status={data.sources.analytics} workspaceId={workspace?.id} kind="analytics" />
-
+            <SourceCard
+              label="Google Search Console"
+              status={data.sources.search}
+              workspaceId={workspace?.id}
+              kind="search-console"
+            />
+            <SourceCard
+              label="Google Analytics 4"
+              status={data.sources.analytics}
+              workspaceId={workspace?.id}
+              kind="analytics"
+            />
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

@@ -218,7 +218,8 @@ async function freeChatInner(
       } catch (error) {
         lastError = (error as Error).message;
         if (error instanceof DailyFreeLimitError) throw error;
-        if (attempt >= tries - 1 || timedOut(lastError) || !transient(lastError) || outOfBudget()) throw error;
+        if (attempt >= tries - 1 || timedOut(lastError) || !transient(lastError) || outOfBudget())
+          throw error;
         await new Promise((r) => setTimeout(r, 1200 * 2 ** attempt + Math.random() * 900));
       }
     }
@@ -227,7 +228,9 @@ async function freeChatInner(
   if (keys.lovable) {
     // المخرجات الطويلة (مقال كامل): GPT-5 يتجاوز 90 ثانية ولا يقبل حدّ الطول — نبدأ بالنموذج السريع.
     const long = (options.maxTokens ?? 1800) > 2500;
-    const order = long ? [...LOVABLE_MODELS].sort((a, b) => Number(isGpt5(a)) - Number(isGpt5(b))) : LOVABLE_MODELS;
+    const order = long
+      ? [...LOVABLE_MODELS].sort((a, b) => Number(isGpt5(a)) - Number(isGpt5(b)))
+      : LOVABLE_MODELS;
     for (const model of order) {
       if (outOfBudget()) break;
       if (long && isGpt5(model) && remaining() < 90_000) continue;
@@ -254,7 +257,8 @@ async function freeChatInner(
       }
     }
   }
-  if (outOfBudget()) throw new Error(`تعذّر توليد الرد في الوقت المتاح (${lastError || "المزوّدات بطيئة"}).`);
+  if (outOfBudget())
+    throw new Error(`تعذّر توليد الرد في الوقت المتاح (${lastError || "المزوّدات بطيئة"}).`);
 
   if (!apiKey) throw new Error(`تعذّر توليد الرد (${lastError || "لا يوجد مزوّد مهيأ"}).`);
 
@@ -383,17 +387,10 @@ export async function freeChatStream(
   for (const attempt of tries) {
     try {
       return await limitLlm(() =>
-        callStream(
-          attempt.endpoint,
-          attempt.key,
-          attempt.model,
-          messages,
-          options,
-          (chunk) => {
-            emitted = true;
-            handlers.onDelta(chunk);
-          },
-        ),
+        callStream(attempt.endpoint, attempt.key, attempt.model, messages, options, (chunk) => {
+          emitted = true;
+          handlers.onDelta(chunk);
+        }),
       );
     } catch (error) {
       console.warn(

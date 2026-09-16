@@ -125,7 +125,13 @@ function draftMessage(body: string, providers: string[]): string {
 /** ينشر المسودة المعتمدة على كل منصة مستهدفة ويعيد ملخصاً نصياً. */
 async function publishDraft(
   admin: Admin,
-  draft: { id: string; workspace_id: string; body: string; providers: string[]; image_url: string | null },
+  draft: {
+    id: string;
+    workspace_id: string;
+    body: string;
+    providers: string[];
+    image_url: string | null;
+  },
 ): Promise<string> {
   const { publishQueuedPost } = await import("./social-queue.server");
   const lines: string[] = [];
@@ -165,7 +171,10 @@ async function publishDraft(
 
   await admin
     .from("command_drafts")
-    .update({ status: anyOk ? "published" : "failed", last_error: anyOk ? null : lines.join(" | ") })
+    .update({
+      status: anyOk ? "published" : "failed",
+      last_error: anyOk ? null : lines.join(" | "),
+    })
     .eq("id", draft.id);
 
   return lines.join("\n") || "لم تُحدَّد منصة للنشر.";

@@ -1,5 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { Check, ArrowLeft, Settings, Link2, MessageSquare, CheckSquare, Zap, BarChart } from "lucide-react";
+import {
+  Check,
+  ArrowLeft,
+  Settings,
+  Link2,
+  MessageSquare,
+  CheckSquare,
+  Zap,
+  BarChart,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import {
@@ -120,13 +129,7 @@ export function ActivationMap({
 
   if (variant === "compact") {
     return (
-      <Link
-        to={next.to}
-        className={cn(
-          "activation-compact",
-          className,
-        )}
-      >
+      <Link to={next.to} className={cn("activation-compact", className)}>
         <span className="activation-count">
           {doneCount}/{steps.length}
         </span>
@@ -142,7 +145,12 @@ export function ActivationMap({
   }
 
   return (
-    <section className={cn("overflow-hidden rounded-3xl border border-border bg-card shadow-card", className)}>
+    <section
+      className={cn(
+        "overflow-hidden rounded-3xl border border-border bg-card shadow-card",
+        className,
+      )}
+    >
       <div className="grid gap-3 border-b border-border/70 bg-secondary/25 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6">
         <div className="min-w-0">
           <p className="text-[0.7rem] font-bold tracking-wide text-primary">تشغيل فريقك</p>
@@ -176,7 +184,9 @@ export function ActivationMap({
             key={s.id}
             className={cn(
               "flex items-start gap-3 rounded-2xl border p-3.5 transition-colors sm:p-4",
-              s.done ? "border-foreground/15 bg-secondary/40" : "border-border/70 hover:bg-secondary/40",
+              s.done
+                ? "border-foreground/15 bg-secondary/40"
+                : "border-border/70 hover:bg-secondary/40",
               s.id === next.id && "border-foreground/40 bg-secondary/50",
             )}
           >
@@ -186,16 +196,27 @@ export function ActivationMap({
                 s.done ? "bg-foreground text-background" : "bg-secondary text-ink-soft",
               )}
             >
-              {s.done ? <Check className="size-3.5" strokeWidth={3} /> : <s.icon className="size-3.5" /> }
+              {s.done ? (
+                <Check className="size-3.5" strokeWidth={3} />
+              ) : (
+                <s.icon className="size-3.5" />
+              )}
             </span>
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-2 text-sm font-bold sm:text-base">
                 {s.title}
-                {s.id === next.id ? <span className="size-1.5 shrink-0 rounded-full bg-foreground" /> : null}
+                {s.id === next.id ? (
+                  <span className="size-1.5 shrink-0 rounded-full bg-foreground" />
+                ) : null}
               </span>
-              <span className="mt-1 block text-xs leading-relaxed text-ink-soft sm:text-sm">{s.lead}</span>
+              <span className="mt-1 block text-xs leading-relaxed text-ink-soft sm:text-sm">
+                {s.lead}
+              </span>
               {!s.done ? (
-                <Link to={s.to} className="mt-2 inline-block text-xs font-bold text-foreground underline underline-offset-4">
+                <Link
+                  to={s.to}
+                  className="mt-2 inline-block text-xs font-bold text-foreground underline underline-offset-4"
+                >
                   {s.cta} ←
                 </Link>
               ) : null}

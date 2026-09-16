@@ -13,7 +13,11 @@ export function BrandLoader({
 }) {
   const px = size === "sm" ? 28 : size === "lg" ? 64 : 44;
   return (
-    <div className={cn("brand-loader", `brand-loader-${size}`, className)} role="status" aria-live="polite">
+    <div
+      className={cn("brand-loader", `brand-loader-${size}`, className)}
+      role="status"
+      aria-live="polite"
+    >
       <span className="brand-loader-ring">
         <span className="brand-loader-arc" aria-hidden />
         <span className="brand-loader-mark">

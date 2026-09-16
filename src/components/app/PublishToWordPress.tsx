@@ -6,13 +6,7 @@ import { Check, Loader2, Upload } from "lucide-react";
 import { publishToWordPress } from "@/lib/integrations.functions";
 import { toArticle } from "@/lib/markdown";
 
-export function PublishToWordPress({
-  workspaceId,
-  body,
-}: {
-  workspaceId: string;
-  body: string;
-}) {
+export function PublishToWordPress({ workspaceId, body }: { workspaceId: string; body: string }) {
   const qc = useQueryClient();
   const publish = useServerFn(publishToWordPress);
   const [link, setLink] = useState<string | null>(null);
@@ -53,7 +47,11 @@ export function PublishToWordPress({
         disabled={send.isPending}
         className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary disabled:opacity-60"
       >
-        {send.isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Upload className="size-3.5" />}
+        {send.isPending ? (
+          <Loader2 className="size-3.5 animate-spin" />
+        ) : (
+          <Upload className="size-3.5" />
+        )}
         أرسل كمسودة إلى ووردبريس
       </button>
       {error ? <p className="mt-1.5 text-xs font-semibold text-coral">{error}</p> : null}

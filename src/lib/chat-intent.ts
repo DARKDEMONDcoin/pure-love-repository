@@ -43,7 +43,12 @@ export function chatIntent(message: string): ChatIntent {
   if (!text) return "smalltalk";
   if (WORK.test(text)) return "work";
   if (SMALL.test(text) && text.length < 60) return "smalltalk";
-  if (/[؟?]\s*$/.test(text) || /^(مين|من|ايه|إيه|ما هو|ما هي|كام|كم|ليه|لماذا|امتى|إمتى|متى|فين|أين|وين|هل|ازاي|إزاي|كيف)(?![\p{L}])/u.test(text))
+  if (
+    /[؟?]\s*$/.test(text) ||
+    /^(مين|من|ايه|إيه|ما هو|ما هي|كام|كم|ليه|لماذا|امتى|إمتى|متى|فين|أين|وين|هل|ازاي|إزاي|كيف)(?![\p{L}])/u.test(
+      text,
+    )
+  )
     return "question";
   return text.length > 160 ? "work" : "question";
 }

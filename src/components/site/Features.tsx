@@ -81,7 +81,9 @@ function DialectVisual() {
       <div className="fv-card">
         <p className="fv-text">أطلقنا اليوم تجربة جديدة تليق بعملائنا في المنطقة.</p>
         <div className="fv-bars">
-          <span /><span /><span />
+          <span />
+          <span />
+          <span />
         </div>
       </div>
     </div>
@@ -91,10 +93,14 @@ function DialectVisual() {
 function MemoryVisual() {
   return (
     <div className="feature-visual feature-visual-memory" aria-hidden="true">
-      <div className="fv-core"><b>سهل</b></div>
+      <div className="fv-core">
+        <b>سهل</b>
+      </div>
       <div className="fv-nodes">
         {["محتوى", "إعلانات", "دعم", "تحليلات", "سيو"].map((n) => (
-          <span key={n} className="fv-node">{n}</span>
+          <span key={n} className="fv-node">
+            {n}
+          </span>
         ))}
       </div>
     </div>
@@ -115,9 +121,7 @@ export function Features() {
         <Reveal>
           <div className="flex flex-col items-start gap-5 md:flex-row md:items-end md:justify-between">
             <div>
-              <span className="section-eyebrow">
-                لماذا سهل
-              </span>
+              <span className="section-eyebrow">لماذا سهل</span>
               <h2 className="mt-4 max-w-2xl font-display text-4xl leading-[1.15] font-black md:text-5xl">
                 كل ما ينقص الأدوات الأجنبية — <span className="text-gradient">مبني من الأساس</span>
               </h2>

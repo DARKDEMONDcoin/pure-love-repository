@@ -48,7 +48,6 @@ async function readMetaWithInbox(
   }
 }
 
-
 type Admin = SupabaseClient<Database>;
 
 export type LiveContext = { block: string; used: string[] };
@@ -64,7 +63,6 @@ export const employeeReadProviders: Record<string, string[]> = {
   dana: [],
   nour: [],
 };
-
 
 async function accountFor(
   admin: Admin,
@@ -115,7 +113,9 @@ export async function liveContextFor(
   if (!ok.length) return EMPTY;
 
   return {
-    block: ok.map((p) => `### ${pipedreamApp(p.provider)?.label ?? p.provider}\n${p.text}`).join("\n\n"),
+    block: ok
+      .map((p) => `### ${pipedreamApp(p.provider)?.label ?? p.provider}\n${p.text}`)
+      .join("\n\n"),
     used: ok.map((p) => pipedreamApp(p.provider)?.label ?? p.provider),
   };
 }
@@ -191,7 +191,9 @@ async function readOutlook(
 
 /* ————— ميتا: آخر منشورات الصفحة / حساب إنستجرام ————— */
 
-type MetaAccounts = { data?: { id: string; name?: string; instagram_business_account?: { id: string } }[] };
+type MetaAccounts = {
+  data?: { id: string; name?: string; instagram_business_account?: { id: string } }[];
+};
 type MetaPosts = {
   data?: {
     message?: string;
@@ -218,8 +220,7 @@ async function readMeta(
   const page = accounts.data?.[0];
   if (!page) return "لا صفحة مرتبطة بالحساب.";
 
-  const target =
-    provider === "instagram" ? page.instagram_business_account?.id : page.id;
+  const target = provider === "instagram" ? page.instagram_business_account?.id : page.id;
   if (!target) return "لا حساب إنستجرام احترافي مرتبط بالصفحة.";
 
   const url =
@@ -239,7 +240,6 @@ async function readMeta(
     )
     .join("\n");
 }
-
 
 /* ————— جيميل: آخر الرسائل غير المقروءة في صندوق الوارد ————— */
 

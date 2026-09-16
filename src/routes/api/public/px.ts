@@ -21,7 +21,10 @@ const pixel = () =>
 
 async function hash(input: string) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return [...new Uint8Array(buf)].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return [...new Uint8Array(buf)]
+    .slice(0, 12)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function sourceOf(referrer: string, host: string) {
@@ -51,7 +54,9 @@ export const Route = createFileRoute("/api/public/px")({
             .eq("workspace_id", workspaceId)
             .eq("provider", "web-analytics")
             .maybeSingle();
-          const allowedHost = ((cred?.config as { host?: string } | undefined)?.host ?? "").toLowerCase();
+          const allowedHost = (
+            (cred?.config as { host?: string } | undefined)?.host ?? ""
+          ).toLowerCase();
           if (!allowedHost) return pixel();
 
           const host = (url.searchParams.get("h") ?? "").replace(/^www\./, "").toLowerCase();
@@ -59,15 +64,15 @@ export const Route = createFileRoute("/api/public/px")({
 
           const referrer = url.searchParams.get("r") ?? "";
           const country =
-            request.headers.get("cf-ipcountry") ??
-            request.headers.get("x-vercel-ip-country") ??
-            "";
+            request.headers.get("cf-ipcountry") ?? request.headers.get("x-vercel-ip-country") ?? "";
           const ip =
             request.headers.get("cf-connecting-ip") ??
             (request.headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim() ??
             "";
           const ua = request.headers.get("user-agent") ?? "";
-          const visitor = await hash(`${workspaceId}|${ip}|${ua}|${new Date().toISOString().slice(0, 10)}`);
+          const visitor = await hash(
+            `${workspaceId}|${ip}|${ua}|${new Date().toISOString().slice(0, 10)}`,
+          );
 
           await supabaseAdmin.from("site_visits").insert({
             workspace_id: workspaceId,

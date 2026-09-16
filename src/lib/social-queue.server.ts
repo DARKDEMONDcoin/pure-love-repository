@@ -53,7 +53,6 @@ function mediaOf(meta: unknown): { url: string; kind: "image" | "video" }[] {
   });
 }
 
-
 /** ينشر منشوراً واحداً ويحدّث صفّه — يُستدعى من الطابور ومن النشر الفوري. */
 export async function publishQueuedPost(admin: Admin, id: string): Promise<QueueReport> {
   const { data: post, error } = await admin
@@ -78,7 +77,6 @@ export async function publishQueuedPost(admin: Admin, id: string): Promise<Queue
       ...(videoUrl ? { videoUrl } : {}),
       ...(media.length ? { media } : {}),
     });
-
 
     await admin
       .from("social_posts")

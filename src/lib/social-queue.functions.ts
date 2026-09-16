@@ -51,7 +51,6 @@ function metaOf(data: {
   };
 }
 
-
 /** أقصى حجم وسائط يُرفع من الجهاز: ٥٠ ميجابايت. */
 const MAX_UPLOAD = 50 * 1024 * 1024;
 
@@ -122,7 +121,6 @@ export const scheduleSocialPost = createServerFn({ method: "POST" })
     if (!connected) {
       throw new Error("هذه المنصة غير مربوطة بعد — اربطها من صفحة التكاملات ثم أعد الجدولة.");
     }
-
 
     const { data: row, error } = await admin
       .from("social_posts")

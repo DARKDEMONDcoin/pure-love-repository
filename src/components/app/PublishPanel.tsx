@@ -23,10 +23,13 @@ import { PostQuality } from "@/components/app/PostQuality";
 import { useConnectedAccounts, useWorkspace } from "@/lib/data";
 import { adaptForProvider, bestTimeFor, extractPostText } from "@/lib/post-format";
 import { PUBLISHABLE, requestedPublishTargets, providerLabel } from "@/lib/platforms";
-import { publishSocialNow, scheduleSocialPost, uploadSocialMedia } from "@/lib/social-queue.functions";
+import {
+  publishSocialNow,
+  scheduleSocialPost,
+  uploadSocialMedia,
+} from "@/lib/social-queue.functions";
 import { generateMedia } from "@/lib/media.functions";
 import { bestPostingTimes } from "@/lib/best-time.functions";
-
 
 type BestTimes = {
   source: "audience" | "history" | "baseline";
@@ -75,7 +78,15 @@ type Media = { url: string; kind: "image" | "video"; label: string };
  * كامل الحرية: تعديل النص يدوياً، إبقاء الصورة المولّدة أو حذفها أو رفع صورة/فيديو من جهازه،
  * والنشر الآن أو جدولة أكثر من موعد.
  */
-export function PublishPanel({ workspaceId, employeeId, taskId, channel, request, body, onPublished }: Props) {
+export function PublishPanel({
+  workspaceId,
+  employeeId,
+  taskId,
+  channel,
+  request,
+  body,
+  onPublished,
+}: Props) {
   const qc = useQueryClient();
   const upload = useServerFn(uploadSocialMedia);
   const { data: accounts, isLoading } = useConnectedAccounts(workspaceId);
@@ -85,7 +96,9 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
     () =>
       (accounts ?? [])
         .map((a) => a.provider)
-        .filter((p): p is (typeof PUBLISHABLE)[number] => (PUBLISHABLE as readonly string[]).includes(p)),
+        .filter((p): p is (typeof PUBLISHABLE)[number] =>
+          (PUBLISHABLE as readonly string[]).includes(p),
+        ),
     [accounts],
   );
 
@@ -93,7 +106,8 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
   const requested = useMemo(() => {
     const fromUser = request ? requestedPublishTargets(request) : [];
     const list = [...fromUser];
-    if (!list.length && (PUBLISHABLE as readonly string[]).includes(channel)) list.push(channel as never);
+    if (!list.length && (PUBLISHABLE as readonly string[]).includes(channel))
+      list.push(channel as never);
     return [...new Set(list)];
   }, [request, channel]);
 
@@ -143,10 +157,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
   const dropMedia = (url: string) => setMedia((prev) => prev.filter((m) => m.url !== url));
 
   // مواعيد متعددة: المستخدم يختار الكمية والأوقات التي يريدها.
-  const [slots, setSlots] = useState<string[]>(() => [localInputValue(new Date(Date.now() + 3_600_000))]);
+  const [slots, setSlots] = useState<string[]>(() => [
+    localInputValue(new Date(Date.now() + 3_600_000)),
+  ]);
   const [busy, setBusy] = useState<"now" | "later" | null>(null);
   const [note, setNote] = useState<string | null>(null);
-
 
   // لوحة النشر اختيارية تماماً: لا تفتح إلا إذا أراد المستخدم نشر هذا الرد.
   const [open, setOpen] = useState(false);
@@ -230,9 +245,16 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
   /** يولّد صوراً: تلقائياً من نص المنشور، أو من وصف كتبه المستخدم بنفسه. */
   const runGenerate = async (mode: "auto" | "manual") => {
     const prompt =
-      mode === "manual" ? aiPrompt.trim() : text.replace(/#[\p{L}\p{N}_]+/gu, " ").trim().slice(0, 600);
+      mode === "manual"
+        ? aiPrompt.trim()
+        : text
+            .replace(/#[\p{L}\p{N}_]+/gu, " ")
+            .trim()
+            .slice(0, 600);
     if (prompt.length < 3) {
-      setNote(mode === "manual" ? "اكتب وصف الصورة أولاً." : "نص المنشور قصير جداً لتوليد صورة منه.");
+      setNote(
+        mode === "manual" ? "اكتب وصف الصورة أولاً." : "نص المنشور قصير جداً لتوليد صورة منه.",
+      );
       return;
     }
     setAiBusy(mode);
@@ -311,7 +333,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
         try {
           if (at) await scheduleSocialPost({ data: { ...base, scheduledAt: at.toISOString() } });
           else await publishSocialNow({ data: base });
-          ok.push(at ? `${appLabel(provider)} (${at.toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" })})` : appLabel(provider));
+          ok.push(
+            at
+              ? `${appLabel(provider)} (${at.toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" })})`
+              : appLabel(provider),
+          );
         } catch (e) {
           failed.push(`${appLabel(provider)}: ${e instanceof Error ? e.message : "تعذّر التنفيذ"}`);
         }
@@ -361,9 +387,6 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
     );
   }
 
-
-
-
   const chipClass = (on: boolean) =>
     `inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
       on ? "border-foreground bg-foreground text-background" : "border-border hover:bg-secondary"
@@ -380,7 +403,9 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
         >
           <Send className="size-3.5" /> انشر هذا المنشور
         </button>
-        <span className="text-[11px] text-muted-foreground">اختياري — أنت تختار المنصة واليوم والساعة.</span>
+        <span className="text-[11px] text-muted-foreground">
+          اختياري — أنت تختار المنصة واليوم والساعة.
+        </span>
       </div>
     );
   }
@@ -389,7 +414,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
     <div className="mt-4 rounded-2xl border border-border bg-secondary/30 p-4">
       <div className="mb-3 flex items-center justify-between">
         <span className="text-xs font-bold text-muted-foreground">خيارات النشر</span>
-        <button type="button" onClick={() => setOpen(false)} className="text-xs font-bold text-muted-foreground hover:underline">
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-xs font-bold text-muted-foreground hover:underline"
+        >
           إخفاء
         </button>
       </div>
@@ -408,7 +437,9 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
               <AppIcon name={p} className="size-3.5" />
               {appLabel(p)}
               {requested.includes(p as never) ? (
-                <span className="rounded-full bg-primary/20 px-1.5 text-[10px] text-primary">طلبته</span>
+                <span className="rounded-full bg-primary/20 px-1.5 text-[10px] text-primary">
+                  طلبته
+                </span>
               ) : null}
             </button>
           ) : (
@@ -429,16 +460,20 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
       </div>
       {missing.length && !active.length ? (
         <p className="mt-2 text-xs font-bold text-coral">
-          طلبت النشر على {missing.map(providerLabel).join(" و")} وهو غير مربوط بعد — لن نبدّله بمنصة أخرى دون إذنك. اربطه أو اختر منصة أخرى يدوياً.
+          طلبت النشر على {missing.map(providerLabel).join(" و")} وهو غير مربوط بعد — لن نبدّله بمنصة
+          أخرى دون إذنك. اربطه أو اختر منصة أخرى يدوياً.
         </p>
       ) : null}
-
 
       {/* النص */}
       <div className="mt-4">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-muted-foreground">نص المنشور</span>
-          <button type="button" onClick={() => setEditing((v) => !v)} className="inline-flex items-center gap-1 text-xs font-bold hover:underline">
+          <button
+            type="button"
+            onClick={() => setEditing((v) => !v)}
+            className="inline-flex items-center gap-1 text-xs font-bold hover:underline"
+          >
             <Pencil className="size-3.5" /> {editing ? "إنهاء التعديل" : "عدّل يدوياً"}
           </button>
         </div>
@@ -451,7 +486,10 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
             className="mt-2 w-full rounded-xl border border-border bg-card p-3 text-sm leading-relaxed outline-none focus:ring-2 focus:ring-foreground/20"
           />
         ) : (
-          <p className="mt-2 line-clamp-4 whitespace-pre-line rounded-xl bg-card/60 p-3 text-sm leading-relaxed text-ink-soft" dir="auto">
+          <p
+            className="mt-2 line-clamp-4 whitespace-pre-line rounded-xl bg-card/60 p-3 text-sm leading-relaxed text-ink-soft"
+            dir="auto"
+          >
             {text}
           </p>
         )}
@@ -489,7 +527,10 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {media.map((item) => (
-            <div key={item.url} className="group relative overflow-hidden rounded-xl border border-border bg-card">
+            <div
+              key={item.url}
+              className="group relative overflow-hidden rounded-xl border border-border bg-card"
+            >
               {item.kind === "image" ? (
                 <img
                   src={item.url}
@@ -498,7 +539,9 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
                   loading="lazy"
                   onError={() => {
                     dropMedia(item.url);
-                    setNote("أُزيلت صورة لا يمكن تحميلها — ولّد صورة جديدة أو ارفع واحدة من جهازك.");
+                    setNote(
+                      "أُزيلت صورة لا يمكن تحميلها — ولّد صورة جديدة أو ارفع واحدة من جهازك.",
+                    );
                   }}
                 />
               ) : (
@@ -531,7 +574,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
             disabled={uploading || media.length >= 10}
             className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary disabled:opacity-60"
           >
-            {uploading ? <Loader2 className="size-3.5 animate-spin" /> : <ImagePlus className="size-3.5" />}
+            {uploading ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <ImagePlus className="size-3.5" />
+            )}
             ارفع صوراً/فيديو
           </button>
           <button
@@ -540,7 +587,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
             disabled={!!aiBusy || media.length >= 10}
             className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary disabled:opacity-60"
           >
-            {aiBusy === "auto" ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+            {aiBusy === "auto" ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="size-3.5" />
+            )}
             ولّد صورة من نص المنشور
           </button>
           <button
@@ -548,7 +599,9 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
             onClick={() => setAiOpen((v) => !v)}
             aria-expanded={aiOpen}
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
-              aiOpen ? "border-foreground bg-foreground text-background" : "border-border hover:bg-secondary"
+              aiOpen
+                ? "border-foreground bg-foreground text-background"
+                : "border-border hover:bg-secondary"
             }`}
           >
             <Wand2 className="size-3.5" /> ولّد صورة بوصفي
@@ -556,7 +609,9 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
           {generated && !media.some((m) => m.url === generated) ? (
             <button
               type="button"
-              onClick={() => addMedia([{ url: generated, kind: "image", label: "الصورة المولّدة" }])}
+              onClick={() =>
+                addMedia([{ url: generated, kind: "image", label: "الصورة المولّدة" }])
+              }
               className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold hover:bg-secondary"
             >
               <Sparkles className="size-3.5" /> أعد الصورة المولّدة
@@ -616,7 +671,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
                 disabled={!!aiBusy || !aiPrompt.trim()}
                 className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-1.5 text-xs font-bold text-background disabled:opacity-60"
               >
-                {aiBusy === "manual" ? <Loader2 className="size-3.5 animate-spin" /> : <Wand2 className="size-3.5" />}
+                {aiBusy === "manual" ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Wand2 className="size-3.5" />
+                )}
                 ولّد الآن
               </button>
             </div>
@@ -625,27 +684,34 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
 
         {media.some((m) => m.kind === "video") ? (
           <p className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Film className="size-3.5" /> الفيديو يُنشر على فيسبوك وإنستجرام (Reels عمودي حتى ٩٠ ثانية).
+            <Film className="size-3.5" /> الفيديو يُنشر على فيسبوك وإنستجرام (Reels عمودي حتى ٩٠
+            ثانية).
           </p>
         ) : null}
         {media.length > 1 ? (
           <p className="mt-2 text-[11px] text-muted-foreground">
-            أكثر من وسيطة تُنشر كألبوم على فيسبوك وكاروسيل على إنستجرام — أما باقي المنصات فتأخذ الصورة الأولى.
+            أكثر من وسيطة تُنشر كألبوم على فيسبوك وكاروسيل على إنستجرام — أما باقي المنصات فتأخذ
+            الصورة الأولى.
           </p>
         ) : null}
         {active.includes("instagram") && !media.length ? (
-          <p className="mt-2 text-xs text-muted-foreground">إنستجرام يتطلّب صورة أو فيديو — ولّد صورة أو ارفع من جهازك.</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            إنستجرام يتطلّب صورة أو فيديو — ولّد صورة أو ارفع من جهازك.
+          </p>
         ) : null}
       </div>
 
       {/* المواعيد */}
       <div className="mt-4">
-        <span className="text-xs font-bold text-muted-foreground">مواعيد الجدولة (اختياري — اختر اليوم والساعة والدقيقة)</span>
+        <span className="text-xs font-bold text-muted-foreground">
+          مواعيد الجدولة (اختياري — اختر اليوم والساعة والدقيقة)
+        </span>
         <div className="mt-2 space-y-3">
           {slots.map((s, i) => {
             const [datePart = "", timePart = "00:00"] = s.split("T");
             const [hourPart = "00", minutePart = "00"] = timePart.split(":");
-            const setPart = (next: string) => setSlots((all) => all.map((v, j) => (j === i ? next : v)));
+            const setPart = (next: string) =>
+              setSlots((all) => all.map((v, j) => (j === i ? next : v)));
             return (
               <div key={i} className="rounded-2xl border border-border bg-card/60 p-3">
                 <div className="flex flex-wrap items-center gap-2">
@@ -676,17 +742,27 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
                       aria-label={`دقيقة النشر ${i + 1}`}
                       className="bg-transparent px-1 text-sm font-bold outline-none"
                     >
-                      {["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
+                      {["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map(
+                        (m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ),
+                      )}
                     </select>
                   </span>
-                  <button type="button" onClick={() => shiftDays(i, 1)} className="rounded-full border border-border px-3 py-2 text-xs font-bold hover:bg-secondary">
+                  <button
+                    type="button"
+                    onClick={() => shiftDays(i, 1)}
+                    className="rounded-full border border-border px-3 py-2 text-xs font-bold hover:bg-secondary"
+                  >
                     +يوم
                   </button>
-                  <button type="button" onClick={() => shiftDays(i, 7)} className="rounded-full border border-border px-3 py-2 text-xs font-bold hover:bg-secondary">
+                  <button
+                    type="button"
+                    onClick={() => shiftDays(i, 7)}
+                    className="rounded-full border border-border px-3 py-2 text-xs font-bold hover:bg-secondary"
+                  >
                     +أسبوع
                   </button>
                   <button
@@ -695,11 +771,20 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
                     disabled={!active.length || loadingTimes}
                     className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-bold hover:bg-secondary disabled:opacity-60"
                   >
-                    {loadingTimes ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+                    {loadingTimes ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="size-3.5" />
+                    )}
                     أفضل وقت لجمهورك
                   </button>
                   {slots.length > 1 ? (
-                    <button type="button" onClick={() => setSlots((all) => all.filter((_, j) => j !== i))} aria-label="حذف الموعد" className="ms-auto rounded-full p-2 text-muted-foreground hover:bg-secondary">
+                    <button
+                      type="button"
+                      onClick={() => setSlots((all) => all.filter((_, j) => j !== i))}
+                      aria-label="حذف الموعد"
+                      className="ms-auto rounded-full p-2 text-muted-foreground hover:bg-secondary"
+                    >
                       <Trash2 className="size-4" />
                     </button>
                   ) : null}
@@ -721,7 +806,10 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
                 <p className="mt-2 text-[11px] text-muted-foreground">
                   {Number.isNaN(new Date(s).getTime())
                     ? "الموعد غير مكتمل — اختر اليوم والساعة."
-                    : new Date(s).toLocaleString("ar-EG", { dateStyle: "full", timeStyle: "short" })}
+                    : new Date(s).toLocaleString("ar-EG", {
+                        dateStyle: "full",
+                        timeStyle: "short",
+                      })}
                 </p>
               </div>
             );
@@ -729,7 +817,14 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
           {slots.length < 10 ? (
             <button
               type="button"
-              onClick={() => setSlots((all) => [...all, localInputValue(new Date(new Date(all[all.length - 1] ?? Date.now()).getTime() + 86_400_000))])}
+              onClick={() =>
+                setSlots((all) => [
+                  ...all,
+                  localInputValue(
+                    new Date(new Date(all[all.length - 1] ?? Date.now()).getTime() + 86_400_000),
+                  ),
+                ])
+              }
               className="inline-flex items-center gap-1 text-xs font-bold hover:underline"
             >
               <Plus className="size-3.5" /> موعد آخر
@@ -737,9 +832,10 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
           ) : null}
         </div>
 
-        {bestTimes ? <p className="mt-2 text-[11px] text-muted-foreground">{bestTimes.note}</p> : null}
+        {bestTimes ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">{bestTimes.note}</p>
+        ) : null}
       </div>
-
 
       {/* الإجراءات */}
       <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -749,7 +845,11 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
           disabled={!!busy || uploading || !active.length}
           className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-bold text-background disabled:opacity-60"
         >
-          {busy === "now" ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+          {busy === "now" ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Send className="size-4" />
+          )}
           انشر الآن
         </button>
         <button
@@ -758,12 +858,18 @@ export function PublishPanel({ workspaceId, employeeId, taskId, channel, request
           disabled={!!busy || uploading || !active.length}
           className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-bold transition-colors hover:bg-secondary disabled:opacity-60"
         >
-          {busy === "later" ? <Loader2 className="size-4 animate-spin" /> : <CalendarClock className="size-4" />}
+          {busy === "later" ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <CalendarClock className="size-4" />
+          )}
           جدولة {slots.length > 1 ? `(${slots.length.toLocaleString("en-US")} مواعيد)` : ""}
         </button>
       </div>
 
-      {note ? <p className="mt-3 whitespace-pre-line text-xs font-bold text-ink-soft">{note}</p> : null}
+      {note ? (
+        <p className="mt-3 whitespace-pre-line text-xs font-bold text-ink-soft">{note}</p>
+      ) : null}
     </div>
   );
 }

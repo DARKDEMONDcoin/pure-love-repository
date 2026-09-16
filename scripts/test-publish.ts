@@ -62,7 +62,8 @@ const shopify = Bun.serve({
     if (req.headers.get("x-shopify-access-token") !== "shpat_mock") {
       return new Response("unauthorized", { status: 401 });
     }
-    if (url.pathname.endsWith("/blogs.json")) return Response.json({ blogs: [{ id: 7, title: "News" }] });
+    if (url.pathname.endsWith("/blogs.json"))
+      return Response.json({ blogs: [{ id: 7, title: "News" }] });
     if (url.pathname.includes("/articles.json") && req.method === "POST") {
       const body = (await req.json()) as { article: { title: string; published: boolean } };
       received.shopify!.push(body.article);
@@ -92,11 +93,12 @@ if (!ws) throw new Error("no workspace");
 log["workspace"] = ws.name;
 
 async function connect(provider: string, config: Record<string, unknown>) {
-  await admin
-    .from("integration_credentials")
-    .upsert({ workspace_id: ws!.id, provider, config: config as never }, {
+  await admin.from("integration_credentials").upsert(
+    { workspace_id: ws!.id, provider, config: config as never },
+    {
       onConflict: "workspace_id,provider",
-    });
+    },
+  );
   const { data: existing } = await admin
     .from("integrations")
     .select("id")

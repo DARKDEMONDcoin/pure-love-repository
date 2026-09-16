@@ -65,7 +65,9 @@ export const startMetaConnect = createServerFn({ method: "POST" })
 export const disconnectMeta = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ workspaceId: z.string().uuid(), pageId: z.string().max(60).optional() }).parse(input),
+    z
+      .object({ workspaceId: z.string().uuid(), pageId: z.string().max(60).optional() })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const admin = await assertOwner(context.supabase, data.workspaceId);
@@ -169,7 +171,11 @@ export const runMetaSelfTest = createServerFn({ method: "POST" })
         });
         results.push({ provider, ok: true, postId: res.postId, permalink: res.permalink });
       } catch (e) {
-        results.push({ provider, ok: false, error: e instanceof Error ? e.message : "فشل غير معروف" });
+        results.push({
+          provider,
+          ok: false,
+          error: e instanceof Error ? e.message : "فشل غير معروف",
+        });
       }
     }
 

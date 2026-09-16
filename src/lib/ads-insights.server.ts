@@ -46,7 +46,8 @@ export async function metaAdsSummary(
 
   const lines = rows.map((r) => {
     const leads =
-      r.actions?.find((a) => a.action_type === "lead" || a.action_type === "purchase")?.value ?? "-";
+      r.actions?.find((a) => a.action_type === "lead" || a.action_type === "purchase")?.value ??
+      "-";
     return `- ${r.campaign_name ?? "?"} | صرف: ${r.spend ?? "-"} ${act.currency ?? ""} | ظهور: ${r.impressions ?? "-"} | نقرات: ${r.clicks ?? "-"} | CTR: ${r.ctr ?? "-"} | CPC: ${r.cpc ?? "-"} | تحويلات: ${leads}`;
   });
   return `الحساب: ${act.name ?? act.id}\n${lines.join("\n")}`;

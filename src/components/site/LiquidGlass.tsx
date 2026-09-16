@@ -1,7 +1,11 @@
 import { useRef, type HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-export function LiquidGlass({ className, onPointerMove, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function LiquidGlass({
+  className,
+  onPointerMove,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div

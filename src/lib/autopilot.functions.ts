@@ -46,7 +46,10 @@ const saveInput = z.object({
   brief: z.string().max(4000).default(""),
   dialect: z.string().min(2).max(20).default("خليجية"),
   // مواعيد حرّة بصيغة HH:MM بتوقيت المستخدم — حتى ٢٤ موعداً في اليوم.
-  slots: z.array(z.string().regex(/^\d{1,2}:\d{2}$/)).min(1).max(24),
+  slots: z
+    .array(z.string().regex(/^\d{1,2}:\d{2}$/))
+    .min(1)
+    .max(24),
   days: z.array(z.number().int().min(0).max(6)).min(1).max(7).default([0, 1, 2, 3, 4, 5, 6]),
   timezone: z.string().min(3).max(60).default("Asia/Riyadh"),
   mode: z.enum(["auto", "review"]),
@@ -86,7 +89,11 @@ export const saveAutopilot = createServerFn({ method: "POST" })
           timezone: timing.timezone,
           mode: data.mode,
           with_image: data.withImage,
-          next_run_at: nextRun({ slots, days: timing.days, timezone: timing.timezone }).toISOString(),
+          next_run_at: nextRun({
+            slots,
+            days: timing.days,
+            timezone: timing.timezone,
+          }).toISOString(),
           paused_reason: null,
           locked_at: null,
         },

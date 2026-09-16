@@ -6,7 +6,6 @@ import { plans, priceOf, currencyOf } from "@/data/pricing";
 import { useRegion } from "@/hooks/use-region";
 import { cn } from "@/lib/utils";
 
-
 export function Pricing() {
   const [yearly, setYearly] = useState(true);
   const { country, countryInfo } = useRegion();
@@ -25,7 +24,8 @@ export function Pricing() {
               ابدأ مجاناً وارتقِ وقت ما تحتاج. بدون عقود، وبدون رسوم مخفية.
             </p>
             <p className="mt-2 text-xs font-semibold text-muted-foreground">
-              الأسعار معروضة بعملة {countryInfo.name} ({cur.code}) تقريبياً — وتُحاسب بالريال السعودي أو الدولار.
+              الأسعار معروضة بعملة {countryInfo.name} ({cur.code}) تقريبياً — وتُحاسب بالريال
+              السعودي أو الدولار.
             </p>
             <div className="mt-7 inline-flex items-center gap-1 rounded-full border border-border bg-card p-1">
               {[
@@ -80,7 +80,12 @@ export function Pricing() {
                   >
                     {p.name}
                   </h3>
-                  <p className={cn("mt-1 text-sm", p.highlight ? "text-background/70" : "text-muted-foreground")}>
+                  <p
+                    className={cn(
+                      "mt-1 text-sm",
+                      p.highlight ? "text-background/70" : "text-muted-foreground",
+                    )}
+                  >
                     {p.desc}
                   </p>
 
@@ -130,7 +135,6 @@ export function Pricing() {
                     </Link>
                   )}
 
-
                   <ul className="mt-7 space-y-3">
                     {p.perks.map((f, pi) => (
                       <li
@@ -145,7 +149,12 @@ export function Pricing() {
                             p.highlight ? "bg-amber" : "bg-jade-deep",
                           )}
                         />
-                        <span className={cn("text-sm", p.highlight ? "text-background/90" : "text-ink-soft")}>
+                        <span
+                          className={cn(
+                            "text-sm",
+                            p.highlight ? "text-background/90" : "text-ink-soft",
+                          )}
+                        >
                           {f}
                         </span>
                       </li>

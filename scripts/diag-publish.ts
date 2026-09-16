@@ -22,8 +22,8 @@ out["accounts"] = accounts.map((a) => ({
   app: typeof a.app === "string" ? a.app : a.app?.name_slug,
 }));
 
-const fb = accounts.find(
-  (a) => (typeof a.app === "string" ? a.app : a.app?.name_slug)?.includes("facebook"),
+const fb = accounts.find((a) =>
+  (typeof a.app === "string" ? a.app : a.app?.name_slug)?.includes("facebook"),
 );
 out["fbAccount"] = fb?.id ?? null;
 
@@ -41,7 +41,12 @@ if (fb) {
 
   try {
     const pages = await proxyRequest<{
-      data?: { id: string; name?: string; access_token?: string; instagram_business_account?: { id: string } }[];
+      data?: {
+        id: string;
+        name?: string;
+        access_token?: string;
+        instagram_business_account?: { id: string };
+      }[];
     }>(config, {
       workspaceId: WS,
       accountId: fb.id,

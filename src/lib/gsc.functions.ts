@@ -22,7 +22,8 @@ export const startSearchConsoleOAuth = createServerFn({ method: "POST" })
     if (owns !== true) throw new Error("Forbidden: لا تملك هذه مساحة العمل.");
 
     const origin = new URL(getRequest().url).origin;
-    const { pipedreamConfig, createConnectToken, missingConfigError } = await import("./pipedream.server");
+    const { pipedreamConfig, createConnectToken, missingConfigError } =
+      await import("./pipedream.server");
     const config = await pipedreamConfig();
     if (!config) throw missingConfigError();
     const token = await createConnectToken(config, data.workspaceId, [origin]);
@@ -51,7 +52,12 @@ export async function loadConfig(workspaceId: string): Promise<SearchConsoleConf
 }
 
 async function assertOwner(
-  supabase: { rpc: (fn: "owns_workspace", args: { _workspace_id: string }) => PromiseLike<{ data: unknown; error: { message: string } | null }> },
+  supabase: {
+    rpc: (
+      fn: "owns_workspace",
+      args: { _workspace_id: string },
+    ) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+  },
   workspaceId: string,
 ) {
   const { data, error } = await supabase.rpc("owns_workspace", { _workspace_id: workspaceId });
@@ -69,7 +75,11 @@ export const listSearchConsoleSites = createServerFn({ method: "POST" })
     const { googleDataRequest } = await import("./google-data.server");
     const { siteEntry = [] } = await googleDataRequest<{
       siteEntry?: { siteUrl: string; permissionLevel?: string }[];
-    }>(data.workspaceId, "search-console", "https://searchconsole.googleapis.com/webmasters/v3/sites");
+    }>(
+      data.workspaceId,
+      "search-console",
+      "https://searchconsole.googleapis.com/webmasters/v3/sites",
+    );
     return {
       sites: siteEntry
         .filter((s) => s.permissionLevel !== "siteUnverifiedUser")
@@ -86,11 +96,17 @@ export const selectSearchConsoleSite = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertOwner(context.supabase, data.workspaceId);
-    const config: SearchConsoleConfig = await loadConfig(data.workspaceId).catch(() => ({ refreshToken: "" }));
+    const config: SearchConsoleConfig = await loadConfig(data.workspaceId).catch(() => ({
+      refreshToken: "",
+    }));
     const { googleDataRequest } = await import("./google-data.server");
     const { siteEntry = [] } = await googleDataRequest<{
       siteEntry?: { siteUrl: string; permissionLevel?: string }[];
-    }>(data.workspaceId, "search-console", "https://searchconsole.googleapis.com/webmasters/v3/sites");
+    }>(
+      data.workspaceId,
+      "search-console",
+      "https://searchconsole.googleapis.com/webmasters/v3/sites",
+    );
     const match = siteEntry.find(
       (s) => s.siteUrl === data.siteUrl && s.permissionLevel !== "siteUnverifiedUser",
     );
@@ -107,7 +123,10 @@ export const selectSearchConsoleSite = createServerFn({ method: "POST" })
     );
     await supabaseAdmin
       .from("integrations")
-      .update({ status: "connected", account: `${match.siteUrl}${config.email ? ` · ${config.email}` : ""}` })
+      .update({
+        status: "connected",
+        account: `${match.siteUrl}${config.email ? ` · ${config.email}` : ""}`,
+      })
       .eq("workspace_id", data.workspaceId)
       .eq("provider", "search-console");
     return { ok: true as const, siteUrl: match.siteUrl };
@@ -121,12 +140,20 @@ export type GscRow = {
   position: number;
 };
 
-export type GscSnapshot = { site: string; range: { start: string; end: string }; queries: GscRow[]; pages: GscRow[] };
+export type GscSnapshot = {
+  site: string;
+  range: { start: string; end: string };
+  queries: GscRow[];
+  pages: GscRow[];
+};
 export type SourceState = "ok" | "not_connected" | "not_selected" | "error";
 export type SourceStatus = { state: SourceState; message: string };
 
 /** هل حساب Google المربوط عبر Pipedream موجود لهذا المزوّد؟ */
-export async function hasGoogleAccount(workspaceId: string, provider: "search-console" | "analytics") {
+export async function hasGoogleAccount(
+  workspaceId: string,
+  provider: "search-console" | "analytics",
+) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin
     .from("pipedream_accounts")
@@ -149,14 +176,21 @@ export async function gscSnapshotDetailed(
   try {
     if (!(await hasGoogleAccount(workspaceId, "search-console"))) {
       return {
-        status: { state: "not_connected", message: "Search Console غير مربوط — اربط حساب Google بضغطة من قسم «الترتيب» أو «التقارير»." },
+        status: {
+          state: "not_connected",
+          message:
+            "Search Console غير مربوط — اربط حساب Google بضغطة من قسم «الترتيب» أو «التقارير».",
+        },
         snapshot: null,
       };
     }
     const config = await loadConfig(workspaceId);
     if (!config.siteUrl) {
       return {
-        status: { state: "not_selected", message: "الحساب مربوط لكن لم تختر موقعاً بعد — اختر الموقع من قسم «الترتيب»." },
+        status: {
+          state: "not_selected",
+          message: "الحساب مربوط لكن لم تختر موقعاً بعد — اختر الموقع من قسم «الترتيب».",
+        },
         snapshot: null,
       };
     }
@@ -166,11 +200,22 @@ export async function gscSnapshotDetailed(
 
     const query = async (dimension: "query" | "page"): Promise<GscRow[]> => {
       const { rows = [] } = await googleDataRequest<{
-        rows?: { keys: string[]; clicks: number; impressions: number; ctr: number; position: number }[];
-      }>(workspaceId, "search-console", `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(config.siteUrl!)}/searchAnalytics/query`, {
-        method: "POST",
-        body: { startDate: start, endDate: end, dimensions: [dimension], rowLimit: 25 },
-      });
+        rows?: {
+          keys: string[];
+          clicks: number;
+          impressions: number;
+          ctr: number;
+          position: number;
+        }[];
+      }>(
+        workspaceId,
+        "search-console",
+        `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(config.siteUrl!)}/searchAnalytics/query`,
+        {
+          method: "POST",
+          body: { startDate: start, endDate: end, dimensions: [dimension], rowLimit: 25 },
+        },
+      );
       return rows.map((r) => ({
         key: r.keys[0] ?? "",
         clicks: r.clicks,
@@ -215,11 +260,22 @@ export const searchConsoleSnapshot = createServerFn({ method: "POST" })
 
     const query = async (dimension: "query" | "page") => {
       const { rows = [] } = await googleDataRequest<{
-        rows?: { keys: string[]; clicks: number; impressions: number; ctr: number; position: number }[];
-      }>(data.workspaceId, "search-console", `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(config.siteUrl!)}/searchAnalytics/query`, {
-        method: "POST",
-        body: { startDate: start, endDate: end, dimensions: [dimension], rowLimit: 25 },
-      });
+        rows?: {
+          keys: string[];
+          clicks: number;
+          impressions: number;
+          ctr: number;
+          position: number;
+        }[];
+      }>(
+        data.workspaceId,
+        "search-console",
+        `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(config.siteUrl!)}/searchAnalytics/query`,
+        {
+          method: "POST",
+          body: { startDate: start, endDate: end, dimensions: [dimension], rowLimit: 25 },
+        },
+      );
       return rows.map((r) => ({
         key: r.keys[0] ?? "",
         clicks: r.clicks,
@@ -251,54 +307,100 @@ export async function gscOpportunities(
 ): Promise<{ status: SourceStatus; data: GscOpportunities | null }> {
   try {
     if (!(await hasGoogleAccount(workspaceId, "search-console")))
-      return { status: { state: "not_connected", message: "Search Console غير مربوط — اربطه بضغطة من قسم «الترتيب» أو «التقارير»." }, data: null };
+      return {
+        status: {
+          state: "not_connected",
+          message: "Search Console غير مربوط — اربطه بضغطة من قسم «الترتيب» أو «التقارير».",
+        },
+        data: null,
+      };
     const config = await loadConfig(workspaceId);
     if (!config.siteUrl)
-      return { status: { state: "not_selected", message: "الحساب مربوط لكن لم تختر موقعاً بعد — اختره من قسم «الترتيب»." }, data: null };
+      return {
+        status: {
+          state: "not_selected",
+          message: "الحساب مربوط لكن لم تختر موقعاً بعد — اختره من قسم «الترتيب».",
+        },
+        data: null,
+      };
 
     const { googleDataRequest } = await import("./google-data.server");
     const end = new Date(Date.now() - 3 * 86_400_000).toISOString().slice(0, 10);
     const start = new Date(Date.now() - (days + 3) * 86_400_000).toISOString().slice(0, 10);
     const { rows = [] } = await googleDataRequest<{
-      rows?: { keys: string[]; clicks: number; impressions: number; ctr: number; position: number }[];
+      rows?: {
+        keys: string[];
+        clicks: number;
+        impressions: number;
+        ctr: number;
+        position: number;
+      }[];
     }>(
       workspaceId,
       "search-console",
       `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(config.siteUrl)}/searchAnalytics/query`,
-      { method: "POST", body: { startDate: start, endDate: end, dimensions: ["query", "page"], rowLimit: 500 } },
+      {
+        method: "POST",
+        body: { startDate: start, endDate: end, dimensions: ["query", "page"], rowLimit: 500 },
+      },
     );
 
     const strikingDistance = rows
       .filter((r) => r.position >= 8 && r.position <= 20 && r.impressions >= 10)
       .sort((a, b) => b.impressions - a.impressions)
       .slice(0, 12)
-      .map((r) => ({ key: r.keys[0] ?? "", position: r.position, impressions: r.impressions, clicks: r.clicks }));
+      .map((r) => ({
+        key: r.keys[0] ?? "",
+        position: r.position,
+        impressions: r.impressions,
+        clicks: r.clicks,
+      }));
 
     const lowCtr = rows
       .filter((r) => r.position <= 10 && r.impressions >= 50 && r.ctr < 0.02)
       .sort((a, b) => b.impressions - a.impressions)
       .slice(0, 10)
-      .map((r) => ({ key: r.keys[0] ?? "", position: r.position, impressions: r.impressions, ctr: r.ctr }));
+      .map((r) => ({
+        key: r.keys[0] ?? "",
+        position: r.position,
+        impressions: r.impressions,
+        ctr: r.ctr,
+      }));
 
     const byQuery = new Map<string, { url: string; clicks: number; position: number }[]>();
     for (const r of rows) {
       const q = r.keys[0] ?? "";
       const p = r.keys[1] ?? "";
       if (!q || !p) continue;
-      byQuery.set(q, [...(byQuery.get(q) ?? []), { url: p, clicks: r.clicks, position: r.position }]);
+      byQuery.set(q, [
+        ...(byQuery.get(q) ?? []),
+        { url: p, clicks: r.clicks, position: r.position },
+      ]);
     }
     const cannibalization = [...byQuery.entries()]
       .filter(([, pages]) => pages.length > 1 && pages.some((p) => p.position <= 30))
       .sort((a, b) => b[1].length - a[1].length)
       .slice(0, 8)
-      .map(([key, pages]) => ({ key, pages: pages.sort((a, b) => a.position - b.position).slice(0, 4) }));
+      .map(([key, pages]) => ({
+        key,
+        pages: pages.sort((a, b) => a.position - b.position).slice(0, 4),
+      }));
 
     return {
       status: { state: "ok", message: `Search Console · ${config.siteUrl}` },
-      data: { site: config.siteUrl, range: { start, end }, strikingDistance, lowCtr, cannibalization },
+      data: {
+        site: config.siteUrl,
+        range: { start, end },
+        strikingDistance,
+        lowCtr,
+        cannibalization,
+      },
     };
   } catch (e) {
     const raw = e instanceof Error ? e.message : String(e);
-    return { status: { state: "error", message: `تعذّر تحليل Search Console: ${raw.slice(0, 160)}` }, data: null };
+    return {
+      status: { state: "error", message: `تعذّر تحليل Search Console: ${raw.slice(0, 160)}` },
+      data: null,
+    };
   }
 }

@@ -28,7 +28,6 @@ export function Portrait({ memberId, name, className, eager }: PortraitProps) {
   );
 }
 
-
 /**
  * مبدّل البلد — يُكتشف بلد الزائر تلقائياً ويستطيع تغييره في أي وقت.
  */
@@ -60,7 +59,10 @@ export function RegionPicker({ className }: { className?: string }) {
             )}
           </span>
           <ChevronDown
-            className={cn("size-4 opacity-60 transition-transform duration-300", open && "rotate-180")}
+            className={cn(
+              "size-4 opacity-60 transition-transform duration-300",
+              open && "rotate-180",
+            )}
           />
         </button>
       </PopoverTrigger>

@@ -145,7 +145,11 @@ export function VisitorsPanel({ workspaceId }: { workspaceId?: string | undefine
               disabled={!workspaceId || connect.isPending || url.trim().length < 4}
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-foreground px-5 py-3 text-sm font-bold text-background disabled:opacity-60"
             >
-              {connect.isPending ? <Loader2 className="size-4 animate-spin" /> : <Globe className="size-4" />}
+              {connect.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Globe className="size-4" />
+              )}
               ابدأ القياس
             </button>
           </div>
@@ -174,7 +178,8 @@ export function VisitorsPanel({ workspaceId }: { workspaceId?: string | undefine
             <div className="rounded-2xl border border-dashed border-border p-4">
               <p className="text-sm font-bold">خطوة أخيرة واحدة</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                الصق هذا السطر داخل موقعك قبل نهاية وسم &lt;head&gt;، وستبدأ الأرقام بالظهور خلال دقائق.
+                الصق هذا السطر داخل موقعك قبل نهاية وسم &lt;head&gt;، وستبدأ الأرقام بالظهور خلال
+                دقائق.
               </p>
               <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-xl bg-foreground/95 p-3">
                 <code dir="ltr" className="min-w-0 truncate text-[0.72rem] text-background">

@@ -85,9 +85,16 @@ export function GoogleConnectButton({
         {busy ? (
           <Loader2 className="size-3.5 animate-spin" />
         ) : (
-          <AppIcon name={kind === "search-console" ? "search-console" : "analytics"} className="size-3.5" />
+          <AppIcon
+            name={kind === "search-console" ? "search-console" : "analytics"}
+            className="size-3.5"
+          />
         )}
-        {needsPick ? (kind === "search-console" ? "اختر موقعك" : "اختر الخاصية") : (label ?? fallback)}
+        {needsPick
+          ? kind === "search-console"
+            ? "اختر موقعك"
+            : "اختر الخاصية"
+          : (label ?? fallback)}
         {!busy ? <Link2 className="size-3.5 opacity-70" /> : null}
       </button>
       {error ? <span className="text-[11px] font-bold text-coral">{error}</span> : null}

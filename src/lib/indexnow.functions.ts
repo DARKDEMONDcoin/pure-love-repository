@@ -39,9 +39,7 @@ function generateKey(): string {
 export const setupIndexNow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z
-      .object({ workspaceId: z.string().uuid(), siteUrl: z.string().min(4).max(300) })
-      .parse(input),
+    z.object({ workspaceId: z.string().uuid(), siteUrl: z.string().min(4).max(300) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const admin = await assertOwner(context.supabase, data.workspaceId);
@@ -57,7 +55,11 @@ export const setupIndexNow = createServerFn({ method: "POST" })
     };
 
     const { error } = await admin.from("integration_credentials").upsert(
-      { workspace_id: data.workspaceId, provider: "indexnow", config: config as unknown as Record<string, string> },
+      {
+        workspace_id: data.workspaceId,
+        provider: "indexnow",
+        config: config as unknown as Record<string, string>,
+      },
       { onConflict: "workspace_id,provider" },
     );
     if (error) throw new Error(error.message);

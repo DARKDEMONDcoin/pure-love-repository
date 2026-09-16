@@ -89,7 +89,10 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
       <Link to="/pricing" onClick={onNavigate} className="app-sidebar-pricing">
-        <span><small>الخطط والسعة</small><b>عرض الأسعار</b></span>
+        <span>
+          <small>الخطط والسعة</small>
+          <b>عرض الأسعار</b>
+        </span>
         <i aria-hidden="true">←</i>
       </Link>
     </div>
@@ -241,7 +244,12 @@ export function AppShell({
   });
 
   return (
-    <div className={cn("app-shell sahl-app-theme flex min-h-screen bg-background", embedded && "is-embedded")}>
+    <div
+      className={cn(
+        "app-shell sahl-app-theme flex min-h-screen bg-background",
+        embedded && "is-embedded",
+      )}
+    >
       <div className="sahl-smoke sahl-smoke-app" aria-hidden="true">
         <i />
         <i />

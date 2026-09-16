@@ -100,7 +100,6 @@ function BrainPage() {
             </div>
           </div>
 
-
           <form
             className={cn(
               "mt-5 space-y-3 rounded-3xl border border-border bg-card p-6",

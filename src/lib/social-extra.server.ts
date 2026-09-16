@@ -4,7 +4,6 @@
  */
 import { proxyRequest, type PipedreamConfig } from "./pipedream.server";
 
-
 type PinterestBoards = { items?: { id: string; name?: string }[] };
 type PinterestPins = { items?: { id: string; title?: string; created_at?: string }[] };
 
@@ -13,7 +12,13 @@ export async function createPin(
   config: PipedreamConfig,
   workspaceId: string,
   accountId: string,
-  params: { title: string; description?: string; imageUrl: string; link?: string; boardId?: string },
+  params: {
+    title: string;
+    description?: string;
+    imageUrl: string;
+    link?: string;
+    boardId?: string;
+  },
 ): Promise<{ id: string }> {
   let boardId = params.boardId;
   if (!boardId) {
@@ -60,7 +65,9 @@ export async function readPinterest(
 }
 
 type TikTokVideos = {
-  data?: { videos?: { title?: string; like_count?: number; view_count?: number; create_time?: number }[] };
+  data?: {
+    videos?: { title?: string; like_count?: number; view_count?: number; create_time?: number }[];
+  };
 };
 
 /** أداء آخر فيديوهات تيك توك (قراءة فقط). */

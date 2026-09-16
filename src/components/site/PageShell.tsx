@@ -19,19 +19,19 @@ export function PageHero({
 }) {
   return (
     <section className="sahl-page-hero">
-      <div className="sahl-page-ribbon" aria-hidden="true"><i /><i /><i /></div>
+      <div className="sahl-page-ribbon" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
       <div className="sahl-page-hero-inner">
         {eyebrow ? (
           <Reveal>
-            <span className="sahl-page-eyebrow">
-              {eyebrow}
-            </span>
+            <span className="sahl-page-eyebrow">{eyebrow}</span>
           </Reveal>
         ) : null}
         <Reveal delay={70}>
-          <h1 className="sahl-page-title">
-            {title}
-          </h1>
+          <h1 className="sahl-page-title">{title}</h1>
         </Reveal>
         {lead ? (
           <Reveal delay={140}>
@@ -77,9 +77,7 @@ export function CtaBand({
         <div className="sahl-page-cta-panel relative mx-auto max-w-6xl overflow-hidden p-10 text-center md:p-16">
           <div className="sahl-page-cta-ribbon" aria-hidden="true" />
           <div className="relative">
-            <h2 className="font-display text-3xl leading-tight font-black md:text-5xl">
-              {title}
-            </h2>
+            <h2 className="font-display text-3xl leading-tight font-black md:text-5xl">{title}</h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">{lead}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link

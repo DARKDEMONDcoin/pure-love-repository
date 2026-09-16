@@ -57,14 +57,11 @@ function DecisionsPage() {
     const active = (data ?? []).filter((d) => d.status === "active");
     const needle = q.trim();
     if (!needle) return active;
-    return active.filter((d) =>
-      `${d.title} ${d.decision} ${d.rationale ?? ""}`.includes(needle),
-    );
+    return active.filter((d) => `${d.title} ${d.decision} ${d.rationale ?? ""}`.includes(needle));
   }, [data, q]);
 
   const mutation = useMutation({
-    mutationFn: (id: string) =>
-      archive({ data: { workspaceId: workspace!.id, decisionId: id } }),
+    mutationFn: (id: string) => archive({ data: { workspaceId: workspace!.id, decisionId: id } }),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ["decisions", workspace?.id] }),
   });
 

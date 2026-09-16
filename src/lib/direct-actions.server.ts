@@ -119,14 +119,20 @@ export async function pipedriveBase(ctx: DirectContext): Promise<string> {
   return domain ? `https://${domain}.pipedrive.com/api/v1` : "https://api.pipedrive.com/v1";
 }
 
-export async function sheetTitle(ctx: DirectContext, sheetId: string, gid: string): Promise<string> {
+export async function sheetTitle(
+  ctx: DirectContext,
+  sheetId: string,
+  gid: string,
+): Promise<string> {
   const meta = await api<{
     sheets?: { properties?: { sheetId?: number; title?: string } }[];
-  }>(ctx, `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}?fields=sheets.properties`);
+  }>(
+    ctx,
+    `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}?fields=sheets.properties`,
+  );
   const wanted = Number(gid) || 0;
   const sheets = meta.sheets ?? [];
-  const hit =
-    sheets.find((s) => (s.properties?.sheetId ?? -1) === wanted) ?? sheets[0];
+  const hit = sheets.find((s) => (s.properties?.sheetId ?? -1) === wanted) ?? sheets[0];
   const title = hit?.properties?.title;
   if (!title) throw new Error("لم يُعثر على الورقة المطلوبة داخل ملف شيتس.");
   return title;
@@ -148,7 +154,11 @@ export async function driveUpload(
   return api(
     ctx,
     `https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=media&fields=id,name,webViewLink`,
-    { method: "PATCH", text: params.content, headers: { "content-type": "text/plain; charset=UTF-8" } },
+    {
+      method: "PATCH",
+      text: params.content,
+      headers: { "content-type": "text/plain; charset=UTF-8" },
+    },
   );
 }
 
@@ -162,7 +172,9 @@ export const directActions: Record<string, (ctx: DirectContext) => Promise<unkno
     }),
   "eva-draft-email": (ctx) =>
     api(ctx, "https://gmail.googleapis.com/gmail/v1/users/me/drafts", {
-      json: { message: { raw: base64Url(rfc822(v(ctx, "to"), v(ctx, "subject"), v(ctx, "body"))) } },
+      json: {
+        message: { raw: base64Url(rfc822(v(ctx, "to"), v(ctx, "subject"), v(ctx, "body"))) },
+      },
     }),
   "eva-outlook-send": (ctx) =>
     api(ctx, "https://graph.microsoft.com/v1.0/me/sendMail", {
@@ -271,7 +283,10 @@ export const directActions: Record<string, (ctx: DirectContext) => Promise<unkno
       headers: { "intercom-version": "2.11" },
     }),
   "sam-twilio-sms": async (ctx) => {
-    const account = await api<{ sid?: string }>(ctx, "https://api.twilio.com/2010-04-01/Accounts.json");
+    const account = await api<{ sid?: string }>(
+      ctx,
+      "https://api.twilio.com/2010-04-01/Accounts.json",
+    );
     const sid =
       opt(ctx, "accountSid") ??
       (account as unknown as { accounts?: { sid?: string }[] }).accounts?.[0]?.sid ??
@@ -340,9 +355,13 @@ export const directActions: Record<string, (ctx: DirectContext) => Promise<unkno
       json: { channel: v(ctx, "channel"), text: v(ctx, "text"), mrkdwn: true },
     }),
   "team-discord-send": (ctx) =>
-    api(ctx, `https://discord.com/api/v10/channels/${encodeURIComponent(v(ctx, "channel"))}/messages`, {
-      json: { content: v(ctx, "message") },
-    }),
+    api(
+      ctx,
+      `https://discord.com/api/v10/channels/${encodeURIComponent(v(ctx, "channel"))}/messages`,
+      {
+        json: { content: v(ctx, "message") },
+      },
+    ),
   "team-notion-page": (ctx) =>
     api(ctx, "https://api.notion.com/v1/pages", {
       json: {
@@ -354,7 +373,9 @@ export const directActions: Record<string, (ctx: DirectContext) => Promise<unkno
                 {
                   object: "block",
                   type: "paragraph",
-                  paragraph: { rich_text: [{ type: "text", text: { content: v(ctx, "content") } }] },
+                  paragraph: {
+                    rich_text: [{ type: "text", text: { content: v(ctx, "content") } }],
+                  },
                 },
               ],
             }
@@ -383,15 +404,19 @@ export const directActions: Record<string, (ctx: DirectContext) => Promise<unkno
       },
     }),
   "team-jira-issue": (ctx) =>
-    api(ctx, `https://api.atlassian.com/ex/jira/${encodeURIComponent(v(ctx, "cloudId"))}/rest/api/3/issue`, {
-      json: {
-        fields: {
-          project: { id: v(ctx, "projectId") },
-          issuetype: { id: v(ctx, "issueTypeId") },
-          summary: v(ctx, "summary"),
+    api(
+      ctx,
+      `https://api.atlassian.com/ex/jira/${encodeURIComponent(v(ctx, "cloudId"))}/rest/api/3/issue`,
+      {
+        json: {
+          fields: {
+            project: { id: v(ctx, "projectId") },
+            issuetype: { id: v(ctx, "issueTypeId") },
+            summary: v(ctx, "summary"),
+          },
         },
       },
-    }),
+    ),
   "team-clickup-task": (ctx) =>
     api(ctx, `https://api.clickup.com/api/v2/list/${encodeURIComponent(v(ctx, "listId"))}/task`, {
       json: {
@@ -478,13 +503,17 @@ export const directActions: Record<string, (ctx: DirectContext) => Promise<unkno
   "adam-ga4-report": (ctx) => {
     const days = Math.max(1, Math.min(365, Number(v(ctx, "days") || "28") || 28));
     const property = v(ctx, "property").replace(/^properties\//, "");
-    return api(ctx, `https://analyticsdata.googleapis.com/v1beta/properties/${property}:runReport`, {
-      json: {
-        dateRanges: [{ startDate: `${days}daysAgo`, endDate: "today" }],
-        metrics: [{ name: "sessions" }, { name: "totalUsers" }, { name: "conversions" }],
-        dimensions: [{ name: "sessionDefaultChannelGroup" }],
+    return api(
+      ctx,
+      `https://analyticsdata.googleapis.com/v1beta/properties/${property}:runReport`,
+      {
+        json: {
+          dateRanges: [{ startDate: `${days}daysAgo`, endDate: "today" }],
+          metrics: [{ name: "sessions" }, { name: "totalUsers" }, { name: "conversions" }],
+          dimensions: [{ name: "sessionDefaultChannelGroup" }],
+        },
       },
-    });
+    );
   },
   "adam-log-sheet": async (ctx) => {
     const title = await sheetTitle(ctx, v(ctx, "sheetId"), v(ctx, "worksheetId"));

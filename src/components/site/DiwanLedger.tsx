@@ -26,17 +26,20 @@ export function DiwanLedger() {
     const node = ref.current;
     if (!node) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const io = new IntersectionObserver(([e]) => {
-      if (!e?.isIntersecting) return;
-      if (reduce) return setWritten(rows.length);
-      let i = 0;
-      const id = window.setInterval(() => {
-        i += 1;
-        setWritten(i);
-        if (i >= rows.length) window.clearInterval(id);
-      }, 380);
-      io.disconnect();
-    }, { threshold: 0.2 });
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e?.isIntersecting) return;
+        if (reduce) return setWritten(rows.length);
+        let i = 0;
+        const id = window.setInterval(() => {
+          i += 1;
+          setWritten(i);
+          if (i >= rows.length) window.clearInterval(id);
+        }, 380);
+        io.disconnect();
+      },
+      { threshold: 0.2 },
+    );
     io.observe(node);
     return () => io.disconnect();
   }, []);
@@ -48,7 +51,8 @@ export function DiwanLedger() {
           <p className="diwan-sec-kicker">دفتر المحل</p>
           <h2 className="diwan-sec-title">يوم واحد في ديوانك، مكتوب سطراً سطراً</h2>
           <p className="diwan-sec-lead">
-            لا تقارير غامضة: كل حركة ينفّذها موظفوك تُسجَّل بوقتها وصاحبها ونتيجتها — كما يكتب التاجر دفتره في آخر النهار.
+            لا تقارير غامضة: كل حركة ينفّذها موظفوك تُسجَّل بوقتها وصاحبها ونتيجتها — كما يكتب
+            التاجر دفتره في آخر النهار.
           </p>
         </header>
 

@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-export function AmbientBackground({ quiet = false, className }: { quiet?: boolean; className?: string }) {
+export function AmbientBackground({
+  quiet = false,
+  className,
+}: {
+  quiet?: boolean;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,7 +29,11 @@ export function AmbientBackground({ quiet = false, className }: { quiet?: boolea
   }, []);
 
   return (
-    <div ref={ref} aria-hidden className={cn("ambient-field", quiet && "ambient-field-quiet", className)}>
+    <div
+      ref={ref}
+      aria-hidden
+      className={cn("ambient-field", quiet && "ambient-field-quiet", className)}
+    >
       <span className="ambient-cloud ambient-cloud-a" />
       <span className="ambient-cloud ambient-cloud-b" />
       <span className="ambient-cloud ambient-cloud-c" />

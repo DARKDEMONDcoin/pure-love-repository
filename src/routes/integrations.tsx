@@ -42,7 +42,11 @@ const groups: { t: string; d: string; items: Item[] }[] = [
       { key: "pinterest", note: "بينات بصور المنتجات والروابط", status: "live" },
       { key: "youtube", note: "رفع الوصف والعناوين والمجتمع", status: "live" },
       { key: "threads", note: "نشر نصي متزامن مع إنستجرام", status: "beta" },
-      { key: "tiktok", note: "مسودات جاهزة للنشر يدوياً — سياسة المنصة تمنع النشر الآلي", status: "beta" },
+      {
+        key: "tiktok",
+        note: "مسودات جاهزة للنشر يدوياً — سياسة المنصة تمنع النشر الآلي",
+        status: "beta",
+      },
     ],
   },
   {

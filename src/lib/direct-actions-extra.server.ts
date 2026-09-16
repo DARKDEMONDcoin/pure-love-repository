@@ -195,7 +195,10 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
       },
     }),
   "eva-zoom-recordings": (ctx) =>
-    api(ctx, `https://api.zoom.us/v2/meetings/${encodeURIComponent(v(ctx, "meetingId"))}/recordings`),
+    api(
+      ctx,
+      `https://api.zoom.us/v2/meetings/${encodeURIComponent(v(ctx, "meetingId"))}/recordings`,
+    ),
   "eva-whatsapp-media": async (ctx) => {
     const phoneId =
       opt(ctx, "phoneNumberId") ??
@@ -217,24 +220,20 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
 
   /* ===== نوشن (أمَل والفريق) ===== */
   "team-notion-append": (ctx) =>
-    api(
-      ctx,
-      `https://api.notion.com/v1/blocks/${encodeURIComponent(v(ctx, "blockId"))}/children`,
-      {
-        method: "PATCH",
-        json: {
-          children: v(ctx, "content")
-            .split("\n")
-            .filter((line) => line.trim())
-            .map((line) => ({
-              object: "block",
-              type: "paragraph",
-              paragraph: { rich_text: notionText(line) },
-            })),
-        },
-        headers: NOTION,
+    api(ctx, `https://api.notion.com/v1/blocks/${encodeURIComponent(v(ctx, "blockId"))}/children`, {
+      method: "PATCH",
+      json: {
+        children: v(ctx, "content")
+          .split("\n")
+          .filter((line) => line.trim())
+          .map((line) => ({
+            object: "block",
+            type: "paragraph",
+            paragraph: { rich_text: notionText(line) },
+          })),
       },
-    ),
+      headers: NOTION,
+    }),
   "team-notion-query": (ctx) =>
     api(
       ctx,
@@ -274,7 +273,11 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
         author,
         commentary: v(ctx, "text"),
         visibility: "PUBLIC",
-        distribution: { feedDistribution: "MAIN_FEED", targetEntities: [], thirdPartyDistributionChannels: [] },
+        distribution: {
+          feedDistribution: "MAIN_FEED",
+          targetEntities: [],
+          thirdPartyDistributionChannels: [],
+        },
         lifecycleState: "PUBLISHED",
         isReshareDisabledByAuthor: false,
       },
@@ -288,7 +291,11 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
         author,
         commentary: v(ctx, "text"),
         visibility: "PUBLIC",
-        distribution: { feedDistribution: "MAIN_FEED", targetEntities: [], thirdPartyDistributionChannels: [] },
+        distribution: {
+          feedDistribution: "MAIN_FEED",
+          targetEntities: [],
+          thirdPartyDistributionChannels: [],
+        },
         content: {
           article: {
             source: v(ctx, "url"),
@@ -508,11 +515,9 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
     });
   },
   "sonny-gbp-answer": (ctx) =>
-    api(
-      ctx,
-      `https://mybusinessqanda.googleapis.com/v1/${v(ctx, "question")}/answers:upsert`,
-      { json: { answer: { text: v(ctx, "text") } } },
-    ),
+    api(ctx, `https://mybusinessqanda.googleapis.com/v1/${v(ctx, "question")}/answers:upsert`, {
+      json: { answer: { text: v(ctx, "text") } },
+    }),
 
   /* ===== المبيعات والـCRM (سالم) ===== */
   "sam-hubspot-note": (ctx) =>
@@ -524,9 +529,7 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
               associations: [
                 {
                   to: { id: v(ctx, "contactId") },
-                  types: [
-                    { associationCategory: "HUBSPOT_DEFINED", associationTypeId: 202 },
-                  ],
+                  types: [{ associationCategory: "HUBSPOT_DEFINED", associationTypeId: 202 }],
                 },
               ],
             }
@@ -579,10 +582,7 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
   },
   "sam-sf-query": async (ctx) => {
     const base = await salesforceInstance(ctx);
-    return api(
-      ctx,
-      `${base}/services/data/v60.0/query?q=${encodeURIComponent(v(ctx, "soql"))}`,
-    );
+    return api(ctx, `${base}/services/data/v60.0/query?q=${encodeURIComponent(v(ctx, "soql"))}`);
   },
   "sam-mailchimp-campaign": async (ctx) => {
     const base = await mailchimpBase(ctx);
@@ -847,9 +847,13 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
       { method: "POST", text: "" },
     ),
   "team-asana-comment": (ctx) =>
-    api(ctx, `https://app.asana.com/api/1.0/tasks/${encodeURIComponent(v(ctx, "taskId"))}/stories`, {
-      json: { data: { text: v(ctx, "text") } },
-    }),
+    api(
+      ctx,
+      `https://app.asana.com/api/1.0/tasks/${encodeURIComponent(v(ctx, "taskId"))}/stories`,
+      {
+        json: { data: { text: v(ctx, "text") } },
+      },
+    ),
   "team-asana-complete": (ctx) =>
     api(ctx, `https://app.asana.com/api/1.0/tasks/${encodeURIComponent(v(ctx, "taskId"))}`, {
       method: "PUT",
@@ -870,9 +874,7 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
           body: {
             type: "doc",
             version: 1,
-            content: [
-              { type: "paragraph", content: [{ type: "text", text: v(ctx, "text") }] },
-            ],
+            content: [{ type: "paragraph", content: [{ type: "text", text: v(ctx, "text") }] }],
           },
         },
       },
@@ -896,7 +898,11 @@ export const extraDirectActions: Record<string, (ctx: DirectContext) => Promise<
       json: {
         query:
           "mutation($board:ID!,$item:ID!,$vals:JSON!){change_multiple_column_values(board_id:$board,item_id:$item,column_values:$vals){id}}",
-        variables: { board: v(ctx, "boardId"), item: v(ctx, "itemId"), vals: v(ctx, "columnValues") },
+        variables: {
+          board: v(ctx, "boardId"),
+          item: v(ctx, "itemId"),
+          vals: v(ctx, "columnValues"),
+        },
       },
     }),
   "team-monday-update": (ctx) =>

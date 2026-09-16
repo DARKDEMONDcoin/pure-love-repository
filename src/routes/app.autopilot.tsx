@@ -30,7 +30,15 @@ export const Route = createFileRoute("/app/autopilot")({
 
 const PROVIDERS = ["instagram", "facebook", "linkedin", "x", "pinterest", "youtube"] as const;
 const DIALECTS = ["خليجية", "مصرية", "شامية", "مغربية", "فصحى"] as const;
-const DAY_NAMES = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] as const;
+const DAY_NAMES = [
+  "الأحد",
+  "الإثنين",
+  "الثلاثاء",
+  "الأربعاء",
+  "الخميس",
+  "الجمعة",
+  "السبت",
+] as const;
 /** مناطق زمنية شائعة للمنطقة العربية + خيار توقيت الجهاز. */
 const ZONES = [
   "Asia/Riyadh",
@@ -49,7 +57,6 @@ const ZONES = [
   "America/New_York",
   "UTC",
 ] as const;
-
 
 function AutopilotPage() {
   const { data: workspace } = useWorkspace();
@@ -152,7 +159,6 @@ function AutopilotPage() {
   const toggleDay = (d: number) =>
     setDays((list) => (list.includes(d) ? list.filter((x) => x !== d) : [...list, d].sort()));
 
-
   const busy = save.isPending || runNow.isPending;
 
   return (
@@ -161,17 +167,25 @@ function AutopilotPage() {
       lead="سِراج يكتب وينشر لوحده — أنت تحدّد المنصات والمواعيد والأسلوب فقط."
       actions={
         <div className="flex gap-2">
-          <Link to="/app/calendar" className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2.5 text-sm font-bold hover:bg-secondary">
+          <Link
+            to="/app/calendar"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2.5 text-sm font-bold hover:bg-secondary"
+          >
             <CalendarDays className="size-4" /> التقويم
           </Link>
-          <Link to="/app/queue" className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2.5 text-sm font-bold hover:bg-secondary">
+          <Link
+            to="/app/queue"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2.5 text-sm font-bold hover:bg-secondary"
+          >
             <ListChecks className="size-4" /> الطابور
           </Link>
         </div>
       }
     >
       {error ? (
-        <p className="mb-4 rounded-2xl bg-destructive/10 p-4 text-sm font-bold text-destructive">{error}</p>
+        <p className="mb-4 rounded-2xl bg-destructive/10 p-4 text-sm font-bold text-destructive">
+          {error}
+        </p>
       ) : null}
       {note ? (
         <p className="mb-4 rounded-2xl bg-jade/12 p-4 text-sm font-bold text-jade-deep">{note}</p>
@@ -204,7 +218,6 @@ function AutopilotPage() {
                     })}
                   </p>
                 ) : null}
-
               </div>
             </div>
             <button
@@ -236,7 +249,9 @@ function AutopilotPage() {
                   key={p}
                   onClick={() => toggleProvider(p)}
                   className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                    on ? "border-transparent bg-foreground text-background" : "border-border text-ink-soft"
+                    on
+                      ? "border-transparent bg-foreground text-background"
+                      : "border-border text-ink-soft"
                   }`}
                 >
                   <AppIcon name={p} className="size-4" />
@@ -285,7 +300,8 @@ function AutopilotPage() {
         <section className="rounded-3xl border border-border bg-card p-6">
           <h3 className="font-display text-lg font-black">المواعيد</h3>
           <p className="mt-1 text-sm text-ink-soft">
-            أضف أي عدد من المواعيد بأي ساعة ودقيقة تريدها، واختر أيام النشر وتوقيت بلدك — بلا أي قيد.
+            أضف أي عدد من المواعيد بأي ساعة ودقيقة تريدها، واختر أيام النشر وتوقيت بلدك — بلا أي
+            قيد.
           </p>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -350,14 +366,17 @@ function AutopilotPage() {
           </div>
         </section>
 
-
         <section className="rounded-3xl border border-border bg-card p-6">
           <h3 className="font-display text-lg font-black">وضع التشغيل</h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {(
               [
                 { id: "auto", title: "ينشر لوحده", desc: "يكتب وينشر في الموعد بلا أي تدخّل منك." },
-                { id: "review", title: "بانتظار موافقتك", desc: "يكتب ويجهّز، وأنت تعتمد قبل النشر." },
+                {
+                  id: "review",
+                  title: "بانتظار موافقتك",
+                  desc: "يكتب ويجهّز، وأنت تعتمد قبل النشر.",
+                },
               ] as const
             ).map((opt) => (
               <button
@@ -384,7 +403,11 @@ function AutopilotPage() {
             disabled={busy || !workspace?.id}
             className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold text-background disabled:opacity-60"
           >
-            {save.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            {save.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Save className="size-4" />
+            )}
             احفظ الإعدادات
           </button>
           <button
@@ -396,7 +419,11 @@ function AutopilotPage() {
             disabled={busy || !row}
             className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-bold disabled:opacity-60"
           >
-            {runNow.isPending ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
+            {runNow.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Play className="size-4" />
+            )}
             شغّله الآن للتجربة
           </button>
         </div>

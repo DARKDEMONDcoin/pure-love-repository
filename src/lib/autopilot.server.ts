@@ -189,7 +189,6 @@ export function extractPost(output: string): {
     return clean(body.join("\n")) || null;
   };
 
-
   const main = section(/نص المنشور|المنشور النهائي|الكابشن/);
   const tags = section(/هاشتاق/);
   const imagePrompt = section(/وصف الصورة/);
@@ -209,12 +208,9 @@ export function extractPost(output: string): {
   };
 }
 
-
 /** نسخة إكس المختصرة — منطق موحّد مع لوحة النشر. */
 import { shortForX } from "./post-format";
 export { shortForX };
-
-
 
 /** رفض دائم من مزوّد الذكاء (رصيد/سياسة) — يوقف الطيار بدل تكرار المحاولة. */
 function isBlocked(message: string): boolean {
@@ -249,7 +245,12 @@ export async function runAutopilotRow(
   const wanted = (row.providers ?? []).slice(0, MAX_PROVIDERS);
   if (!wanted.length) {
     await finish({ last_status: "لم تختر أي منصة بعد." });
-    return { workspaceId: row.workspace_id, status: "skipped", created: 0, note: "لا منصات مختارة" };
+    return {
+      workspaceId: row.workspace_id,
+      status: "skipped",
+      created: 0,
+      note: "لا منصات مختارة",
+    };
   }
 
   const { data: accounts } = await admin
@@ -261,7 +262,12 @@ export async function runAutopilotRow(
   const providers = wanted.filter((p) => connected.has(p));
   if (!providers.length) {
     await finish({ last_status: "المنصات المختارة غير مربوطة — اربطها من صفحة التكاملات." });
-    return { workspaceId: row.workspace_id, status: "skipped", created: 0, note: "لا حسابات مربوطة" };
+    return {
+      workspaceId: row.workspace_id,
+      status: "skipped",
+      created: 0,
+      note: "لا حسابات مربوطة",
+    };
   }
 
   try {
@@ -306,11 +312,15 @@ export async function runAutopilotRow(
       }
     }
 
-
     // وضع المراجعة: المهمة أُنشئت بالفعل داخل executeSkill بحالة «بانتظار الاعتماد».
     if (row.mode !== "auto") {
       await finish({ last_status: "جاهز بانتظار اعتمادك في صفحة الموافقات.", paused_reason: null });
-      return { workspaceId: row.workspace_id, status: "generated", created: 0, note: "بانتظار المراجعة" };
+      return {
+        workspaceId: row.workspace_id,
+        status: "generated",
+        created: 0,
+        note: "بانتظار المراجعة",
+      };
     }
 
     const rows = providers
@@ -358,7 +368,10 @@ export async function runAutopilotRow(
 }
 
 /** يلتقط دفعة محدودة من الطيارات المستحقة ويشغّلها واحداً تلو الآخر. */
-export async function runDueAutopilots(admin: Admin, now: Date = new Date()): Promise<AutopilotReport[]> {
+export async function runDueAutopilots(
+  admin: Admin,
+  now: Date = new Date(),
+): Promise<AutopilotReport[]> {
   const staleBefore = new Date(now.getTime() - LOCK_MS).toISOString();
 
   const { data: due, error } = await admin

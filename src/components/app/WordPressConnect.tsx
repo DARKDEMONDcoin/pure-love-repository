@@ -43,7 +43,11 @@ export function WordPressConnect({
               نور ستحفظ المقالات كمسودة على مدونتك، والنشر النهائي بموافقتك.
             </p>
           </div>
-          <button onClick={onClose} aria-label="إغلاق" className="grid size-9 place-items-center rounded-xl hover:bg-secondary">
+          <button
+            onClick={onClose}
+            aria-label="إغلاق"
+            className="grid size-9 place-items-center rounded-xl hover:bg-secondary"
+          >
             <X className="size-4.5" />
           </button>
         </div>
@@ -70,7 +74,9 @@ export function WordPressConnect({
             />
           </label>
           <label className="block">
-            <span className="mb-2 block text-sm font-bold">كلمة مرور التطبيق (Application Password)</span>
+            <span className="mb-2 block text-sm font-bold">
+              كلمة مرور التطبيق (Application Password)
+            </span>
             <input
               dir="ltr"
               type="password"
@@ -87,7 +93,9 @@ export function WordPressConnect({
         </div>
 
         {error ? (
-          <p className="mt-4 rounded-2xl bg-coral/12 px-4 py-3 text-sm font-semibold text-coral">{error}</p>
+          <p className="mt-4 rounded-2xl bg-coral/12 px-4 py-3 text-sm font-semibold text-coral">
+            {error}
+          </p>
         ) : null}
 
         <p className="mt-4 flex items-start gap-2 rounded-2xl bg-secondary/60 p-4 text-xs leading-relaxed text-ink-soft">

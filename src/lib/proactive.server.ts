@@ -135,7 +135,12 @@ export async function detectProposals(
       reason: `منها «${keywords[0]?.keyword ?? ""}» — المتابعة بلا محتوى جديد لا تحرّك الترتيب.`,
       impact: "تجميع الكلمات في عناقيد بنيّة بحث واضحة وصفحة مستهدفة لكل عنقود.",
       priority: 3,
-      values: { keywords: keywords.map((k) => k.keyword).slice(0, 12).join("، ") },
+      values: {
+        keywords: keywords
+          .map((k) => k.keyword)
+          .slice(0, 12)
+          .join("، "),
+      },
     });
   }
 

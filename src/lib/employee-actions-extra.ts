@@ -14,7 +14,11 @@ export const extraEmployeeActions: EmployeeActionDef[] = [
     employeeId: "eva",
     provider: "gmail",
     label: "الرد داخل نفس خط البريد (جيميل)",
-    inputs: [req("messageId", "معرّف الرسالة"), req("body", "نص الرد"), optn("to", "المستلم (اختياري)")],
+    inputs: [
+      req("messageId", "معرّف الرسالة"),
+      req("body", "نص الرد"),
+      optn("to", "المستلم (اختياري)"),
+    ],
   },
   {
     id: "eva-gmail-label",
@@ -444,14 +448,23 @@ export const extraEmployeeActions: EmployeeActionDef[] = [
     employeeId: "sam",
     provider: "pipedrive",
     label: "ملاحظة في بايبدرايف",
-    inputs: [req("content", "النص"), optn("dealId", "معرّف الصفقة"), optn("personId", "معرّف الشخص")],
+    inputs: [
+      req("content", "النص"),
+      optn("dealId", "معرّف الصفقة"),
+      optn("personId", "معرّف الشخص"),
+    ],
   },
   {
     id: "sam-intercom-contact",
     employeeId: "sam",
     provider: "intercom",
     label: "إنشاء جهة اتصال في إنتركوم",
-    inputs: [req("email", "البريد"), optn("name", "الاسم"), optn("phone", "الجوال"), optn("role", "النوع")],
+    inputs: [
+      req("email", "البريد"),
+      optn("name", "الاسم"),
+      optn("phone", "الجوال"),
+      optn("role", "النوع"),
+    ],
   },
   {
     id: "sam-intercom-reply",
@@ -501,7 +514,11 @@ export const extraEmployeeActions: EmployeeActionDef[] = [
     employeeId: "sam",
     provider: "stripe",
     label: "إنشاء اشتراك متكرر",
-    inputs: [req("customer", "معرّف العميل"), req("priceId", "معرّف السعر"), optn("trialDays", "أيام تجريبية")],
+    inputs: [
+      req("customer", "معرّف العميل"),
+      req("priceId", "معرّف السعر"),
+      optn("trialDays", "أيام تجريبية"),
+    ],
   },
   {
     id: "sam-stripe-refund",
@@ -627,14 +644,23 @@ export const extraEmployeeActions: EmployeeActionDef[] = [
     employeeId: "*",
     provider: "discord",
     label: "بطاقة منسّقة في ديسكورد",
-    inputs: [req("channel", "القناة"), req("title", "العنوان"), req("description", "الوصف"), optn("url", "رابط")],
+    inputs: [
+      req("channel", "القناة"),
+      req("title", "العنوان"),
+      req("description", "الوصف"),
+      optn("url", "رابط"),
+    ],
   },
   {
     id: "team-telegram-photo",
     employeeId: "*",
     provider: "telegram",
     label: "إرسال صورة على تيليجرام",
-    inputs: [req("chatId", "معرّف المحادثة"), req("photoUrl", "رابط الصورة"), optn("caption", "تعليق")],
+    inputs: [
+      req("chatId", "معرّف المحادثة"),
+      req("photoUrl", "رابط الصورة"),
+      optn("caption", "تعليق"),
+    ],
   },
   {
     id: "team-trello-move",
@@ -669,7 +695,11 @@ export const extraEmployeeActions: EmployeeActionDef[] = [
     employeeId: "*",
     provider: "jira",
     label: "تحويل حالة مهمة جيرا",
-    inputs: [req("cloudId", "معرّف المساحة"), req("issueKey", "رقم المهمة"), req("transitionId", "معرّف الحالة")],
+    inputs: [
+      req("cloudId", "معرّف المساحة"),
+      req("issueKey", "رقم المهمة"),
+      req("transitionId", "معرّف الحالة"),
+    ],
   },
   {
     id: "team-jira-comment",

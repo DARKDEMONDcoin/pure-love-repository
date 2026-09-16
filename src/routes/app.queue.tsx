@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, CalendarDays, CheckCircle2, Loader2, RefreshCw, Send, Trash2, TriangleAlert } from "lucide-react";
+import {
+  CalendarClock,
+  CalendarDays,
+  CheckCircle2,
+  Loader2,
+  RefreshCw,
+  Send,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 
 import { AppShell } from "@/components/app/AppShell";
 import { AppIcon, appLabel } from "@/components/site/AppIcon";
@@ -15,7 +24,8 @@ export const Route = createFileRoute("/app/queue")({
       { title: "طابور النشر | سهل" },
       {
         name: "description",
-        content: "تابع منشوراتك المجدولة على إنستجرام وفيسبوك ولينكدإن وإكس، وانشرها أو ألغِها بضغطة.",
+        content:
+          "تابع منشوراتك المجدولة على إنستجرام وفيسبوك ولينكدإن وإكس، وانشرها أو ألغِها بضغطة.",
       },
       { property: "og:title", content: "طابور النشر | سهل" },
       { property: "og:description", content: "منشوراتك المجدولة والمنشورة في مكان واحد." },
@@ -80,7 +90,9 @@ function QueuePage() {
       }
     >
       {error ? (
-        <p className="mb-4 rounded-2xl bg-destructive/10 p-4 text-sm font-bold text-destructive">{error}</p>
+        <p className="mb-4 rounded-2xl bg-destructive/10 p-4 text-sm font-bold text-destructive">
+          {error}
+        </p>
       ) : null}
 
       {isLoading ? (
@@ -96,7 +108,10 @@ function QueuePage() {
           <p className="mt-2 text-ink-soft">
             اعتمد منشوراً من صفحة الموافقات واختر «جدولة» ليظهر هنا وينشر في موعده تلقائياً.
           </p>
-          <Link to="/app/calendar" className="mt-5 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-bold text-background">
+          <Link
+            to="/app/calendar"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-bold text-background"
+          >
             <CalendarDays className="size-4" /> خطط أسبوعاً كاملاً مع سِراج
           </Link>
         </div>
@@ -138,7 +153,9 @@ function QueuePage() {
                       />
                     </a>
                   ) : null}
-                  <p className="line-clamp-5 min-w-0 whitespace-pre-wrap leading-relaxed text-ink-soft">{p.body}</p>
+                  <p className="line-clamp-5 min-w-0 whitespace-pre-wrap leading-relaxed text-ink-soft">
+                    {p.body}
+                  </p>
                 </div>
 
                 {p.last_error ? (

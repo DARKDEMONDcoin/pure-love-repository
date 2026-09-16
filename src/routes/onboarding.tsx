@@ -41,10 +41,14 @@ export const Route = createFileRoute("/onboarding")({
       { title: "جهّز فريقك في دقائق | سهل" },
       {
         name: "description",
-        content: "عرّف سهل على نشاطك، اختر نبرتك وأهدافك وفريقك، وابدأ العمل خلال دقائق — وكل خطوة اختيارية.",
+        content:
+          "عرّف سهل على نشاطك، اختر نبرتك وأهدافك وفريقك، وابدأ العمل خلال دقائق — وكل خطوة اختيارية.",
       },
       { property: "og:title", content: "جهّز فريقك الرقمي في دقائق — سهل" },
-      { property: "og:description", content: "إعداد ذكي ومرن، بدون خبرة تقنية، وكل خطوة يمكن تخطّيها." },
+      {
+        property: "og:description",
+        content: "إعداد ذكي ومرن، بدون خبرة تقنية، وكل خطوة يمكن تخطّيها.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex" },
@@ -54,37 +58,117 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 const steps = [
-  { id: "site", title: "ابدأ من موقعك", lead: "سنقرأ موقعك ونملأ عنك كل شيء — أو تخطَّ واكتب بنفسك." },
+  {
+    id: "site",
+    title: "ابدأ من موقعك",
+    lead: "سنقرأ موقعك ونملأ عنك كل شيء — أو تخطَّ واكتب بنفسك.",
+  },
   { id: "business", title: "عرّفنا على نشاطك", lead: "كلما عرفنا أكثر، كان المحتوى أقرب لعملائك." },
   { id: "voice", title: "كيف تتكلم علامتك؟", lead: "اختر نبرة جاهزة أو اكتب نبرتك الخاصة." },
-  { id: "goals", title: "ما الذي تريد إنجازه؟", lead: "نختار لك المهام التلقائية المناسبة لأهدافك." },
+  {
+    id: "goals",
+    title: "ما الذي تريد إنجازه؟",
+    lead: "نختار لك المهام التلقائية المناسبة لأهدافك.",
+  },
   { id: "team", title: "من يعمل معك؟", lead: "كل الموظفين مشمولون — فعّل من تحتاجه الآن." },
 ] as const;
 
 const tones = [
-  { id: "دافئة وقريبة، بدون مبالغة", label: "دافئة وقريبة", sample: "أهلاً! جهّزنا لك شيئاً يعجبك اليوم 🌿" },
-  { id: "احترافية ورصينة", label: "احترافية ورصينة", sample: "يسرّنا مشاركتكم آخر تحديثات المنتج لهذا الربع." },
-  { id: "جريئة ومباشرة", label: "جريئة ومباشرة", sample: "توقف عن إضاعة ميزانيتك. إليك ما ينجح فعلاً." },
+  {
+    id: "دافئة وقريبة، بدون مبالغة",
+    label: "دافئة وقريبة",
+    sample: "أهلاً! جهّزنا لك شيئاً يعجبك اليوم 🌿",
+  },
+  {
+    id: "احترافية ورصينة",
+    label: "احترافية ورصينة",
+    sample: "يسرّنا مشاركتكم آخر تحديثات المنتج لهذا الربع.",
+  },
+  {
+    id: "جريئة ومباشرة",
+    label: "جريئة ومباشرة",
+    sample: "توقف عن إضاعة ميزانيتك. إليك ما ينجح فعلاً.",
+  },
   { id: "مرحة وخفيفة الظل", label: "مرحة وخفيفة", sample: "خبر حلو… وخبر أحلى. ابدأ بالثاني 😄" },
 ];
 
 const goals = [
-  { id: "social", label: "محتوى يومي للسوشيال", hint: "أفكار ومنشورات جاهزة كل صباح", icon: MessageSquareHeart },
-  { id: "ads", label: "إعلانات ممولة", hint: "بناء الحملات وإدارة الميزانية والنتائج", icon: Megaphone },
-  { id: "seo", label: "ظهور أعلى في جوجل", hint: "كلمات مفتاحية ومقالات تجلب زيارات", icon: Search },
+  {
+    id: "social",
+    label: "محتوى يومي للسوشيال",
+    hint: "أفكار ومنشورات جاهزة كل صباح",
+    icon: MessageSquareHeart,
+  },
+  {
+    id: "ads",
+    label: "إعلانات ممولة",
+    hint: "بناء الحملات وإدارة الميزانية والنتائج",
+    icon: Megaphone,
+  },
+  {
+    id: "seo",
+    label: "ظهور أعلى في جوجل",
+    hint: "كلمات مفتاحية ومقالات تجلب زيارات",
+    icon: Search,
+  },
   { id: "sales", label: "عملاء ومبيعات أكثر", hint: "متابعة العملاء وردود أسرع", icon: Users },
-  { id: "whatsapp", label: "ردود فورية على العملاء", hint: "واتساب والرسائل والتعليقات بلا تأخير", icon: MessagesSquare },
+  {
+    id: "whatsapp",
+    label: "ردود فورية على العملاء",
+    hint: "واتساب والرسائل والتعليقات بلا تأخير",
+    icon: MessagesSquare,
+  },
   { id: "video", label: "فيديو وريلز وصور", hint: "تصميم وتوليد المحتوى البصري", icon: Video },
   { id: "email", label: "بريد ورسائل منتظمة", hint: "نشرات ورسائل متابعة", icon: Mail },
-  { id: "store", label: "مبيعات المتجر الإلكتروني", hint: "وصف المنتجات والعروض والسلات المتروكة", icon: ShoppingBag },
-  { id: "competitors", label: "متابعة المنافسين والسوق", hint: "ما يفعله منافسك وفرصك الحالية", icon: Radar },
-  { id: "reputation", label: "سمعة وتقييمات أفضل", hint: "تقييمات جوجل والردود على الشكاوى", icon: Star },
-  { id: "reports", label: "تقارير تفهمها بسرعة", hint: "ملخص أسبوعي لأداء كل شيء", icon: BarChart3 },
+  {
+    id: "store",
+    label: "مبيعات المتجر الإلكتروني",
+    hint: "وصف المنتجات والعروض والسلات المتروكة",
+    icon: ShoppingBag,
+  },
+  {
+    id: "competitors",
+    label: "متابعة المنافسين والسوق",
+    hint: "ما يفعله منافسك وفرصك الحالية",
+    icon: Radar,
+  },
+  {
+    id: "reputation",
+    label: "سمعة وتقييمات أفضل",
+    hint: "تقييمات جوجل والردود على الشكاوى",
+    icon: Star,
+  },
+  {
+    id: "reports",
+    label: "تقارير تفهمها بسرعة",
+    hint: "ملخص أسبوعي لأداء كل شيء",
+    icon: BarChart3,
+  },
   { id: "brand", label: "هوية وصوت ثابت", hint: "كل المخرجات بنفس النبرة", icon: PenLine },
-  { id: "leads", label: "عملاء محتملون جدد", hint: "اكتشاف عملاء وبيانات تواصل ورسائل أولى", icon: Target },
-  { id: "proposals", label: "عروض أسعار ومقترحات", hint: "مقترحات وعروض جاهزة للإرسال", icon: FileText },
-  { id: "landing", label: "صفحات هبوط تبيع", hint: "صفحات وعروض ترفع نسبة التحويل", icon: LayoutTemplate },
-  { id: "support", label: "دعم ومتابعة بعد البيع", hint: "متابعة الطلبات وحل الشكاوى وتكرار الشراء", icon: LifeBuoy },
+  {
+    id: "leads",
+    label: "عملاء محتملون جدد",
+    hint: "اكتشاف عملاء وبيانات تواصل ورسائل أولى",
+    icon: Target,
+  },
+  {
+    id: "proposals",
+    label: "عروض أسعار ومقترحات",
+    hint: "مقترحات وعروض جاهزة للإرسال",
+    icon: FileText,
+  },
+  {
+    id: "landing",
+    label: "صفحات هبوط تبيع",
+    hint: "صفحات وعروض ترفع نسبة التحويل",
+    icon: LayoutTemplate,
+  },
+  {
+    id: "support",
+    label: "دعم ومتابعة بعد البيع",
+    hint: "متابعة الطلبات وحل الشكاوى وتكرار الشراء",
+    icon: LifeBuoy,
+  },
   { id: "local", label: "عملاء من منطقتك", hint: "خرائط جوجل والبحث المحلي والفروع", icon: Globe2 },
 ];
 
@@ -154,7 +238,10 @@ function Onboarding() {
         await addBrain.mutateAsync({
           kind: "note",
           title: "أهدافنا هذا الربع",
-          body: picked.map((id) => goals.find((goal) => goal.id === id)?.label).filter(Boolean).join("، "),
+          body: picked
+            .map((id) => goals.find((goal) => goal.id === id)?.label)
+            .filter(Boolean)
+            .join("، "),
           meta: "ملاحظة · من الإعداد الأولي",
         });
       }
@@ -168,7 +255,11 @@ function Onboarding() {
               employeeId: "sonny",
               skillId: "social-daily-ideas",
               label: "3 أفكار منشورات كل صباح",
-              values: { business: topic, platform: "إنستغرام", dialect: "خليجية (السعودية/الإمارات)" },
+              values: {
+                business: topic,
+                platform: "إنستغرام",
+                dialect: "خليجية (السعودية/الإمارات)",
+              },
               cadence: "daily",
               dayOfWeek: 1,
               hour: 7,
@@ -215,7 +306,10 @@ function Onboarding() {
         <Link to="/" className="font-display text-2xl font-black">
           سهل<span className="text-primary">.</span>
         </Link>
-        <Link to="/app" className="rounded-full border border-border bg-card/60 px-4 py-2 text-xs font-bold backdrop-blur-xl">
+        <Link
+          to="/app"
+          className="rounded-full border border-border bg-card/60 px-4 py-2 text-xs font-bold backdrop-blur-xl"
+        >
           تخطّي الإعداد
         </Link>
       </header>
@@ -223,7 +317,10 @@ function Onboarding() {
       <main className="mx-auto max-w-3xl px-5 pb-20">
         <div className="mb-5 flex items-center gap-3">
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-card/80">
-            <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
           </div>
           <span className="text-xs font-bold text-muted-foreground">
             {step + 1} / {steps.length}
@@ -266,7 +363,8 @@ function Onboarding() {
                     compact
                     onProfiled={(profiled) => {
                       if (profiled.name) setName(profiled.name);
-                      if (profiled.industry && profiled.industry !== "عام") setIndustry(profiled.industry);
+                      if (profiled.industry && profiled.industry !== "عام")
+                        setIndustry(profiled.industry);
                       const summary = [
                         profiled.summary,
                         profiled.products.length ? `نبيع: ${profiled.products.join("، ")}` : "",
@@ -302,11 +400,21 @@ function Onboarding() {
               <div className="space-y-5">
                 <label className="block">
                   <span className="mb-2 block text-sm font-bold">اسم النشاط</span>
-                  <input value={name} onChange={(event) => setName(event.target.value)} className={glassField} placeholder="مثال: نخلة للتمور الفاخرة" />
+                  <input
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    className={glassField}
+                    placeholder="مثال: نخلة للتمور الفاخرة"
+                  />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-bold">مجال النشاط</span>
-                  <input value={industry} onChange={(event) => setIndustry(event.target.value)} className={glassField} placeholder="تجزئة، مطاعم، خدمات…" />
+                  <input
+                    value={industry}
+                    onChange={(event) => setIndustry(event.target.value)}
+                    className={glassField}
+                    placeholder="تجزئة، مطاعم، خدمات…"
+                  />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-bold">ماذا تبيع ولمن؟</span>
@@ -334,16 +442,22 @@ function Onboarding() {
                       onClick={() => setTone(item.id)}
                       className={cn(
                         "rounded-2xl border p-4 text-start backdrop-blur-xl transition",
-                        tone === item.id ? "border-primary/60 bg-primary/15" : "border-border bg-card/50 hover:bg-card/70",
+                        tone === item.id
+                          ? "border-primary/60 bg-primary/15"
+                          : "border-border bg-card/50 hover:bg-card/70",
                       )}
                     >
                       <span className="block font-bold">{item.label}</span>
-                      <span className="mt-1 block text-sm text-muted-foreground">«{item.sample}»</span>
+                      <span className="mt-1 block text-sm text-muted-foreground">
+                        «{item.sample}»
+                      </span>
                     </button>
                   ))}
                 </div>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-bold">أو اكتب نبرتك بنفسك (اختياري)</span>
+                  <span className="mb-2 block text-sm font-bold">
+                    أو اكتب نبرتك بنفسك (اختياري)
+                  </span>
                   <textarea
                     value={customTone}
                     onChange={(event) => setCustomTone(event.target.value)}
@@ -393,15 +507,24 @@ function Onboarding() {
                       onClick={() => toggle(picked, setPicked, goal.id)}
                       className={cn(
                         "flex items-start gap-3 rounded-2xl border p-4 text-start backdrop-blur-xl transition",
-                        on ? "border-primary/60 bg-primary/15" : "border-border bg-card/50 hover:bg-card/70",
+                        on
+                          ? "border-primary/60 bg-primary/15"
+                          : "border-border bg-card/50 hover:bg-card/70",
                       )}
                     >
-                      <span className={cn("grid size-10 shrink-0 place-items-center rounded-2xl", on ? "bg-primary text-primary-foreground" : "bg-card/70")}>
+                      <span
+                        className={cn(
+                          "grid size-10 shrink-0 place-items-center rounded-2xl",
+                          on ? "bg-primary text-primary-foreground" : "bg-card/70",
+                        )}
+                      >
                         <goal.icon className="size-5" />
                       </span>
                       <span className="min-w-0">
                         <span className="block font-bold">{goal.label}</span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{goal.hint}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {goal.hint}
+                        </span>
                       </span>
                     </button>
                   );
@@ -421,17 +544,31 @@ function Onboarding() {
                         onClick={() => toggle(hired, setHired, member.id)}
                         className={cn(
                           "flex items-center gap-3 rounded-2xl border p-4 text-start backdrop-blur-xl transition",
-                          on ? "border-primary/60 bg-primary/15" : "border-border bg-card/50 hover:bg-card/70",
+                          on
+                            ? "border-primary/60 bg-primary/15"
+                            : "border-border bg-card/50 hover:bg-card/70",
                         )}
                       >
-                        <span className="size-11 shrink-0 overflow-hidden rounded-2xl" style={{ background: member.tintSoft }}>
+                        <span
+                          className="size-11 shrink-0 overflow-hidden rounded-2xl"
+                          style={{ background: member.tintSoft }}
+                        >
                           <Portrait memberId={member.id} name={member.name} className="size-full" />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block font-bold">{member.name}</span>
-                          <span className="block truncate text-sm text-muted-foreground">{member.role}</span>
+                          <span className="block truncate text-sm text-muted-foreground">
+                            {member.role}
+                          </span>
                         </span>
-                        <span className={cn("grid size-6 shrink-0 place-items-center rounded-full border", on ? "border-primary bg-primary text-primary-foreground" : "border-border")}>
+                        <span
+                          className={cn(
+                            "grid size-6 shrink-0 place-items-center rounded-full border",
+                            on
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border",
+                          )}
+                        >
                           {on ? <Check className="size-3.5" /> : null}
                         </span>
                       </button>
@@ -439,7 +576,8 @@ function Onboarding() {
                   })}
                 </div>
                 <p className="rounded-2xl border border-border bg-card/50 p-4 text-sm text-muted-foreground backdrop-blur-xl">
-                  لن نربط أي حساب الآن. عندما تطلب نشراً أو إرسالاً، سيطلب الموظف المعني ربط الحساب بضغطة واحدة.
+                  لن نربط أي حساب الآن. عندما تطلب نشراً أو إرسالاً، سيطلب الموظف المعني ربط الحساب
+                  بضغطة واحدة.
                 </p>
               </div>
             ) : null}
@@ -456,7 +594,11 @@ function Onboarding() {
             </button>
             <div className="flex items-center gap-3">
               {step < steps.length - 1 ? (
-                <button type="button" onClick={() => setStep(step + 1)} className="text-sm font-bold text-muted-foreground hover:text-foreground">
+                <button
+                  type="button"
+                  onClick={() => setStep(step + 1)}
+                  className="text-sm font-bold text-muted-foreground hover:text-foreground"
+                >
                   تخطّي هذه الخطوة
                 </button>
               ) : null}

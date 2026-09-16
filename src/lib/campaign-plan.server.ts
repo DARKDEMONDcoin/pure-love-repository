@@ -89,7 +89,6 @@ async function planSkeleton(
   return { reply, slots };
 }
 
-
 /** كتابة دفعة منشورات كاملة (نص جاهز للنشر لكل عنصر). */
 async function writeChunk(
   apiKey: string,
@@ -98,7 +97,10 @@ async function writeChunk(
   slots: Slot[],
 ): Promise<PlanDeliverable[]> {
   const list = slots
-    .map((s, i) => `${i + 1}) اليوم ${s.day} — ${s.channel} — الزاوية: ${s.angle}${s.time ? ` — الوقت: ${s.time}` : ""}`)
+    .map(
+      (s, i) =>
+        `${i + 1}) اليوم ${s.day} — ${s.channel} — الزاوية: ${s.angle}${s.time ? ` — الوقت: ${s.time}` : ""}`,
+    )
     .join("\n");
   const raw = await freeChat(
     apiKey,
@@ -126,7 +128,9 @@ async function writeChunk(
     .map((p, i) => ({ p, i, body: asText(p?.["body"]).trim() }))
     .filter(({ body }) => body.length > 20)
     .map(({ p, i, body }) => ({
-      title: (asText(p["title"]) || `اليوم ${slots[i]?.day ?? i + 1} — ${slots[i]?.channel ?? ""}`).replace(/الزاوية\s*:\s*/g, "").slice(0, 180),
+      title: (asText(p["title"]) || `اليوم ${slots[i]?.day ?? i + 1} — ${slots[i]?.channel ?? ""}`)
+        .replace(/الزاوية\s*:\s*/g, "")
+        .slice(0, 180),
       kind: asText(p["kind"]) || "منشور",
       channel:
         typeof p["channel"] === "string" && slots.some((s) => s.channel === p["channel"])
@@ -136,7 +140,6 @@ async function writeChunk(
       scheduled: asText(p["scheduled"]) || slots[i]?.time || `اليوم ${slots[i]?.day ?? i + 1}`,
       image_prompt: typeof p["image_prompt"] === "string" ? p["image_prompt"] : null,
     }));
-
 }
 
 /**
@@ -156,9 +159,9 @@ export async function generateCampaign(
   });
   if (!skeleton.slots.length) return null;
 
-
   const chunks: Slot[][] = [];
-  for (let i = 0; i < skeleton.slots.length; i += CHUNK) chunks.push(skeleton.slots.slice(i, i + CHUNK));
+  for (let i = 0; i < skeleton.slots.length; i += CHUNK)
+    chunks.push(skeleton.slots.slice(i, i + CHUNK));
 
   const write = (chunk: Slot[]) =>
     writeChunk(apiKey, system, message, chunk).catch((error) => {
@@ -183,5 +186,4 @@ export async function generateCampaign(
     `جهّزت خطة نشر لمدة ${days} ${days > 10 ? "يوماً" : "أيام"} على ${targets.length} منصات، ` +
       `بمنشور مستقل لكل يوم ولكل منصة (${deliverables.length} منشوراً) مع موعد النشر المقترح لكل واحد.`;
   return { reply: summary, deliverables };
-
 }

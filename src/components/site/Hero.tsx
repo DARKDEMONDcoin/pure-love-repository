@@ -29,13 +29,16 @@ export function Hero() {
           <span>فريق سهل يتولّى الباقي.</span>
         </h1>
         <p className="sahl-video-lead">
-          ستة موظفين رقميين ينفّذون التسويق والمبيعات والمحتوى والتنظيم داخل حساباتك — وأنت تقودهم من مكان واحد.
+          ستة موظفين رقميين ينفّذون التسويق والمبيعات والمحتوى والتنظيم داخل حساباتك — وأنت تقودهم
+          من مكان واحد.
         </p>
         <div className="sahl-video-actions">
           <Link to="/auth" search={{ mode: "signup" as const }} className="sahl-video-primary">
             <span>كوّن فريقك مجانًا</span>
           </Link>
-          <Link to="/app" className="sahl-video-secondary">شاهد فريقك يعمل</Link>
+          <Link to="/app" className="sahl-video-secondary">
+            شاهد فريقك يعمل
+          </Link>
         </div>
       </div>
 
@@ -45,7 +48,10 @@ export function Hero() {
           {team.map((employee, index) => (
             <li key={employee.id} style={{ "--team-order": index } as React.CSSProperties}>
               <Portrait memberId={employee.id} name={employee.name} eager={index < 3} />
-              <span><strong>{employee.name}</strong><small>{employee.role}</small></span>
+              <span>
+                <strong>{employee.name}</strong>
+                <small>{employee.role}</small>
+              </span>
             </li>
           ))}
         </ul>

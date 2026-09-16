@@ -34,7 +34,9 @@ export function Faq() {
     <section id="faq" className="mx-auto max-w-3xl scroll-mt-24 px-5 py-24">
       <Reveal>
         <p className="text-center text-sm font-bold tracking-wider text-primary">الأسئلة الشائعة</p>
-        <h2 className="mt-3 text-center font-display text-4xl font-black md:text-5xl">أسئلة متكررة</h2>
+        <h2 className="mt-3 text-center font-display text-4xl font-black md:text-5xl">
+          أسئلة متكررة
+        </h2>
         <p className="mx-auto mt-4 max-w-md text-center text-muted-foreground">
           لم تجد إجابتك؟ راسلنا وسيردّ عليك إنسان حقيقي خلال يوم عمل.
         </p>

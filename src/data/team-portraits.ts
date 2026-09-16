@@ -72,7 +72,13 @@ export type Country = {
 
 export const COUNTRIES: Country[] = [
   { code: "EG", name: "مصر", attire: "eg", group: "مصر والسودان", zones: ["Africa/Cairo"] },
-  { code: "SD", name: "السودان", attire: "sudan", group: "مصر والسودان", zones: ["Africa/Khartoum"] },
+  {
+    code: "SD",
+    name: "السودان",
+    attire: "sudan",
+    group: "مصر والسودان",
+    zones: ["Africa/Khartoum"],
+  },
   { code: "SA", name: "السعودية", attire: "gulf", group: "الخليج", zones: ["Asia/Riyadh"] },
   { code: "AE", name: "الإمارات", attire: "gulf", group: "الخليج", zones: ["Asia/Dubai"] },
   { code: "KW", name: "الكويت", attire: "gulf", group: "الخليج", zones: ["Asia/Kuwait"] },
@@ -82,17 +88,65 @@ export const COUNTRIES: Country[] = [
   { code: "YE", name: "اليمن", attire: "yemen", group: "الخليج", zones: ["Asia/Aden"] },
   { code: "IQ", name: "العراق", attire: "iraq", group: "الشام والعراق", zones: ["Asia/Baghdad"] },
   { code: "JO", name: "الأردن", attire: "sham", group: "الشام والعراق", zones: ["Asia/Amman"] },
-  { code: "PS", name: "فلسطين", attire: "sham", group: "الشام والعراق", zones: ["Asia/Gaza", "Asia/Hebron", "Asia/Jerusalem"] },
+  {
+    code: "PS",
+    name: "فلسطين",
+    attire: "sham",
+    group: "الشام والعراق",
+    zones: ["Asia/Gaza", "Asia/Hebron", "Asia/Jerusalem"],
+  },
   { code: "LB", name: "لبنان", attire: "sham", group: "الشام والعراق", zones: ["Asia/Beirut"] },
   { code: "SY", name: "سوريا", attire: "sham", group: "الشام والعراق", zones: ["Asia/Damascus"] },
-  { code: "MA", name: "المغرب", attire: "maghreb", group: "المغرب العربي", zones: ["Africa/Casablanca", "Africa/El_Aaiun"] },
-  { code: "DZ", name: "الجزائر", attire: "maghreb", group: "المغرب العربي", zones: ["Africa/Algiers"] },
+  {
+    code: "MA",
+    name: "المغرب",
+    attire: "maghreb",
+    group: "المغرب العربي",
+    zones: ["Africa/Casablanca", "Africa/El_Aaiun"],
+  },
+  {
+    code: "DZ",
+    name: "الجزائر",
+    attire: "maghreb",
+    group: "المغرب العربي",
+    zones: ["Africa/Algiers"],
+  },
   { code: "TN", name: "تونس", attire: "maghreb", group: "المغرب العربي", zones: ["Africa/Tunis"] },
-  { code: "LY", name: "ليبيا", attire: "maghreb", group: "المغرب العربي", zones: ["Africa/Tripoli"] },
-  { code: "MR", name: "موريتانيا", attire: "maghreb", group: "المغرب العربي", zones: ["Africa/Nouakchott"] },
-  { code: "SO", name: "الصومال", attire: "sudan", group: "القرن الأفريقي", zones: ["Africa/Mogadishu"] },
-  { code: "DJ", name: "جيبوتي", attire: "sudan", group: "القرن الأفريقي", zones: ["Africa/Djibouti"] },
-  { code: "KM", name: "جزر القمر", attire: "sudan", group: "القرن الأفريقي", zones: ["Indian/Comoro"] },
+  {
+    code: "LY",
+    name: "ليبيا",
+    attire: "maghreb",
+    group: "المغرب العربي",
+    zones: ["Africa/Tripoli"],
+  },
+  {
+    code: "MR",
+    name: "موريتانيا",
+    attire: "maghreb",
+    group: "المغرب العربي",
+    zones: ["Africa/Nouakchott"],
+  },
+  {
+    code: "SO",
+    name: "الصومال",
+    attire: "sudan",
+    group: "القرن الأفريقي",
+    zones: ["Africa/Mogadishu"],
+  },
+  {
+    code: "DJ",
+    name: "جيبوتي",
+    attire: "sudan",
+    group: "القرن الأفريقي",
+    zones: ["Africa/Djibouti"],
+  },
+  {
+    code: "KM",
+    name: "جزر القمر",
+    attire: "sudan",
+    group: "القرن الأفريقي",
+    zones: ["Indian/Comoro"],
+  },
 ];
 
 export const COUNTRY_GROUPS = Array.from(new Set(COUNTRIES.map((c) => c.group)));
@@ -104,13 +158,55 @@ export function countryOf(code: string): Country {
 }
 
 const portraits: Record<Region, Record<string, string>> = {
-  gulf: { sonny: sonnyGulf, eva: evaGulf, sam: samGulf, nour: nourGulf, dana: danaGulf, adam: adamGulf },
+  gulf: {
+    sonny: sonnyGulf,
+    eva: evaGulf,
+    sam: samGulf,
+    nour: nourGulf,
+    dana: danaGulf,
+    adam: adamGulf,
+  },
   eg: { sonny: sonnyEg, eva: evaEg, sam: samEg, nour: nourEg, dana: danaEg, adam: adamEg },
-  sham: { sonny: sonnySham, eva: evaSham, sam: samSham, nour: nourSham, dana: danaSham, adam: adamSham },
-  maghreb: { sonny: sonnyMaghreb, eva: evaMaghreb, sam: samMaghreb, nour: nourMaghreb, dana: danaMaghreb, adam: adamMaghreb },
-  iraq: { sonny: sonnyIraq, eva: evaIraq, sam: samIraq, nour: nourIraq, dana: danaIraq, adam: adamIraq },
-  sudan: { sonny: sonnySudan, eva: evaSudan, sam: samSudan, nour: nourSudan, dana: danaSudan, adam: adamSudan },
-  yemen: { sonny: sonnyYemen, eva: evaYemen, sam: samYemen, nour: nourYemen, dana: danaYemen, adam: adamYemen },
+  sham: {
+    sonny: sonnySham,
+    eva: evaSham,
+    sam: samSham,
+    nour: nourSham,
+    dana: danaSham,
+    adam: adamSham,
+  },
+  maghreb: {
+    sonny: sonnyMaghreb,
+    eva: evaMaghreb,
+    sam: samMaghreb,
+    nour: nourMaghreb,
+    dana: danaMaghreb,
+    adam: adamMaghreb,
+  },
+  iraq: {
+    sonny: sonnyIraq,
+    eva: evaIraq,
+    sam: samIraq,
+    nour: nourIraq,
+    dana: danaIraq,
+    adam: adamIraq,
+  },
+  sudan: {
+    sonny: sonnySudan,
+    eva: evaSudan,
+    sam: samSudan,
+    nour: nourSudan,
+    dana: danaSudan,
+    adam: adamSudan,
+  },
+  yemen: {
+    sonny: sonnyYemen,
+    eva: evaYemen,
+    sam: samYemen,
+    nour: nourYemen,
+    dana: danaYemen,
+    adam: adamYemen,
+  },
 };
 
 /**
@@ -128,4 +224,3 @@ export function portraitOf(memberId: string, region?: Region): string {
 export function portraitForCountry(memberId: string, countryCode?: string): string {
   return portraitOf(memberId, countryCode ? countryOf(countryCode).attire : undefined);
 }
-

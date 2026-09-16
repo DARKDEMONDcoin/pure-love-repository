@@ -36,7 +36,11 @@ export function GhostConnect({
               ومفتاح Admin API key كاملاً بالشكل <code>id:secret</code>.
             </p>
           </div>
-          <button onClick={onClose} aria-label="إغلاق" className="rounded-xl p-1 hover:bg-secondary">
+          <button
+            onClick={onClose}
+            aria-label="إغلاق"
+            className="rounded-xl p-1 hover:bg-secondary"
+          >
             <X className="size-5" />
           </button>
         </div>

@@ -30,7 +30,6 @@ const staticPaths = [
   "/refunds",
 ];
 
-
 function escapeXml(value: string) {
   return value.replace(
     /[&<>"']/g,

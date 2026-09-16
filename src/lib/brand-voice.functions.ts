@@ -32,9 +32,8 @@ export const extractBrandVoice = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!workspace) throw new Error("مساحة العمل غير موجودة.");
 
-    const { collectSiteText, analyzeStyle, synthesizeVoice, voiceRuleText } = await import(
-      "./brand-voice.server"
-    );
+    const { collectSiteText, analyzeStyle, synthesizeVoice, voiceRuleText } =
+      await import("./brand-voice.server");
 
     let text = data.samples ?? "";
     let urls: string[] = [];
@@ -59,7 +58,12 @@ export const extractBrandVoice = createServerFn({ method: "POST" })
     }
 
     const stats = analyzeStyle(text, taglines);
-    const profile = await synthesizeVoice({ name: workspace.name, industry: workspace.industry }, stats, text, headings);
+    const profile = await synthesizeVoice(
+      { name: workspace.name, industry: workspace.industry },
+      stats,
+      text,
+      headings,
+    );
     const rule = voiceRuleText(profile, stats);
 
     let savedId: string | null = null;

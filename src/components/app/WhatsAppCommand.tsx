@@ -228,7 +228,11 @@ export function WhatsAppCommand({ workspaceId }: { workspaceId: string }) {
             codeMutation.mutate(String(f.get("label") ?? "").trim());
           }}
         >
-          <input name="label" placeholder="اسم صاحب الرقم (اختياري)" className={`${field} sm:w-64`} />
+          <input
+            name="label"
+            placeholder="اسم صاحب الرقم (اختياري)"
+            className={`${field} sm:w-64`}
+          />
           <button
             type="submit"
             disabled={codeMutation.isPending}

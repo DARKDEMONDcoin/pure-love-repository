@@ -75,8 +75,8 @@ function UseCasesPage() {
           <div className="mx-auto max-w-3xl rounded-[1.75rem] border border-border bg-secondary/50 p-8 text-center">
             <h2 className="font-display text-2xl font-black">نشاطك ليس في القائمة؟</h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              الفريق يتعلّم مجالك من موقعك ومنافسيك ونصوصك خلال أول جلسة إعداد. أخبرنا بمجالك
-              وسنبني لك خطة الأسبوع الأولى قبل أن تدفع شيئاً.
+              الفريق يتعلّم مجالك من موقعك ومنافسيك ونصوصك خلال أول جلسة إعداد. أخبرنا بمجالك وسنبني
+              لك خطة الأسبوع الأولى قبل أن تدفع شيئاً.
             </p>
             <Link
               to="/contact"

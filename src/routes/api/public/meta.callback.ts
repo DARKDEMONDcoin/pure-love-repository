@@ -34,7 +34,8 @@ export const Route = createFileRoute("/api/public/meta/callback")({
               headers: {
                 "content-type": "text/html; charset=utf-8",
                 "cache-control": "no-store",
-                "content-security-policy": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
+                "content-security-policy":
+                  "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
               },
             },
           );
@@ -45,7 +46,8 @@ export const Route = createFileRoute("/api/public/meta/callback")({
         if (!config) return back("/app/integrations", { meta: "failed", reason: "no-config" });
 
         const error = url.searchParams.get("error_description") ?? url.searchParams.get("error");
-        if (error) return back("/app/integrations", { meta: "failed", reason: error.slice(0, 160) });
+        if (error)
+          return back("/app/integrations", { meta: "failed", reason: error.slice(0, 160) });
 
         // اقرأ كود OAuth من الاستعلام الخام. URLSearchParams يعامل علامة + كمسافة
         // وفق form-urlencoded، وهو ما يفسد بعض أكواد ميتا ويؤدي إلى
@@ -113,8 +115,7 @@ export const Route = createFileRoute("/api/public/meta/callback")({
             meta.grantedScopes(token),
             meta.fetchPages(token),
           ]);
-          if (!pages.length)
-            return back(verified.returnTo, { meta: "failed", reason: "no-pages" });
+          if (!pages.length) return back(verified.returnTo, { meta: "failed", reason: "no-pages" });
 
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           const saved = await meta.saveConnections(supabaseAdmin, verified.workspaceId, {

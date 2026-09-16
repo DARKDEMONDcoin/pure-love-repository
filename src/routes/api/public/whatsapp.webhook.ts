@@ -65,7 +65,6 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
           return new Response("bad request", { status: 400 });
         }
 
-
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { workspaceByPhoneNumberId, sendWhatsapp } = await import("@/lib/whatsapp.server");
         const { handleCommandMessage } = await import("@/lib/command-core.server");

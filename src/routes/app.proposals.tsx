@@ -60,13 +60,11 @@ function ProposalsPage() {
     onSuccess: invalidate,
   });
   const run = useMutation({
-    mutationFn: (id: string) =>
-      accept({ data: { workspaceId: workspace!.id, proposalId: id } }),
+    mutationFn: (id: string) => accept({ data: { workspaceId: workspace!.id, proposalId: id } }),
     onSuccess: invalidate,
   });
   const skip = useMutation({
-    mutationFn: (id: string) =>
-      dismiss({ data: { workspaceId: workspace!.id, proposalId: id } }),
+    mutationFn: (id: string) => dismiss({ data: { workspaceId: workspace!.id, proposalId: id } }),
     onSuccess: invalidate,
   });
 
@@ -118,7 +116,9 @@ function ProposalsPage() {
             return (
               <li key={p.id} className="rounded-3xl border border-border bg-card p-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className={cn("rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold", pr.style)}>
+                  <span
+                    className={cn("rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold", pr.style)}
+                  >
                     {pr.label}
                   </span>
                   {member ? (
@@ -189,7 +189,11 @@ function ProposalsPage() {
               >
                 <span className="font-bold">{p.title}</span>
                 <span className="text-muted-foreground">
-                  {p.status === "accepted" ? "نُفِّذت" : p.status === "dismissed" ? "مؤجّلة" : "انتهت"}
+                  {p.status === "accepted"
+                    ? "نُفِّذت"
+                    : p.status === "dismissed"
+                      ? "مؤجّلة"
+                      : "انتهت"}
                 </span>
               </li>
             ))}

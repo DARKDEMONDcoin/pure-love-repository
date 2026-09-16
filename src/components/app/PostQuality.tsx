@@ -1,6 +1,14 @@
 import { useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, CheckCircle2, ChevronDown, Gauge, Loader2, Wand2, XCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronDown,
+  Gauge,
+  Loader2,
+  Wand2,
+  XCircle,
+} from "lucide-react";
 
 import { scorePost, type QualityReport } from "@/lib/post-quality";
 import { improvePostQuality } from "@/lib/post-improve.functions";
@@ -27,7 +35,15 @@ const RING: Record<QualityReport["grade"], string> = {
  * بطاقة «جودة المنشور قبل النشر»: درجة من ١٠٠ لكل منصة مختارة،
  * مع أسباب واضحة وإرشاد مباشر لرفع الجودة. لا تمنع النشر — تُنبّه فقط.
  */
-export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone, industry, onApply }: Props) {
+export function PostQuality({
+  text,
+  providers,
+  hasMedia,
+  bannedWords = [],
+  tone,
+  industry,
+  onApply,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -81,7 +97,9 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
         <span className="flex items-center gap-2">
           <Gauge className="size-4 text-muted-foreground" />
           <span className="text-xs font-bold">جودة المنشور قبل النشر</span>
-          <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${RING[weakest.grade]}`}>
+          <span
+            className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${RING[weakest.grade]}`}
+          >
             {weakest.score}/100 · {weakest.grade}
           </span>
           {weakest.blockers.length ? (
@@ -90,7 +108,9 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
             </span>
           ) : null}
         </span>
-        <ChevronDown className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open ? (
@@ -99,7 +119,9 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
             <div key={r.provider}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-bold">{r.providerLabel}</span>
-                <span className={`rounded-full border px-2 py-0.5 text-[11px] font-bold ${RING[r.grade]}`}>
+                <span
+                  className={`rounded-full border px-2 py-0.5 text-[11px] font-bold ${RING[r.grade]}`}
+                >
                   {r.score}/100
                 </span>
                 <span className="text-[11px] text-muted-foreground">
@@ -109,7 +131,17 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
               <ul className="mt-2 space-y-1.5">
                 {r.checks
                   .slice()
-                  .sort((a, b) => (a.severity === b.severity ? 0 : a.severity === "fail" ? -1 : b.severity === "fail" ? 1 : a.severity === "warn" ? -1 : 1))
+                  .sort((a, b) =>
+                    a.severity === b.severity
+                      ? 0
+                      : a.severity === "fail"
+                        ? -1
+                        : b.severity === "fail"
+                          ? 1
+                          : a.severity === "warn"
+                            ? -1
+                            : 1,
+                  )
                   .map((c) => (
                     <li key={c.id} className="flex items-start gap-2 text-[11px] leading-relaxed">
                       {c.severity === "pass" ? (
@@ -119,7 +151,11 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
                       ) : (
                         <XCircle className="mt-0.5 size-3.5 shrink-0 text-coral" />
                       )}
-                      <span className={c.severity === "pass" ? "text-muted-foreground" : "text-ink-soft"}>
+                      <span
+                        className={
+                          c.severity === "pass" ? "text-muted-foreground" : "text-ink-soft"
+                        }
+                      >
                         <span className="font-bold">{c.label}</span> — {c.hint}
                       </span>
                     </li>
@@ -139,7 +175,11 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
               disabled={busy}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-bold hover:bg-secondary disabled:opacity-50"
             >
-              {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Wand2 className="size-3.5" />}
+              {busy ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Wand2 className="size-3.5" />
+              )}
               {busy ? "أعيد الكتابة بأعلى جودة…" : "ارفع الجودة تلقائياً"}
             </button>
             <span className="text-[11px] text-muted-foreground">
@@ -163,7 +203,10 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
                       استخدم هذه
                     </button>
                   </div>
-                  <p className="mt-1.5 max-h-40 overflow-auto whitespace-pre-line text-[11px] leading-relaxed text-ink-soft" dir="auto">
+                  <p
+                    className="mt-1.5 max-h-40 overflow-auto whitespace-pre-line text-[11px] leading-relaxed text-ink-soft"
+                    dir="auto"
+                  >
                     {v.text}
                   </p>
                 </div>
@@ -177,7 +220,8 @@ export function PostQuality({ text, providers, hasMedia, bannedWords = [], tone,
         <p className="mt-1.5 text-[11px] text-muted-foreground">
           {weakest.blockers.length
             ? weakest.blockers[0]!.hint
-            : (weakest.checks.find((c) => c.severity === "warn")?.hint ?? "المنشور مستوفٍ لكل معايير الجودة.")}
+            : (weakest.checks.find((c) => c.severity === "warn")?.hint ??
+              "المنشور مستوفٍ لكل معايير الجودة.")}
         </p>
       ) : null}
     </div>

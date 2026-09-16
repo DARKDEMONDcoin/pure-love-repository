@@ -104,7 +104,6 @@ const sections: LegalSection[] = [
       "لا نكشف هوية المُبلِّغ لصاحب الحساب المخالف.",
     ],
   },
-
 ];
 
 function AcceptableUsePage() {

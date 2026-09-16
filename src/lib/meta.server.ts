@@ -138,7 +138,6 @@ export function metaRedirectUri(_origin?: string): string {
   return `${new URL(override || META_CANONICAL_ORIGIN).origin}/api/public/meta/callback`;
 }
 
-
 export function metaAuthorizeUrl(
   config: MetaConfig,
   redirectUri: string,
@@ -178,7 +177,8 @@ export async function discoverWabaPhones(
         `&access_token=${encodeURIComponent(`${config.appId}|${config.appSecret}`)}`,
     );
     for (const g of debug.data?.granular_scopes ?? []) {
-      if (g.scope.startsWith("whatsapp_business")) for (const id of g.target_ids ?? []) wabaIds.add(id);
+      if (g.scope.startsWith("whatsapp_business"))
+        for (const id of g.target_ids ?? []) wabaIds.add(id);
     }
   } catch (error) {
     discoveryErrors.push(error instanceof Error ? error.message : "تعذّر فحص صلاحيات واتساب");
@@ -214,9 +214,7 @@ export async function discoverWabaPhones(
     try {
       const res = await graph<{
         data?: { id: string; display_phone_number?: string; verified_name?: string }[];
-      }>(
-        `${GRAPH}/${wabaId}/phone_numbers?limit=25&access_token=${encodeURIComponent(userToken)}`,
-      );
+      }>(`${GRAPH}/${wabaId}/phone_numbers?limit=25&access_token=${encodeURIComponent(userToken)}`);
       for (const p of res.data ?? []) {
         phones.push({
           id: p.id,
@@ -256,7 +254,9 @@ async function graph<T>(url: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     const err = (json as { error?: { message?: string; code?: number; error_subcode?: number } })
       .error;
-    throw new Error(explainMetaError(err) ?? `ميتا رفضت الطلب [${res.status}]: ${text.slice(0, 200)}`);
+    throw new Error(
+      explainMetaError(err) ?? `ميتا رفضت الطلب [${res.status}]: ${text.slice(0, 200)}`,
+    );
   }
   return json as T;
 }
@@ -276,7 +276,8 @@ export function explainMetaError(
       "ميتا رفضت النشر لنقص الأذونات (pages_manage_posts / pages_read_engagement). " +
       "أعد الربط ووافق على كل الأذونات، وتأكد أنك مسؤول (Admin) على الصفحة."
     );
-  if (code === 10) return "التطبيق لا يملك الإذن لهذا الإجراء على هذه الصفحة — تأكد أنك مسؤول عنها.";
+  if (code === 10)
+    return "التطبيق لا يملك الإذن لهذا الإجراء على هذه الصفحة — تأكد أنك مسؤول عنها.";
   if (code === 368) return "ميتا حظرت النشر مؤقتاً على هذه الصفحة — حاول لاحقاً.";
   if (code === 4 || code === 17 || code === 32 || code === 9)
     return "تجاوزت حد الطلبات لدى ميتا — انتظر قليلاً ثم أعد المحاولة.";
@@ -523,7 +524,9 @@ export async function publishFacebook(
       message: input.text,
       access_token: conn.pageToken,
     });
-    ids.forEach((id, i) => feedParams.set(`attached_media[${i}]`, JSON.stringify({ media_fbid: id })));
+    ids.forEach((id, i) =>
+      feedParams.set(`attached_media[${i}]`, JSON.stringify({ media_fbid: id })),
+    );
     const album = await graph<{ id?: string; post_id?: string }>(`${GRAPH}/${conn.pageId}/feed`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -556,7 +559,6 @@ export async function publishFacebook(
     params.set("message", input.text);
   }
 
-
   const res = await graph<{ id?: string; post_id?: string }>(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -583,7 +585,9 @@ async function waitForContainer(conn: MetaConnection, containerId: string): Prom
     );
     if (st.status_code === "FINISHED") return;
     if (st.status_code === "ERROR")
-      throw new Error("إنستجرام رفض الوسائط — استخدم MP4 عمودياً (9:16) أقل من ٩٠ ثانية أو صوراً بصيغة JPG.");
+      throw new Error(
+        "إنستجرام رفض الوسائط — استخدم MP4 عمودياً (9:16) أقل من ٩٠ ثانية أو صوراً بصيغة JPG.",
+      );
   }
 }
 
@@ -615,7 +619,8 @@ export async function publishInstagram(
   let containerId: string;
   if (media.length > 1) {
     const children: string[] = [];
-    for (const item of media) children.push(await makeContainer(item, { is_carousel_item: "true" }));
+    for (const item of media)
+      children.push(await makeContainer(item, { is_carousel_item: "true" }));
     const carousel = await graph<{ id?: string }>(`${GRAPH}/${conn.igUserId}/media`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -639,7 +644,6 @@ export async function publishInstagram(
 
   // الكاروسيل نفسه يحتاج لحظات ليجهز بعد تجهيز أبنائه.
   if (media.length > 1) await waitForContainer(conn, container.id);
-
 
   const published = await graph<{ id?: string }>(`${GRAPH}/${conn.igUserId}/media_publish`, {
     method: "POST",
@@ -687,7 +691,9 @@ export async function metaPublish(
     );
   try {
     const result =
-      provider === "facebook" ? await publishFacebook(conn, input) : await publishInstagram(conn, input);
+      provider === "facebook"
+        ? await publishFacebook(conn, input)
+        : await publishInstagram(conn, input);
     await admin
       .from("meta_connections")
       .update({ status: "connected", last_error: null })

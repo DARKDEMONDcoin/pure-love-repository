@@ -24,7 +24,9 @@ function decodeEntities(text: string): string {
 }
 
 const strip = (html: string) =>
-  decodeEntities(html.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
+  decodeEntities(html.replace(/<[^>]*>/g, " "))
+    .replace(/\s+/g, " ")
+    .trim();
 
 /** اقتراحات بحث حقيقية من جوجل (مجاني، بلا مفتاح). */
 export async function googleSuggest(query: string, hl = "ar", gl = "sa"): Promise<string[]> {
@@ -76,7 +78,12 @@ export async function keywordExpansion(seed: string): Promise<KeywordExpansion> 
   ]);
 
   const unique = Array.from(
-    new Set(batches.flat().map((s) => s.replace(/\s+/g, " ").trim()).filter((s) => s.length > 2)),
+    new Set(
+      batches
+        .flat()
+        .map((s) => s.replace(/\s+/g, " ").trim())
+        .filter((s) => s.length > 2),
+    ),
   );
 
   const has = (s: string, words: string[]) => words.some((w) => s.includes(w));
@@ -84,18 +91,48 @@ export async function keywordExpansion(seed: string): Promise<KeywordExpansion> 
     has(s, ["كيف", "طريقة", "ما هو", "ماهو", "لماذا", "هل", "خطوات", "فوائد", "أضرار", "معنى"]),
   );
   const commercial = unique.filter(
-    (s) => !informational.includes(s) && has(s, ["أفضل", "افضل", "مقارنة", "مقابل", "أم", "تقييم", "مراجعة"]),
+    (s) =>
+      !informational.includes(s) &&
+      has(s, ["أفضل", "افضل", "مقارنة", "مقابل", "أم", "تقييم", "مراجعة"]),
   );
   const transactional = unique.filter(
     (s) =>
       !informational.includes(s) &&
       !commercial.includes(s) &&
-      has(s, ["سعر", "أسعار", "اسعار", "كم", "شراء", "أرخص", "ارخص", "عرض", "خصم", "شركة", "رقم", "حجز"]),
+      has(s, [
+        "سعر",
+        "أسعار",
+        "اسعار",
+        "كم",
+        "شراء",
+        "أرخص",
+        "ارخص",
+        "عرض",
+        "خصم",
+        "شركة",
+        "رقم",
+        "حجز",
+      ]),
   );
   const local = unique.filter((s) =>
     has(s, [
-      "الرياض", "جدة", "مكة", "المدينة", "الدمام", "الخبر", "القاهرة", "الإسكندرية", "دبي",
-      "أبوظبي", "الكويت", "الدوحة", "مسقط", "المنامة", "عمان", "قريب", "قرب",
+      "الرياض",
+      "جدة",
+      "مكة",
+      "المدينة",
+      "الدمام",
+      "الخبر",
+      "القاهرة",
+      "الإسكندرية",
+      "دبي",
+      "أبوظبي",
+      "الكويت",
+      "الدوحة",
+      "مسقط",
+      "المنامة",
+      "عمان",
+      "قريب",
+      "قرب",
     ]),
   );
 
@@ -137,7 +174,6 @@ async function getText(url: string, ms = 7_000): Promise<string> {
     return "";
   }
 }
-
 
 /**
  * نتائج بحث عامة (أفضل جهد) من مصادر مجانية بلا مفاتيح.
@@ -216,7 +252,6 @@ export async function serpSearch(query: string): Promise<SerpResult[]> {
     await serpToDb(query, results);
   }
   return results;
-
 }
 
 /**
@@ -270,7 +305,6 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
     },
     // 1) Brave Search (نتائج عربية حقيقية بلا مفتاح)
     async () => {
-
       const html = await getText(
         `https://search.brave.com/search?q=${encodeURIComponent(query)}`,
         7_000,
@@ -364,7 +398,6 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
         out.push({ rank: out.length + 1, title, url: href, snippet: "" });
       }
       return out.length ? out : genericLinks(html, ["bing.com", "microsoft.com", "msn.com"]);
-
     },
     // 4) Startpage (نتائج جوجل عبر وسيط مجاني)
     async () => {
@@ -374,7 +407,8 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
       );
       const out: SerpResult[] = [];
       const seen = new Set<string>();
-      const rx = /<a[^>]+class="[^"]*result-link[^"]*"[^>]+href="(https?:\/\/[^"]+)"[^>]*>([\s\S]{0,600}?)<\/a>/g;
+      const rx =
+        /<a[^>]+class="[^"]*result-link[^"]*"[^>]+href="(https?:\/\/[^"]+)"[^>]*>([\s\S]{0,600}?)<\/a>/g;
       let m: RegExpExecArray | null;
       while ((m = rx.exec(html)) && out.length < 10) {
         const href = decodeEntities(m[1] ?? "");
@@ -387,7 +421,6 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
     },
     // 5) DuckDuckGo Lite
     async () => {
-
       const html = await getText(
         `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(query)}&kl=xa-ar`,
       );
@@ -399,7 +432,12 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
         const uddg = /[?&]uddg=([^&]+)/.exec(href);
         if (uddg?.[1]) href = decodeURIComponent(uddg[1]);
         if (!/^https?:\/\//.test(href)) continue;
-        out.push({ rank: out.length + 1, title: strip(m[2] ?? "").slice(0, 200), url: href, snippet: "" });
+        out.push({
+          rank: out.length + 1,
+          title: strip(m[2] ?? "").slice(0, 200),
+          url: href,
+          snippet: "",
+        });
       }
       return out.length ? out : genericLinks(html, ["duckduckgo.com"]);
     },
@@ -412,7 +450,12 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
       while ((m = rx.exec(html)) && out.length < 10) {
         const href = decodeEntities(m[1] ?? "");
         if (!/^https?:\/\//.test(href)) continue;
-        out.push({ rank: out.length + 1, title: strip(m[2] ?? "").slice(0, 200), url: href, snippet: "" });
+        out.push({
+          rank: out.length + 1,
+          title: strip(m[2] ?? "").slice(0, 200),
+          url: href,
+          snippet: "",
+        });
       }
       return out.length ? out : genericLinks(html, ["mojeek.com"]);
     },
@@ -440,7 +483,11 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
       .toLowerCase();
   const tokens = query
     .split(/\s+/)
-    .map((t) => norm(t).replace(/^(ال|افضل|في|من)/, "").trim())
+    .map((t) =>
+      norm(t)
+        .replace(/^(ال|افضل|في|من)/, "")
+        .trim(),
+    )
     .filter((t) => t.length > 2);
   const relevantOnly = (rows: SerpResult[]) =>
     tokens.length
@@ -510,12 +557,15 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
     const first = await withBudget(Promise.any(race), 13_000, [] as SerpResult[]);
     if (first.length) {
       // نافذة قصيرة نلتقط فيها ما ينهيه بقية المحركات ثم ندمج — بلا تأخير محسوس.
-      await withBudget(Promise.allSettled(race).then(() => undefined), 2_500, undefined);
+      await withBudget(
+        Promise.allSettled(race).then(() => undefined),
+        2_500,
+        undefined,
+      );
       const fused = fuse(settled.length ? settled : [first]);
       return fused.length ? fused : first;
     }
   } catch {
-
     // كل المحركات فشلت — ننتقل للملاذ الأخير
   }
   if (!allowWiki) return [];
@@ -531,7 +581,6 @@ async function serpSearchOnce(query: string, allowWiki = true): Promise<SerpResu
   );
   return wiki;
 }
-
 
 /** ينفّذ وعداً بميزانية زمنية صارمة ويعيد بديلاً عند التجاوز — يمنع تعليق الردود. */
 export async function withBudget<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
@@ -549,7 +598,6 @@ export async function withBudget<T>(promise: Promise<T>, ms: number, fallback: T
     if (timer) clearTimeout(timer);
   }
 }
-
 
 export type CompetitorInventory = {
   domain: string;
@@ -570,7 +618,15 @@ export async function competitorInventory(domainOrUrl: string): Promise<Competit
       return "";
     }
   })();
-  if (!base) return { domain: domainOrUrl, sitemaps: [], urlCount: 0, samples: [], topics: [], error: "نطاق غير صالح" };
+  if (!base)
+    return {
+      domain: domainOrUrl,
+      sitemaps: [],
+      urlCount: 0,
+      samples: [],
+      topics: [],
+      error: "نطاق غير صالح",
+    };
 
   const robots = await getText(`${base}/robots.txt`, 8000);
   let sitemaps = [...robots.matchAll(/Sitemap:\s*(\S+)/gi)]
@@ -682,7 +738,6 @@ async function readerFallback(url: string): Promise<{ title: string; text: strin
 
 /** قراءة أي صفحة وتحليلها تقنياً — مجاني (زحف مباشر + قارئ احتياطي للصفحات الديناميكية). */
 export async function auditPage(url: string): Promise<PageAudit> {
-
   const empty: PageAudit = {
     url,
     status: 0,
@@ -763,7 +818,6 @@ export async function auditPage(url: string): Promise<PageAudit> {
         return href.startsWith("/") || href.includes(target.host);
       }).length,
     };
-
   } catch (error) {
     const reader = await readerFallback(url);
     if (reader) {
@@ -778,7 +832,6 @@ export async function auditPage(url: string): Promise<PageAudit> {
     return { ...empty, error: error instanceof Error ? error.message : "تعذّر جلب الصفحة" };
   }
 }
-
 
 export type KeywordMetric = {
   keyword: string;
@@ -799,8 +852,19 @@ export type KeywordMetric = {
 };
 
 const STRONG_DOMAINS = [
-  "wikipedia.org", "youtube.com", "amazon.", "noon.com", "aljazeera.net", "alarabiya.net",
-  "reddit.com", "quora.com", "linkedin.com", "facebook.com", "gov.sa", "gov.ae", "moe.gov",
+  "wikipedia.org",
+  "youtube.com",
+  "amazon.",
+  "noon.com",
+  "aljazeera.net",
+  "alarabiya.net",
+  "reddit.com",
+  "quora.com",
+  "linkedin.com",
+  "facebook.com",
+  "gov.sa",
+  "gov.ae",
+  "moe.gov",
 ];
 
 /** مشاهدات شهرية حقيقية لأقرب مقال ويكيبيديا عربي (Wikimedia REST — مجاني بلا مفتاح). */
@@ -854,8 +918,10 @@ export async function keywordMetrics(keyword: string): Promise<KeywordMetric> {
   const suggestionDepth = suggestions.length;
 
   let demandScore = Math.min(100, suggestionDepth * 5 + (autocompleted ? 25 : 0));
-  if (wiki) demandScore = Math.min(100, demandScore + Math.min(25, Math.round(wiki.monthlyViews / 200)));
-  if (!suggestionDepth) notes.push("لا اقتراحات من محركات البحث لهذه العبارة — طلب ضعيف أو صياغة غير شائعة.");
+  if (wiki)
+    demandScore = Math.min(100, demandScore + Math.min(25, Math.round(wiki.monthlyViews / 200)));
+  if (!suggestionDepth)
+    notes.push("لا اقتراحات من محركات البحث لهذه العبارة — طلب ضعيف أو صياغة غير شائعة.");
 
   const topDomains = Array.from(
     new Set(
@@ -908,8 +974,43 @@ export type ContentBrief = {
 };
 
 const AR_STOP = new Set([
-  "في","من","على","عن","الى","إلى","مع","هذا","هذه","ذلك","التي","الذي","كل","بعد","قبل","هو","هي",
-  "أو","او","ما","لا","إن","ان","كما","بين","حتى","عند","لكن","قد","كان","يكون","the","and","for","with","you","your",
+  "في",
+  "من",
+  "على",
+  "عن",
+  "الى",
+  "إلى",
+  "مع",
+  "هذا",
+  "هذه",
+  "ذلك",
+  "التي",
+  "الذي",
+  "كل",
+  "بعد",
+  "قبل",
+  "هو",
+  "هي",
+  "أو",
+  "او",
+  "ما",
+  "لا",
+  "إن",
+  "ان",
+  "كما",
+  "بين",
+  "حتى",
+  "عند",
+  "لكن",
+  "قد",
+  "كان",
+  "يكون",
+  "the",
+  "and",
+  "for",
+  "with",
+  "you",
+  "your",
 ]);
 
 function terms(text: string): string[] {
@@ -930,8 +1031,16 @@ export async function contentBrief(query: string, ownUrl?: string): Promise<Cont
   const serp = await serpSearch(query);
   // نستثني المنصات العامة (موسوعات/فيديو/شبكات) لأنها ليست منافساً محتوائياً قابلاً للقياس
   const EXCLUDE = [
-    "wikipedia.org","youtube.com","pinterest.","facebook.com","instagram.com",
-    "tiktok.com","x.com","twitter.com","reddit.com","linkedin.com",
+    "wikipedia.org",
+    "youtube.com",
+    "pinterest.",
+    "facebook.com",
+    "instagram.com",
+    "tiktok.com",
+    "x.com",
+    "twitter.com",
+    "reddit.com",
+    "linkedin.com",
   ];
   const filtered = serp.filter((r) => {
     try {
@@ -964,13 +1073,16 @@ export async function contentBrief(query: string, ownUrl?: string): Promise<Cont
   }
 
   const words = ok.map((a) => a.wordCount).sort((a, b) => a - b);
-  const medianWordCount = words.length
-    ? (words[Math.floor(words.length / 2)] ?? 0)
-    : 0;
+  const medianWordCount = words.length ? (words[Math.floor(words.length / 2)] ?? 0) : 0;
   const targetWordCount = medianWordCount ? Math.round((medianWordCount * 1.15) / 50) * 50 : 0;
 
   const headingIdeas = Array.from(
-    new Set(ok.flatMap((a) => a.h2).map((h) => h.trim()).filter((h) => h.length > 8 && h.length < 90)),
+    new Set(
+      ok
+        .flatMap((a) => a.h2)
+        .map((h) => h.trim())
+        .filter((h) => h.length > 8 && h.length < 90),
+    ),
   ).slice(0, 20);
 
   const freq = new Map<string, Set<string>>();
@@ -996,8 +1108,13 @@ export async function contentBrief(query: string, ownUrl?: string): Promise<Cont
   if (ownUrl) {
     const mine = await auditPage(ownUrl);
     if (!mine.error) {
-      const own = new Set(terms([mine.title, mine.metaDescription, ...mine.h1, ...mine.h2].join(" ")));
-      entityGaps = commonTerms.filter((t) => !own.has(t.term)).map((t) => t.term).slice(0, 15);
+      const own = new Set(
+        terms([mine.title, mine.metaDescription, ...mine.h1, ...mine.h2].join(" ")),
+      );
+      entityGaps = commonTerms
+        .filter((t) => !own.has(t.term))
+        .map((t) => t.term)
+        .slice(0, 15);
     } else {
       notes.push(`تعذّر تحليل صفحتك (${mine.error}) فلا مقارنة فجوات.`);
     }
@@ -1018,7 +1135,12 @@ export async function contentBrief(query: string, ownUrl?: string): Promise<Cont
     commonTerms,
     entityGaps,
     schemaCoverage,
-    competitors: ok.map((a) => ({ url: a.url, title: a.title, words: a.wordCount, h2: a.h2.length })),
+    competitors: ok.map((a) => ({
+      url: a.url,
+      title: a.title,
+      words: a.wordCount,
+      h2: a.h2.length,
+    })),
     notes,
   };
 }
@@ -1055,13 +1177,16 @@ export async function entityProfile(term: string): Promise<EntityProfile | null>
     );
     if (!detail.ok) return null;
     const body = (await detail.json()) as {
-      entities?: Record<string, {
-        labels?: Record<string, { value?: string }>;
-        descriptions?: Record<string, { value?: string }>;
-        aliases?: Record<string, { value?: string }[]>;
-        claims?: Record<string, { mainsnak?: { datavalue?: { value?: unknown } } }[]>;
-        sitelinks?: Record<string, { title?: string }>;
-      }>;
+      entities?: Record<
+        string,
+        {
+          labels?: Record<string, { value?: string }>;
+          descriptions?: Record<string, { value?: string }>;
+          aliases?: Record<string, { value?: string }[]>;
+          claims?: Record<string, { mainsnak?: { datavalue?: { value?: unknown } } }[]>;
+          sitelinks?: Record<string, { title?: string }>;
+        }
+      >;
     };
     const e = body.entities?.[id];
     if (!e) return null;
@@ -1072,9 +1197,14 @@ export async function entityProfile(term: string): Promise<EntityProfile | null>
       id,
       label: e.labels?.["ar"]?.value ?? e.labels?.["en"]?.value ?? term,
       description: e.descriptions?.["ar"]?.value ?? e.descriptions?.["en"]?.value ?? "",
-      aliases: (e.aliases?.["ar"] ?? []).map((a) => a.value ?? "").filter(Boolean).slice(0, 6),
+      aliases: (e.aliases?.["ar"] ?? [])
+        .map((a) => a.value ?? "")
+        .filter(Boolean)
+        .slice(0, 6),
       officialSite: typeof site === "string" ? site : null,
-      wikipediaAr: arTitle ? `https://ar.wikipedia.org/wiki/${encodeURIComponent(arTitle.replace(/ /g, "_"))}` : null,
+      wikipediaAr: arTitle
+        ? `https://ar.wikipedia.org/wiki/${encodeURIComponent(arTitle.replace(/ /g, "_"))}`
+        : null,
     };
   } catch {
     return null;

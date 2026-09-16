@@ -96,13 +96,17 @@ export function ImpactStats() {
             <span className="flow-chip-dot" /> يعمل الآن
           </span>
           <h2 className="flow-title font-display">فريقك الذكي يشتغل على مدار اليوم</h2>
-          <p className="flow-sub">كل موظف يستلم مهامه تلقائيًا، ينفّذها، ويسلّم النتيجة — بدون متابعة منك.</p>
+          <p className="flow-sub">
+            كل موظف يستلم مهامه تلقائيًا، ينفّذها، ويسلّم النتيجة — بدون متابعة منك.
+          </p>
         </header>
 
         <div ref={ref} className={`flow-panel ${live ? "is-live" : ""}`} dir="ltr">
           <div className="flow-ruler" aria-hidden="true">
             {hours.map((h) => (
-              <span key={h} style={{ left: `${(h / 24) * 100}%` }}>{h}h</span>
+              <span key={h} style={{ left: `${(h / 24) * 100}%` }}>
+                {h}h
+              </span>
             ))}
           </div>
 
@@ -111,12 +115,18 @@ export function ImpactStats() {
               const isActive = li === activeLane;
               return (
                 <li key={lane.role} className={`flow-lane ${isActive ? "is-active" : ""}`}>
-                  <span className="flow-lane-name" dir="rtl">{lane.role}</span>
+                  <span className="flow-lane-name" dir="rtl">
+                    {lane.role}
+                  </span>
                   <div className="flow-track">
                     <span className="flow-rail" />
                     <span
                       className="flow-rail-fill"
-                      style={{ width: isActive ? `${(lane.nodes[activeNode]?.at ?? 0) / 24 * 100}%` : "0%" }}
+                      style={{
+                        width: isActive
+                          ? `${((lane.nodes[activeNode]?.at ?? 0) / 24) * 100}%`
+                          : "0%",
+                      }}
                     />
                     {lane.nodes.map((n, ni) => {
                       const on = isActive && ni <= activeNode;
@@ -128,7 +138,9 @@ export function ImpactStats() {
                           style={{ left: `${(n.at / 24) * 100}%` }}
                         >
                           {now && (
-                            <span className="flow-tip" dir="rtl">{n.task}</span>
+                            <span className="flow-tip" dir="rtl">
+                              {n.task}
+                            </span>
                           )}
                         </span>
                       );

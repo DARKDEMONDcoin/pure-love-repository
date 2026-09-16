@@ -38,7 +38,6 @@ export async function pipedreamConfig(): Promise<PipedreamConfig | null> {
   const { getSecrets } = await import("./secrets.server");
   const found: Record<string, string> = await getSecrets(SECRET_NAMES);
 
-
   const clientId = found["PIPEDREAM_CLIENT_ID"] ?? "";
   const clientSecret = found["PIPEDREAM_CLIENT_SECRET"] ?? "";
   const projectId = found["PIPEDREAM_PROJECT_ID"] ?? "";
@@ -48,7 +47,10 @@ export async function pipedreamConfig(): Promise<PipedreamConfig | null> {
     clientId,
     clientSecret,
     projectId,
-    environment: found["PIPEDREAM_ENVIRONMENT"]?.trim().toLowerCase() === "production" ? "production" : "development",
+    environment:
+      found["PIPEDREAM_ENVIRONMENT"]?.trim().toLowerCase() === "production"
+        ? "production"
+        : "development",
   };
   configCache = { at: Date.now(), value };
   return value;
@@ -82,11 +84,7 @@ async function accessToken(config: PipedreamConfig): Promise<string> {
   return json.access_token;
 }
 
-async function call<T>(
-  config: PipedreamConfig,
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+async function call<T>(config: PipedreamConfig, path: string, init: RequestInit = {}): Promise<T> {
   const token = await accessToken(config);
   const res = await fetch(`${API}/connect/${config.projectId}${path}`, {
     ...init,
@@ -125,13 +123,19 @@ export function explainPlatformError(raw: string): string | null {
   let code: number | undefined;
   let message = "";
   try {
-    const j = JSON.parse(raw) as { error?: { code?: number; message?: string; error_subcode?: number } };
+    const j = JSON.parse(raw) as {
+      error?: { code?: number; message?: string; error_subcode?: number };
+    };
     code = j.error?.code;
     message = j.error?.message ?? "";
   } catch {
     message = raw;
   }
-  if (/pages_manage_posts|pages_read_engagement/.test(message) || code === 283 || (code === 200 && /permission/i.test(message))) {
+  if (
+    /pages_manage_posts|pages_read_engagement/.test(message) ||
+    code === 283 ||
+    (code === 200 && /permission/i.test(message))
+  ) {
     return (
       "فيسبوك رفض النشر لأن الربط لا يملك صلاحية النشر (pages_manage_posts / pages_read_engagement). " +
       "نافذة الربط الافتراضية لا تطلب هذه الصلاحيات أصلاً، لذا لا يكفي إعادة الربط وحدها. " +
@@ -140,11 +144,16 @@ export function explainPlatformError(raw: string): string | null {
     );
   }
   if (code === 190) return "انتهت صلاحية ربط فيسبوك/إنستجرام — أعد ربط الحساب من صفحة التكاملات.";
-  if (code === 10) return "التطبيق لا يملك الإذن لهذا الإجراء على هذه الصفحة — تأكد أنك مسؤول (Admin) عن الصفحة ثم أعد الربط.";
-  if (code === 368) return "فيسبوك حظر النشر مؤقتاً على هذه الصفحة (سياسة المجتمع) — حاول لاحقاً أو راجع إشعارات الصفحة.";
-  if (code === 9 || code === 4 || code === 17 || code === 32) return "تجاوزت حد الطلبات المسموح لدى المنصة — انتظر قليلاً ثم أعد المحاولة.";
-  if (code === 100 && /image|media|url/i.test(message)) return "المنصة رفضت الصورة — تأكد أن رابط الصورة عام ومباشر (JPG/PNG) وحجمها أقل من 8 ميجابايت.";
-  if (code === 9004 || /instagram.*(media|container)/i.test(message)) return "إنستجرام تعذّر تحميل الوسائط — استخدم صورة JPG عامة بنسبة بين 4:5 و1.91:1.";
+  if (code === 10)
+    return "التطبيق لا يملك الإذن لهذا الإجراء على هذه الصفحة — تأكد أنك مسؤول (Admin) عن الصفحة ثم أعد الربط.";
+  if (code === 368)
+    return "فيسبوك حظر النشر مؤقتاً على هذه الصفحة (سياسة المجتمع) — حاول لاحقاً أو راجع إشعارات الصفحة.";
+  if (code === 9 || code === 4 || code === 17 || code === 32)
+    return "تجاوزت حد الطلبات المسموح لدى المنصة — انتظر قليلاً ثم أعد المحاولة.";
+  if (code === 100 && /image|media|url/i.test(message))
+    return "المنصة رفضت الصورة — تأكد أن رابط الصورة عام ومباشر (JPG/PNG) وحجمها أقل من 8 ميجابايت.";
+  if (code === 9004 || /instagram.*(media|container)/i.test(message))
+    return "إنستجرام تعذّر تحميل الوسائط — استخدم صورة JPG عامة بنسبة بين 4:5 و1.91:1.";
   return null;
 }
 
@@ -209,7 +218,6 @@ export async function pickScopeProfile(
     return null;
   }
 }
-
 
 export type PdAccount = {
   id: string;
@@ -299,7 +307,6 @@ export async function proxyRequest<T = unknown>(
     ),
   });
 }
-
 
 function base64Url(value: string): string {
   const bytes = new TextEncoder().encode(value);

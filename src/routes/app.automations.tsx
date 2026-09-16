@@ -36,13 +36,7 @@ const cadenceLabel: Record<string, string> = {
 
 const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
-function Form({
-  workspaceId,
-  onClose,
-}: {
-  workspaceId: string;
-  onClose: () => void;
-}) {
+function Form({ workspaceId, onClose }: { workspaceId: string; onClose: () => void }) {
   const qc = useQueryClient();
   const save = useServerFn(saveAutomation);
   const nourSkills = useMemo(() => skillsFor("nour"), []);
@@ -93,7 +87,11 @@ function Form({
       <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg font-black">جدولة مهمة جديدة لنور</h2>
-          <button onClick={onClose} aria-label="إغلاق" className="rounded-xl p-1 hover:bg-secondary">
+          <button
+            onClick={onClose}
+            aria-label="إغلاق"
+            className="rounded-xl p-1 hover:bg-secondary"
+          >
             <X className="size-5" />
           </button>
         </div>
@@ -275,7 +273,9 @@ function AutomationsPage() {
         </button>
       }
     >
-      {open && workspace ? <Form workspaceId={workspace.id} onClose={() => setOpen(false)} /> : null}
+      {open && workspace ? (
+        <Form workspaceId={workspace.id} onClose={() => setOpen(false)} />
+      ) : null}
 
       {note ? (
         <p className="mb-5 rounded-2xl bg-jade/12 px-4 py-3 text-sm font-semibold text-jade-deep">
