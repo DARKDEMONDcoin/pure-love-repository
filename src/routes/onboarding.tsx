@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Sparkles,
   Star,
+  Target,
   Users,
   Video,
 } from "lucide-react";
