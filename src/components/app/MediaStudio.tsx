@@ -1,7 +1,20 @@
 import { useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ImagePlus, Loader2, Link2, X, Wand2, Check, Globe, RefreshCw, Upload } from "lucide-react";
+import {
+  ImagePlus,
+  Loader2,
+  Link2,
+  X,
+  Wand2,
+  Check,
+  Globe,
+  RefreshCw,
+  Upload,
+  Camera,
+  Paperclip,
+  FileText,
+} from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { generateMedia } from "@/lib/media.functions";
@@ -9,11 +22,23 @@ import { listSiteAssets, syncSiteAssets, type StoredAsset } from "@/lib/brand-as
 import { ReelStudio } from "@/components/app/ReelStudio";
 import { cn } from "@/lib/utils";
 
-export type Attachment = { url: string; type: "image" | "video"; alt?: string };
+export type Attachment = {
+  url: string;
+  type: "image" | "video" | "file";
+  alt?: string;
+  mime?: string;
+  size?: number;
+};
 
-/** حتى ١٠ صور/فيديوهات مع بعض في نفس الرسالة، وكل ملف حتى ٥٠ ميجابايت. */
+/** حتى ١٠ عناصر مع بعض في نفس الرسالة. حدود الحجم تحمي الرفع من الفشل الصامت. */
 const MAX_ATTACHMENTS = 10;
 const MAX_BYTES = 50 * 1024 * 1024;
+/** الملفات (مستندات/جداول/نصوص) تُقرأ بالكامل على الخادم، فنُحدّها بـ٢٥ ميجابايت. */
+const MAX_FILE_BYTES = 25 * 1024 * 1024;
+const humanSize = (bytes: number) =>
+  bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toFixed(1)} م.ب`
+    : `${Math.max(1, Math.round(bytes / 1024))} ك.ب`;
 export type ImageMode = "auto" | "off" | "manual";
 export type Aspect = "square" | "portrait" | "landscape" | "story";
 
