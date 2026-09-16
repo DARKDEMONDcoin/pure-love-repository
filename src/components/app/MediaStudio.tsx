@@ -95,6 +95,8 @@ export function MediaStudio({
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
+  const docInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
   const generate = useServerFn(generateMedia);
 
   const run = useMutation({
