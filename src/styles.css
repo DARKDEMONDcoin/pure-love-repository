@@ -7598,15 +7598,22 @@ select.glass-input {
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
 }
 .brand-loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
   display: grid;
   place-items: center;
-  min-height: 72svh;
-  padding: 3rem 1.25rem;
+  width: 100%;
+  height: 100dvh;
+  min-height: 100svh;
+  padding: 1.25rem;
+  overflow: hidden;
+  background: var(--background);
+  text-align: center;
 }
-@media (min-width: 1024px) {
-  .brand-loader-screen {
-    min-height: 82svh;
-  }
+.brand-loader-screen > .brand-loader {
+  flex-direction: column;
+  justify-content: center;
 }
 @keyframes brand-loader-spin {
   to {
@@ -22855,15 +22862,22 @@ select.glass-input {
   color: color-mix(in oklab, var(--foreground) 62%, transparent);
 }
 .brand-loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
   display: grid;
   place-items: center;
-  min-height: 72svh;
-  padding: 3rem 1.25rem;
+  width: 100%;
+  height: 100dvh;
+  min-height: 100svh;
+  padding: 1.25rem;
+  overflow: hidden;
+  background: var(--background);
+  text-align: center;
 }
-@media (min-width: 1024px) {
-  .brand-loader-screen {
-    min-height: 82svh;
-  }
+.brand-loader-screen > .brand-loader {
+  flex-direction: column;
+  justify-content: center;
 }
 @keyframes brand-loader-spin {
   to {
