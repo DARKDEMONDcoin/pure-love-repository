@@ -13688,6 +13688,99 @@ section:has(> .integration-grid-wave) {
   }
 }
 
+/* Final responsive placement: approval sits below the showcased device. */
+.sahl-hero-product > .sahl-float-note {
+  position: absolute;
+  z-index: 20;
+  inset: auto 1.5rem -1.5rem auto;
+  width: 232px;
+  min-width: 0;
+  min-height: 64px;
+  padding: 11px 13px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  overflow: visible;
+  border: 1px solid color-mix(in oklab, var(--home-bg) 78%, transparent);
+  border-radius: 17px;
+  background: color-mix(in oklab, var(--home-bg) 82%, var(--glass-tint));
+  box-shadow:
+    0 22px 44px -16px color-mix(in oklab, var(--home-ink) 48%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--home-bg) 86%, transparent);
+  backdrop-filter: blur(24px) saturate(155%);
+}
+.sahl-hero-product > .sahl-float-note b,
+.sahl-hero-product > .sahl-float-note small {
+  display: block;
+  white-space: nowrap;
+}
+.sahl-hero-product > .sahl-float-note b {
+  color: var(--home-ink);
+  font-family: "Almarai", "IBM Plex Sans Arabic", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.sahl-hero-product > .sahl-float-note small {
+  margin-top: 2px;
+  color: var(--home-copy);
+  font-size: 0.62rem;
+  line-height: 1.45;
+}
+
+/* Desktop chat uses one centered reading rail from messages through composer. */
+@media (min-width: 1024px) {
+  .is-chat-shell .app-topbar-inner > div:first-of-type {
+    flex: 0 0 clamp(8rem, 11vw, 11rem);
+  }
+  .is-chat-shell .app-topbar-controls {
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+  .is-chat-shell .chat-topbar-actions {
+    justify-content: flex-start;
+    padding-block: 0.2rem;
+  }
+  .is-chat-shell main,
+  .is-chat-shell .chat-command-layout,
+  .is-chat-shell .chat-stage {
+    width: 100%;
+  }
+  .is-chat-shell .chat-message-column,
+  .is-chat-shell .chat-composer {
+    width: min(100%, 64rem);
+  }
+}
+
+@media (min-width: 1600px) {
+  .is-chat-shell .chat-message-column,
+  .is-chat-shell .chat-composer {
+    width: min(100%, 68rem);
+  }
+  .is-chat-shell .chat-message-column {
+    padding-inline: 2rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .sahl-hero-product > .sahl-float-note {
+    position: relative;
+    inset: auto;
+    width: min(100%, 216px);
+    min-height: 58px;
+    margin: 12px auto 0;
+    padding: 9px 10px;
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+  .sahl-hero-product > .sahl-float-note b {
+    font-size: 0.72rem;
+  }
+  .sahl-hero-product > .sahl-float-note small {
+    font-size: 0.56rem;
+  }
+}
+
 /* رأس لوحة الأداة قابل للسحب داخل نفس المحادثة. */
 .chat-tool-drag {
   cursor: grab;

@@ -620,16 +620,16 @@ export function EditorialHomepage() {
               alt="مساحة عمل سهل: محادثة سِراج داخل المنصة"
               hero
             />
-          </div>
-          <div className="sahl-float-note liquid-glass-sahl" role="status">
-            <span className="sahl-float-note-icon">
-              <Check aria-hidden="true" />
-            </span>
-            <div>
-              <b>بانتظار اعتمادك</b>
-              <small>٣ مخرجات جاهزة للمراجعة</small>
+            <div className="sahl-float-note liquid-glass-sahl" role="status">
+              <span className="sahl-float-note-icon">
+                <Check aria-hidden="true" />
+              </span>
+              <div>
+                <b>بانتظار اعتمادك</b>
+                <small>٣ مخرجات جاهزة للمراجعة</small>
+              </div>
+              <i className="sahl-float-note-dot" aria-hidden="true" />
             </div>
-            <i className="sahl-float-note-dot" aria-hidden="true" />
           </div>
         </div>
       </section>

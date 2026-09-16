@@ -258,6 +258,7 @@ export function AppShell({
       className={cn(
         "app-shell sahl-app-theme flex min-h-screen bg-background",
         embedded && "is-embedded",
+        compactTitle && "is-chat-shell",
       )}
     >
       <div className="sahl-smoke sahl-smoke-app" aria-hidden="true">
@@ -310,7 +311,7 @@ export function AppShell({
             </div>
             <div
               className={cn(
-                "flex min-w-0 shrink items-center gap-1 sm:gap-2",
+                "app-topbar-controls flex min-w-0 shrink items-center gap-1 sm:gap-2",
                 compactTitle && "flex-1 overflow-hidden sm:flex-initial sm:overflow-visible",
               )}
             >
