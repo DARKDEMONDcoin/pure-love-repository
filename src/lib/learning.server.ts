@@ -16,7 +16,7 @@ export async function learningBlock(client: Client, workspaceId: string, employe
 
   const { data } = await client
     .from("employee_lessons")
-    .select("id, title, instruction, confidence, evidence_count, status")
+    .select("id, title, instruction, confidence, evidence_count, status, risk_level")
     .eq("workspace_id", workspaceId)
     .eq("employee_id", employeeId)
     .in("status", ["active", "approved"])
@@ -25,12 +25,14 @@ export async function learningBlock(client: Client, workspaceId: string, employe
     .limit(6);
   const experimentPercent = settings?.experiment_percent ?? 10;
   const selected = (data ?? []).filter(
-    (lesson) => lesson.status === "active" || Math.random() * 100 < experimentPercent,
+    (lesson) =>
+      lesson.status === "active" ||
+      (lesson.risk_level === "low" && Math.random() * 100 < experimentPercent),
   );
   if (!selected.length) return { block: "", lessonIds: [] as string[] };
   return {
     block: [
-      "## دروس مثبت أثبتتها نتائج هذه العلامة",
+      "## دروس نشطة وتجارب منخفضة المخاطر لهذه العلامة",
       "طبّقها فقط عندما تلائم الطلب. لا تجعلها تتجاوز طلب المستخدم أو قواعد الأمان والصدق.",
       ...selected.map((lesson, index) => `${index + 1}) ${lesson.instruction}`),
     ].join("\n"),
