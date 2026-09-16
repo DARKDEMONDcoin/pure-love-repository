@@ -18,7 +18,7 @@ export function InlineApproval({
   onEdit,
   onDone,
 }: {
-  workspaceId?: string;
+  workspaceId?: string | undefined;
   taskId: string;
   employeeName: string;
   onEdit?: (text: string) => void;
