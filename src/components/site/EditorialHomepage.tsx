@@ -53,6 +53,7 @@ import planFlowWide from "@/assets/product/plan-flow-wide.png";
 import planFlowTall from "@/assets/product/plan-flow-tall.png";
 import adsVisual from "@/assets/product/ads-visual.png";
 import proofVisual from "@/assets/product/proof-visual.png";
+import { VerifiedBadge } from "@/components/site/VerifiedBadge";
 
 type DemoPhase = "idle" | "thinking" | "draft" | "approved";
 
