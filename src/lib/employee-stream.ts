@@ -5,7 +5,13 @@ export type EmployeeTurnPayload = {
   employeeId: string;
   conversationId: string;
   message: string;
-  attachments?: { url: string; type: "image" | "video"; alt?: string }[];
+  attachments?: {
+    url: string;
+    type: "image" | "video" | "file";
+    alt?: string;
+    mime?: string;
+    size?: number;
+  }[];
   imageMode?: "auto" | "off" | "manual";
   imagePrompt?: string | undefined;
   imageAspect?: "square" | "portrait" | "landscape" | "story";
