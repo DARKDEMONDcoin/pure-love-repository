@@ -179,9 +179,9 @@ export async function describeUserMedia(attachments: Attachment[]): Promise<stri
     if (!described && keys.gemini) {
       described = await callVision(GEMINI, keys.gemini, VISION_GEMINI, parts).catch(() => "");
     }
-    return [described, videoNote].filter(Boolean).join(" · ");
+    return [described, filesNote, videoNote].filter(Boolean).join(" · ");
   } catch (error) {
     console.warn("[media-vision] failed:", error instanceof Error ? error.message : error);
-    return videoNote;
+    return [filesNote, videoNote].filter(Boolean).join(" · ");
   }
 }
