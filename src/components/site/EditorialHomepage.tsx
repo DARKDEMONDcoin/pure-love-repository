@@ -621,8 +621,8 @@ export function EditorialHomepage() {
               hero
             />
             <div className="sahl-float-note liquid-glass-sahl" role="status">
-              <span className="sahl-float-note-icon">
-                <Check aria-hidden="true" />
+              <span className="sahl-float-note-icon is-verified">
+                <VerifiedBadge title="مخرجات موثّقة بانتظار اعتمادك" />
               </span>
               <div>
                 <b>بانتظار اعتمادك</b>
