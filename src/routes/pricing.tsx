@@ -52,7 +52,7 @@ function PricingPage() {
   if (!selected) return null;
   return (
     <PageShell className="h-svh overflow-hidden bg-background md:min-h-screen md:h-auto md:overflow-visible" hideFooterOnMobile>
-      <section className="flex h-svh flex-col px-4 pb-4 pt-[5.5rem] md:hidden">
+      <section className="flex h-svh flex-col px-4 pb-4 pt-[7rem] md:hidden">
         <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col">
           <div className="flex items-end justify-between gap-3">
             <div>
