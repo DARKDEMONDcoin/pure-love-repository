@@ -1012,7 +1012,7 @@ function ChatView({
             <span />
             <span />
           </div>
-          <div className="chat-message-column relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 sm:px-6">
+          <div className="chat-message-column relative mx-auto flex w-full max-w-5xl flex-1 flex-col px-3 sm:px-6">
             {(messages ?? []).length === 0 && !pending ? (
               <div className="chat-welcome animate-pop-in">
                 <div className="chat-welcome-portraits" aria-hidden="true">
@@ -1276,7 +1276,7 @@ function ChatView({
           <div className="chat-composer-dock pointer-events-none p-3 sm:p-5">
             <PromptInput
               onSubmit={(message) => submit(message.text || draft)}
-              className="chat-composer pointer-events-auto mx-auto max-w-4xl rounded-2xl border border-border/70 p-2 transition-all focus-within:border-primary/55 focus-within:ring-4 focus-within:ring-primary/10"
+              className="chat-composer pointer-events-auto mx-auto max-w-5xl rounded-2xl border border-border/70 p-2 transition-all focus-within:border-primary/55 focus-within:ring-4 focus-within:ring-primary/10"
             >
               <PromptInputTextarea
                 ref={inputRef}
