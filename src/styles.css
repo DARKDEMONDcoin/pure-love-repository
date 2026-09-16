@@ -31258,8 +31258,8 @@ html { scroll-padding-top: 96px; }
 @media (max-width: 720px) {
   /* الصفحة الرئيسية: عنوان يناسب عرض الهاتف بلا تراكب مع الشريط الملوّن. */
   .sahl-hero { min-height: auto; padding: 104px 0 68px; }
-  .sahl-hero-ribbon { inset: -80px -150px auto 30%; height: 430px; }
-  .sahl-hero-layout { padding-top: 148px; }
+  .sahl-hero-ribbon { inset: -86px -150px auto 30%; height: 320px; }
+  .sahl-hero-layout { padding-top: 258px; }
   .sahl-hero h1 {
     max-width: none;
     margin-top: 26px;
@@ -31273,8 +31273,8 @@ html { scroll-padding-top: 96px; }
   .sahl-hero-product { margin-top: 30px; }
 
   /* الصفحات الداخلية: نفس المنطق للعنوان والمقدمة. */
-  .sahl-page-hero { min-height: auto; padding: 196px 16px 60px; }
-  .sahl-page-ribbon { inset: -130px -160px auto 30%; height: 400px; }
+  .sahl-page-hero { min-height: auto; padding: 232px 16px 60px; }
+  .sahl-page-ribbon { inset: -120px -160px auto 30%; height: 320px; }
   .sahl-page-title {
     max-width: none;
     margin-top: 18px;
@@ -31283,8 +31283,8 @@ html { scroll-padding-top: 96px; }
   }
   .sahl-page-lead { margin-top: 16px; font-size: .96rem; line-height: 1.8; }
   .sahl-page-hero-inner > .sahl-reveal:last-child { margin-top: 22px; }
-  .sahl-member-hero { padding-top: 200px; }
-  .sahl-member-hero > div[aria-hidden]:first-child { inset: -140px -160px auto 30%; height: 410px; }
+  .sahl-member-hero { padding-top: 236px; }
+  .sahl-member-hero > div[aria-hidden]:first-child { inset: -120px -160px auto 30%; height: 320px; }
 
   /* أقسام الموقع: عناوين ومسافات أقصر تناسب الهاتف. */
   .sahl-site-page main > section,
@@ -31303,9 +31303,9 @@ html { scroll-padding-top: 96px; }
 }
 
 @media (max-width: 430px) {
-  .sahl-hero-layout { padding-top: 132px; }
+  .sahl-hero-layout { padding-top: 240px; }
   .sahl-hero h1 { font-size: clamp(1.9rem, 9vw, 2.5rem); }
-  .sahl-page-hero { padding-top: 178px; }
+  .sahl-page-hero { padding-top: 216px; }
   .sahl-page-title { font-size: clamp(1.8rem, 8.6vw, 2.35rem); }
   .sahl-live-metric { font-size: .76rem; }
 }
