@@ -604,8 +604,6 @@ const EMPLOYEE_COPY: Record<string, { prompts: string[]; greetings: string[] }> 
 };
 
 /** أزرار الشريط العلوي المناسبة لكل موظف. */
-const BAR_BRAND = new Set(["sonny", "nour", "dana"]);
-const BAR_WORK = new Set(["sonny", "eva", "sam", "nour", "adam", "dana"]);
 
 function useTypewriter(lines: string[], pause = 1700) {
   const [line, setLine] = useState(0);
@@ -717,7 +715,7 @@ function ChatView({
     setBarPanel(null);
     return true;
   };
-  const [activeTool, setActiveTool] = useState<"media" | "length" | null>(null);
+  const [activeTool, setActiveTool] = useState<"media" | "length" | "sections" | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   /** يصير true عند إيقاف الطلب بعد الإرسال — فنتجاهل نتيجته. */
@@ -1015,7 +1013,7 @@ function ChatView({
               </small>
             </button>
           ) : null}
-          {BAR_BRAND.has(member.id) ? (
+          {true ? (
             <button
               ref={(button) => {
                 barPanelButtonRefs.current.brand = button;
@@ -1030,7 +1028,7 @@ function ChatView({
               <span>العلامة</span>
             </button>
           ) : null}
-          {BAR_WORK.has(member.id) ? (
+          {true ? (
             <button
               ref={(button) => {
                 barPanelButtonRefs.current.work = button;
@@ -1755,7 +1753,7 @@ function ChatView({
               ) : (
                 <div className="chat-work-sheet">
                   <div className="chat-work-links" aria-label="أدوات التشغيل الأساسية">
-                    {WORK_TOOLS.filter((tool) => !tool.sonnyOnly || id === "sonny").map((tool) => {
+                    {ALL_CHAT_TOOLS.map((tool) => {
                       const Icon = tool.icon;
                       return (
                         <article key={tool.id} className="chat-work-card">
