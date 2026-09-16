@@ -655,6 +655,8 @@ function ChatView({
 
   /** لوحات الشريط العلوي — تُفتح كلها داخل نفس الصفحة. */
   const [barPanel, setBarPanel] = useState<"apps" | "brand" | "chats" | "work" | null>(null);
+  const [barPanelAnchor, setBarPanelAnchor] = useState({ x: 0, top: 0 });
+  const barPanelButtonRefs = useRef<Partial<Record<"apps" | "brand" | "chats" | "work", HTMLButtonElement>>>({});
   const [brandSource, setBrandSource] = useState("");
   const [conversationSearch, setConversationSearch] = useState("");
   const [embeddedTool, setEmbeddedTool] = useState<{
@@ -683,6 +685,34 @@ function ChatView({
   /** إزاحة سحب لوحة الأداة — يحرّكها المستخدم من رأسها داخل نفس المحادثة. */
   const [toolOffset, setToolOffset] = useState({ x: 0, y: 0 });
   const dragRef = useRef<{ px: number; py: number; ox: number; oy: number } | null>(null);
+
+  const positionBarPanel = (panel: "apps" | "brand" | "chats" | "work") => {
+    const button = barPanelButtonRefs.current[panel];
+    if (!button) return;
+    const rect = button.getBoundingClientRect();
+    setBarPanelAnchor({ x: rect.left + rect.width / 2, top: rect.bottom + 8 });
+  };
+
+  const toggleBarPanel = (panel: "apps" | "brand" | "chats" | "work") => {
+    if (barPanel === panel) {
+      setBarPanel(null);
+      return;
+    }
+    positionBarPanel(panel);
+    setBarPanel(panel);
+  };
+
+  useEffect(() => {
+    if (!barPanel) return;
+    const reposition = () => positionBarPanel(barPanel);
+    window.addEventListener("resize", reposition);
+    window.addEventListener("scroll", reposition, true);
+    return () => {
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", reposition, true);
+    };
+  }, [barPanel]);
+
   useEffect(() => {
     setToolOffset({ x: 0, y: 0 });
   }, [embeddedTool?.tool.id, embeddedTool?.mode]);
@@ -916,8 +946,11 @@ function ChatView({
           />
           {member.apps.length ? (
             <button
+              ref={(button) => {
+                barPanelButtonRefs.current.apps = button ?? undefined;
+              }}
               type="button"
-              onClick={() => setBarPanel((v) => (v === "apps" ? null : "apps"))}
+              onClick={() => toggleBarPanel("apps")}
               aria-expanded={barPanel === "apps"}
               title={`تكاملات ${member.name}`}
               className={cn("topbar-pill", barPanel === "apps" && "is-active")}
@@ -931,8 +964,11 @@ function ChatView({
           ) : null}
           {BAR_BRAND.has(member.id) ? (
             <button
+              ref={(button) => {
+                barPanelButtonRefs.current.brand = button ?? undefined;
+              }}
               type="button"
-              onClick={() => setBarPanel((v) => (v === "brand" ? null : "brand"))}
+              onClick={() => toggleBarPanel("brand")}
               aria-expanded={barPanel === "brand"}
               title="عقل وصوت العلامة"
               className={cn("topbar-pill", barPanel === "brand" && "is-active")}
@@ -943,8 +979,11 @@ function ChatView({
           ) : null}
           {BAR_WORK.has(member.id) ? (
             <button
+              ref={(button) => {
+                barPanelButtonRefs.current.work = button ?? undefined;
+              }}
               type="button"
-              onClick={() => setBarPanel((v) => (v === "work" ? null : "work"))}
+              onClick={() => toggleBarPanel("work")}
               aria-expanded={barPanel === "work"}
               title={`تشغيل ومتابعة ${member.name}`}
               className={cn("topbar-pill", barPanel === "work" && "is-active")}
@@ -954,10 +993,11 @@ function ChatView({
             </button>
           ) : null}
           <button
-            type="button"
-            onClick={() => {
-              setBarPanel((v) => (v === "chats" ? null : "chats"));
+            ref={(button) => {
+              barPanelButtonRefs.current.chats = button ?? undefined;
             }}
+            type="button"
+            onClick={() => toggleBarPanel("chats")}
             aria-expanded={barPanel === "chats"}
             title={`محادثات ${member.name}`}
             className={cn("topbar-pill", barPanel === "chats" && "is-active")}
@@ -1445,6 +1485,12 @@ function ChatView({
             />
             <section
               className="topbar-sheet"
+              style={
+                {
+                  "--topbar-sheet-anchor-x": `${barPanelAnchor.x}px`,
+                  "--topbar-sheet-anchor-top": `${barPanelAnchor.top}px`,
+                } as React.CSSProperties
+              }
               aria-label={
                 barPanel === "apps"
                   ? `تكاملات ${member.name}`

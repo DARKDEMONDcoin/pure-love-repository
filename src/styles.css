@@ -8336,6 +8336,29 @@ select.glass-input {
   }
 }
 
+/* قوائم أزرار الموظف: ترتبط بالزر المضغوط وتبقى داخل حدود الشاشة. */
+.is-chat-shell .topbar-sheet {
+  --topbar-sheet-width: min(25rem, calc(100vw - 1rem));
+  top: var(--topbar-sheet-anchor-top);
+  left: clamp(
+    calc(var(--topbar-sheet-width) / 2 + 0.5rem),
+    var(--topbar-sheet-anchor-x),
+    calc(100vw - var(--topbar-sheet-width) / 2 - 0.5rem)
+  );
+  right: auto;
+  width: var(--topbar-sheet-width);
+  max-height: min(calc(100dvh - var(--topbar-sheet-anchor-top) - 0.75rem), 42rem);
+  transform: translateX(-50%);
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 640px) {
+  .is-chat-shell .topbar-sheet {
+    --topbar-sheet-width: calc(100vw - 1rem);
+    max-height: calc(100dvh - var(--topbar-sheet-anchor-top) - env(safe-area-inset-bottom) - 0.5rem);
+  }
+}
+
 /* كانفاس أبيض واحد لكل الأقسام */
 section:has(> .integration-grid-wave) {
   background-image: linear-gradient(180deg, oklch(1 0 0), oklch(0.975 0.002 60));
