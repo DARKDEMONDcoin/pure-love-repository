@@ -12,7 +12,16 @@ const schema = {
 };
 
 /** عرض مخرجات الموظفين بتنسيق Markdown كامل (جداول، قوائم، عناوين، أكواد) بشكل احترافي وRTL. */
-export function Markdown({ body, className }: { body: string; className?: string }) {
+export function Markdown({
+  body,
+  className,
+  onOpenApp,
+}: {
+  body: string;
+  className?: string;
+  /** يفتح مسار داخلي (/app/...) داخل المحادثة نفسها؛ يرجع true إذا تعامل معه. */
+  onOpenApp?: (path: string) => boolean;
+}) {
   return (
     <div
       dir="auto"
@@ -40,6 +49,33 @@ export function Markdown({ body, className }: { body: string; className?: string
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
+        components={
+          onOpenApp
+            ? {
+                a: ({ href, children, ...rest }) => {
+                  const path = typeof href === "string" ? href : "";
+                  if (path.startsWith("/app")) {
+                    return (
+                      <button
+                        type="button"
+                        className="text-primary underline underline-offset-4"
+                        onClick={() => {
+                          onOpenApp(path);
+                        }}
+                      >
+                        {children}
+                      </button>
+                    );
+                  }
+                  return (
+                    <a href={href} target="_blank" rel="noreferrer" {...rest}>
+                      {children}
+                    </a>
+                  );
+                },
+              }
+            : undefined
+        }
       >
         {body}
       </ReactMarkdown>
