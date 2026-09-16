@@ -57,7 +57,7 @@ import { Thinking } from "@/components/app/Thinking";
 import { Markdown } from "@/components/app/Markdown";
 import { PublishPanel } from "@/components/app/PublishPanel";
 import { requestedPublishTargets } from "@/lib/platforms";
-import { askedForPublishableOutput, isNonPostReply } from "@/lib/post-format";
+import { askedForPublishableOutput, extractPostText, isNonPostReply } from "@/lib/post-format";
 import { detectHandoff } from "@/lib/handoff";
 import { HandoffCard } from "@/components/app/HandoffCard";
 import { PublishToWordPress } from "@/components/app/PublishToWordPress";
