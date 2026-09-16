@@ -30,12 +30,41 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
       },
 
       POST: async ({ request }) => {
+        const raw = await request.text();
+
+        // التحقق من توقيع ميتا (X-Hub-Signature-256) قبل تنفيذ أي أمر.
+        const { getSecrets } = await import("@/lib/secrets.server");
+        const { META_APP_SECRET } = await getSecrets(["META_APP_SECRET"] as const);
+        const appSecret = META_APP_SECRET?.trim();
+        if (appSecret) {
+          const header = request.headers.get("x-hub-signature-256") ?? "";
+          const provided = header.startsWith("sha256=") ? header.slice(7) : "";
+          const key = await crypto.subtle.importKey(
+            "raw",
+            new TextEncoder().encode(appSecret),
+            { name: "HMAC", hash: "SHA-256" },
+            false,
+            ["sign"],
+          );
+          const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(raw));
+          const expected = Array.from(new Uint8Array(mac))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+          const ok =
+            provided.length === expected.length &&
+            provided
+              .split("")
+              .every((ch, i) => ch.toLowerCase() === (expected[i] as string).toLowerCase());
+          if (!ok) return new Response("forbidden", { status: 403 });
+        }
+
         let payload: { entry?: { changes?: WaChange[] }[] };
         try {
-          payload = (await request.json()) as typeof payload;
+          payload = JSON.parse(raw) as typeof payload;
         } catch {
           return new Response("bad request", { status: 400 });
         }
+
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { workspaceByPhoneNumberId, sendWhatsapp } = await import("@/lib/whatsapp.server");
