@@ -33,6 +33,7 @@ import {
   Sparkles,
   ScrollText,
   LayoutDashboard,
+  ChevronDown,
 } from "lucide-react";
 
 import { AppShell } from "@/components/app/AppShell";
