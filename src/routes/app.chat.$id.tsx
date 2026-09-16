@@ -656,7 +656,9 @@ function ChatView({
   /** لوحات الشريط العلوي — تُفتح كلها داخل نفس الصفحة. */
   const [barPanel, setBarPanel] = useState<"apps" | "brand" | "chats" | "work" | null>(null);
   const [barPanelAnchor, setBarPanelAnchor] = useState({ x: 0, top: 0 });
-  const barPanelButtonRefs = useRef<Partial<Record<"apps" | "brand" | "chats" | "work", HTMLButtonElement>>>({});
+  const barPanelButtonRefs = useRef<
+    Record<"apps" | "brand" | "chats" | "work", HTMLButtonElement | null>
+  >({ apps: null, brand: null, chats: null, work: null });
   const [brandSource, setBrandSource] = useState("");
   const [conversationSearch, setConversationSearch] = useState("");
   const [embeddedTool, setEmbeddedTool] = useState<{
@@ -947,7 +949,7 @@ function ChatView({
           {member.apps.length ? (
             <button
               ref={(button) => {
-                barPanelButtonRefs.current.apps = button ?? undefined;
+                barPanelButtonRefs.current.apps = button;
               }}
               type="button"
               onClick={() => toggleBarPanel("apps")}
@@ -965,7 +967,7 @@ function ChatView({
           {BAR_BRAND.has(member.id) ? (
             <button
               ref={(button) => {
-                barPanelButtonRefs.current.brand = button ?? undefined;
+                barPanelButtonRefs.current.brand = button;
               }}
               type="button"
               onClick={() => toggleBarPanel("brand")}
@@ -980,7 +982,7 @@ function ChatView({
           {BAR_WORK.has(member.id) ? (
             <button
               ref={(button) => {
-                barPanelButtonRefs.current.work = button ?? undefined;
+                barPanelButtonRefs.current.work = button;
               }}
               type="button"
               onClick={() => toggleBarPanel("work")}
@@ -994,7 +996,7 @@ function ChatView({
           ) : null}
           <button
             ref={(button) => {
-              barPanelButtonRefs.current.chats = button ?? undefined;
+              barPanelButtonRefs.current.chats = button;
             }}
             type="button"
             onClick={() => toggleBarPanel("chats")}
