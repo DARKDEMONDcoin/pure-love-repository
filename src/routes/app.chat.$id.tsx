@@ -33,6 +33,7 @@ import {
   Sparkles,
   ScrollText,
   LayoutDashboard,
+  ChevronDown,
 } from "lucide-react";
 
 import { AppShell } from "@/components/app/AppShell";
@@ -56,7 +57,7 @@ import { askEmployee, runSkill } from "@/lib/ai.functions";
 import { SkillPalette } from "@/components/app/SkillPalette";
 import { Thinking } from "@/components/app/Thinking";
 import { Markdown } from "@/components/app/Markdown";
-import { PublishPanel } from "@/components/app/PublishPanel";
+import { PostCards } from "@/components/app/PostCards";
 import { requestedPublishTargets } from "@/lib/platforms";
 import { askedForPublishableOutput, extractPostText, isNonPostReply } from "@/lib/post-format";
 import { detectHandoff } from "@/lib/handoff";
@@ -719,6 +720,9 @@ function ChatView({
   };
   const [activeTool, setActiveTool] = useState<"media" | "length" | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const columnRef = useRef<HTMLDivElement>(null);
+  /** يبقى true وهو عند أسفل المحادثة، ويصير false لحظة ما يقلّب لأعلى بنفسه. */
+  const [stickToBottom, setStickToBottom] = useState(true);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   /** يصير true عند إيقاف الطلب بعد الإرسال — فنتجاهل نتيجته. */
   const cancelledRef = useRef(false);
@@ -921,9 +925,18 @@ function ChatView({
 
   const busy = send.isPending || skillRun.isPending;
 
+  // المستخدم حرّ في التقليب أثناء كتابة الموظف: لا ننزل معه إلا إذا كان أصلاً عند الأسفل.
   useEffect(() => {
+    if (!stickToBottom) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [messages?.length, send.isPending, skillRun.isPending, liveText, liveStep]);
+  }, [messages?.length, send.isPending, skillRun.isPending, liveText, liveStep, stickToBottom]);
+
+  const onColumnScroll = () => {
+    const el = columnRef.current;
+    if (!el) return;
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setStickToBottom(distance < 120);
+  };
 
   // إبقاء التركيز في مربع الكتابة + تمدد تلقائي لارتفاع النص.
   useEffect(() => {
@@ -947,6 +960,7 @@ function ChatView({
     if (!body || !workspace || busy) return;
     setError(null);
     setSavedTask(null);
+    setStickToBottom(true);
 
     cancelledRef.current = false;
     setDraft("");
@@ -1105,7 +1119,11 @@ function ChatView({
             <span />
             <span />
           </div>
-          <div className="chat-message-column relative mx-auto flex w-full max-w-5xl flex-1 flex-col px-3 sm:px-6">
+          <div
+            ref={columnRef}
+            onScroll={onColumnScroll}
+            className="chat-message-column relative mx-auto flex w-full max-w-5xl flex-1 flex-col px-3 sm:px-6"
+          >
             {(messages ?? []).length === 0 && !pending ? (
               <div className="chat-welcome animate-pop-in">
                 <div className="chat-welcome-portraits" aria-hidden="true">
@@ -1190,9 +1208,10 @@ function ChatView({
                         !m.body.includes("(/app/tasks)") &&
                         askedForPublishableOutput(lastUserBefore(arr, idx)) &&
                         looksPostable(m.body) ? (
-                          <PublishPanel
+                          <PostCards
                             workspaceId={workspace.id}
                             employeeId="sonny"
+                            taskId={savedTask}
                             channel={
                               requestedPublishTargets(lastUserBefore(arr, idx))[0] ?? "instagram"
                             }
@@ -1367,6 +1386,21 @@ function ChatView({
 
             <div ref={endRef} />
           </div>
+
+          {!stickToBottom ? (
+            <button
+              type="button"
+              onClick={() => {
+                setStickToBottom(true);
+                endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              }}
+              className="chat-jump-bottom"
+              aria-label="انزل لأحدث رسالة"
+            >
+              <ChevronDown className="size-4" />
+              أحدث رسالة
+            </button>
+          ) : null}
 
           <div className="chat-composer-dock pointer-events-none p-3 sm:p-5">
             <PromptInput

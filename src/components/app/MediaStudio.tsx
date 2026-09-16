@@ -1,7 +1,20 @@
 import { useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ImagePlus, Loader2, Link2, X, Wand2, Check, Globe, RefreshCw, Upload } from "lucide-react";
+import {
+  ImagePlus,
+  Loader2,
+  Link2,
+  X,
+  Wand2,
+  Check,
+  Globe,
+  RefreshCw,
+  Upload,
+  Camera,
+  Paperclip,
+  FileText,
+} from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { generateMedia } from "@/lib/media.functions";
@@ -9,11 +22,23 @@ import { listSiteAssets, syncSiteAssets, type StoredAsset } from "@/lib/brand-as
 import { ReelStudio } from "@/components/app/ReelStudio";
 import { cn } from "@/lib/utils";
 
-export type Attachment = { url: string; type: "image" | "video"; alt?: string };
+export type Attachment = {
+  url: string;
+  type: "image" | "video" | "file";
+  alt?: string;
+  mime?: string;
+  size?: number;
+};
 
-/** حتى ١٠ صور/فيديوهات مع بعض في نفس الرسالة، وكل ملف حتى ٥٠ ميجابايت. */
+/** حتى ١٠ عناصر مع بعض في نفس الرسالة. حدود الحجم تحمي الرفع من الفشل الصامت. */
 const MAX_ATTACHMENTS = 10;
 const MAX_BYTES = 50 * 1024 * 1024;
+/** الملفات (مستندات/جداول/نصوص) تُقرأ بالكامل على الخادم، فنُحدّها بـ٢٥ ميجابايت. */
+const MAX_FILE_BYTES = 25 * 1024 * 1024;
+const humanSize = (bytes: number) =>
+  bytes >= 1024 * 1024
+    ? `${(bytes / (1024 * 1024)).toFixed(1)} م.ب`
+    : `${Math.max(1, Math.round(bytes / 1024))} ك.ب`;
 export type ImageMode = "auto" | "off" | "manual";
 export type Aspect = "square" | "portrait" | "landscape" | "story";
 
@@ -70,6 +95,8 @@ export function MediaStudio({
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
+  const docInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
   const generate = useServerFn(generateMedia);
 
   const run = useMutation({
@@ -115,7 +142,7 @@ export function MediaStudio({
     onAttachmentsChange([...attachments, { url, type }]);
   };
 
-  /** رفع صور وفيديوهات من جهاز المستخدم (المعرض) إلى مخزن مساحة العمل، حتى ١٠ عناصر. */
+  /** رفع صور وفيديوهات وملفات من جهاز المستخدم أو كاميرته، حتى ١٠ عناصر. */
   const uploadFiles = async (files: File[]) => {
     if (!workspaceId) return setError("اختر مساحة العمل أولاً.");
     const room = MAX_ATTACHMENTS - attachments.length;
@@ -129,26 +156,44 @@ export function MediaStudio({
     for (const file of picked) {
       const isVideo = file.type.startsWith("video/");
       const isImage = file.type.startsWith("image/");
-      if (!isVideo && !isImage) {
-        setError("اختر صوراً أو فيديوهات فقط.");
+      const kind: Attachment["type"] = isVideo ? "video" : isImage ? "image" : "file";
+      const limit = kind === "file" ? MAX_FILE_BYTES : MAX_BYTES;
+      if (file.size > limit) {
+        setError(
+          `«${file.name}» ${humanSize(file.size)} — الحد الأقصى ${humanSize(limit)} ${
+            kind === "file" ? "للملف" : "للصورة/الفيديو"
+          }.`,
+        );
         continue;
       }
-      if (file.size > MAX_BYTES) {
-        setError(`«${file.name}» أكبر من ٥٠ ميجابايت.`);
+      if (file.size === 0) {
+        setError(`«${file.name}» ملف فارغ.`);
         continue;
       }
       try {
-        const ext = file.name.split(".").pop()?.toLowerCase() || (isVideo ? "mp4" : "jpg");
+        const ext =
+          file.name
+            .split(".")
+            .pop()
+            ?.toLowerCase()
+            .replace(/[^a-z0-9]/g, "") || (isVideo ? "mp4" : isImage ? "jpg" : "bin");
         const key = `${workspaceId}/uploads/${crypto.randomUUID()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("nour-media")
-          .upload(key, file, { contentType: file.type, upsert: false });
+        const { error: upErr } = await supabase.storage.from("nour-media").upload(key, file, {
+          contentType: file.type || "application/octet-stream",
+          upsert: false,
+        });
         if (upErr) throw upErr;
         const { data } = await supabase.storage
           .from("nour-media")
           .createSignedUrl(key, 60 * 60 * 24 * 365 * 5);
         if (!data?.signedUrl) throw new Error("no-url");
-        added.push({ url: data.signedUrl, type: isVideo ? "video" : "image", alt: file.name });
+        added.push({
+          url: data.signedUrl,
+          type: kind,
+          alt: file.name,
+          mime: file.type || "application/octet-stream",
+          size: file.size,
+        });
       } catch {
         setError(`تعذّر رفع «${file.name}». أعد المحاولة.`);
       } finally {
@@ -241,9 +286,17 @@ export function MediaStudio({
             >
               {a.type === "image" ? (
                 <img src={a.url} alt="مرفق" className="size-16 object-cover" loading="lazy" />
-              ) : (
+              ) : a.type === "video" ? (
                 <span className="grid size-16 place-items-center text-[0.65rem] font-bold">
                   فيديو
+                </span>
+              ) : (
+                <span
+                  className="grid size-16 place-items-center gap-0.5 px-1 text-center text-[0.6rem] font-bold leading-tight"
+                  title={`${a.alt ?? "ملف"}${a.size ? ` · ${humanSize(a.size)}` : ""}`}
+                >
+                  <FileText className="mx-auto size-4" />
+                  <span className="line-clamp-2 break-all">{a.alt ?? "ملف"}</span>
                 </span>
               )}
               <button
@@ -268,31 +321,86 @@ export function MediaStudio({
               <span className="text-[0.65rem] text-muted-foreground">
                 {attachments.length}/{MAX_ATTACHMENTS}
               </span>
-              <button
-                type="button"
-                disabled={
-                  disabled || !workspaceId || uploading > 0 || attachments.length >= MAX_ATTACHMENTS
-                }
-                onClick={() => fileInput.current?.click()}
-                className="ms-auto inline-flex items-center gap-1 rounded-lg bg-foreground px-3 py-1.5 text-[0.68rem] font-bold text-background disabled:opacity-40"
-              >
-                {uploading > 0 ? (
-                  <Loader2 className="size-3 animate-spin" />
-                ) : (
-                  <ImagePlus className="size-3" />
-                )}
-                {uploading > 0 ? `جاري الرفع… ${uploading}` : "اختر صوراً وفيديوهات"}
-              </button>
+              <div className="ms-auto flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={
+                    disabled ||
+                    !workspaceId ||
+                    uploading > 0 ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  onClick={() => fileInput.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-lg bg-foreground px-3 py-1.5 text-[0.68rem] font-bold text-background disabled:opacity-40"
+                >
+                  {uploading > 0 ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <ImagePlus className="size-3" />
+                  )}
+                  {uploading > 0 ? `جاري الرفع… ${uploading}` : "صور وفيديوهات"}
+                </button>
+                <button
+                  type="button"
+                  disabled={
+                    disabled ||
+                    !workspaceId ||
+                    uploading > 0 ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  onClick={() => docInput.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-[0.68rem] font-bold hover:bg-secondary disabled:opacity-40"
+                >
+                  <Paperclip className="size-3" /> ملفات
+                </button>
+                <button
+                  type="button"
+                  disabled={
+                    disabled ||
+                    !workspaceId ||
+                    uploading > 0 ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  onClick={() => cameraInput.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-[0.68rem] font-bold hover:bg-secondary disabled:opacity-40"
+                >
+                  <Camera className="size-3" /> كاميرا
+                </button>
+              </div>
             </div>
             <p className="mt-1.5 text-[0.68rem] text-muted-foreground">
-              حتى ١٠ ملفات مع بعض (صور وفيديوهات)، كل ملف حتى ٥٠ ميجابايت — والموظف يقرأ محتواها
-              ويحلّلها إذا سألته عنها.
+              حتى ١٠ عناصر مع بعض: صور وفيديوهات حتى {humanSize(MAX_BYTES)} لكل ملف، ومستندات وملفات
+              (PDF · نصوص · CSV · JSON · أكواد) حتى {humanSize(MAX_FILE_BYTES)} — والموظف يقرأ
+              محتواها فعلياً وينفّذ عليها ما تطلبه.
             </p>
             <input
               ref={fileInput}
               type="file"
               accept="image/*,video/*"
               multiple
+              className="hidden"
+              onChange={(event) => {
+                const files = Array.from(event.target.files ?? []);
+                event.target.value = "";
+                if (files.length) void uploadFiles(files);
+              }}
+            />
+            <input
+              ref={docInput}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(event) => {
+                const files = Array.from(event.target.files ?? []);
+                event.target.value = "";
+                if (files.length) void uploadFiles(files);
+              }}
+            />
+            <input
+              ref={cameraInput}
+              type="file"
+              accept="image/*"
+              capture="environment"
               className="hidden"
               onChange={(event) => {
                 const files = Array.from(event.target.files ?? []);

@@ -53,6 +53,7 @@ import planFlowWide from "@/assets/product/plan-flow-wide.png";
 import planFlowTall from "@/assets/product/plan-flow-tall.png";
 import adsVisual from "@/assets/product/ads-visual.png";
 import proofVisual from "@/assets/product/proof-visual.png";
+import { VerifiedBadge } from "@/components/site/VerifiedBadge";
 
 type DemoPhase = "idle" | "thinking" | "draft" | "approved";
 
@@ -621,8 +622,8 @@ export function EditorialHomepage() {
               hero
             />
             <div className="sahl-float-note liquid-glass-sahl" role="status">
-              <span className="sahl-float-note-icon">
-                <Check aria-hidden="true" />
+              <span className="sahl-float-note-icon is-verified">
+                <VerifiedBadge title="مخرجات موثّقة بانتظار اعتمادك" />
               </span>
               <div>
                 <b>بانتظار اعتمادك</b>

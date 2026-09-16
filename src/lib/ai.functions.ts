@@ -138,13 +138,15 @@ export const askEmployeeInput = z.object({
   employeeId: z.string().min(1),
   message: z.string().min(1).max(4000),
   conversationId: z.string().uuid(),
-  /** وسائط أرفقها المستخدم (صور/فيديو) — تُحفظ داخل رسالته وتُعرض في المحادثة. */
+  /** وسائط وملفات أرفقها المستخدم — تُحفظ داخل رسالته وتُعرض في المحادثة. */
   attachments: z
     .array(
       z.object({
         url: z.string().url().max(2000),
-        type: z.enum(["image", "video"]).default("image"),
-        alt: z.string().max(160).optional(),
+        type: z.enum(["image", "video", "file"]).default("image"),
+        alt: z.string().max(200).optional(),
+        mime: z.string().max(160).optional(),
+        size: z.number().int().nonnegative().optional(),
       }),
     )
     .max(10)
@@ -271,7 +273,9 @@ export async function runEmployeeTurn(
       .map((a) =>
         a.type === "video"
           ? `\n\n🎬 [${a.alt ?? "فيديو مرفق"}](${a.url})`
-          : `\n\n![${a.alt ?? "صورة مرفقة"}](${a.url})`,
+          : a.type === "file"
+            ? `\n\n📎 [${a.alt ?? "ملف مرفق"}](${a.url})`
+            : `\n\n![${a.alt ?? "صورة مرفقة"}](${a.url})`,
       )
       .join("");
 
@@ -603,10 +607,10 @@ export async function runEmployeeTurn(
     // نُعلم الموظف بوسائط المستخدم وبقراره حول الصورة حتى يبني عليها بدل تجاهلها.
     const mediaNote = [
       attachments.length
-        ? `(المستخدم أرفق ${attachments.filter((a) => a.type === "image").length} صورة و${attachments.filter((a) => a.type === "video").length} فيديو مع الطلب — اعتمدها كوسائط المنشور ولا تطلب غيرها.)`
+        ? `(المستخدم أرفق ${attachments.filter((a) => a.type === "image").length} صورة و${attachments.filter((a) => a.type === "video").length} فيديو و${attachments.filter((a) => a.type === "file").length} ملف مع الطلب — اعتمدها كما هي ولا تطلب غيرها.)`
         : "",
       mediaRead
-        ? `(محتوى وسائط المستخدم كما قرأها النظام — اعتمد عليه في ردك وحلّله إن سُئلت عنه: ${mediaRead.slice(0, 2000)})`
+        ? `(محتوى وسائط وملفات المستخدم كما قرأها النظام حرفياً — اعتمد عليه ونفّذ ما طلبه منه مباشرة، وحلّله إن سُئلت عنه: ${mediaRead.slice(0, 12_000)})`
         : "",
       data.imageMode === "off" ? "(المستخدم أوقف توليد الصور — لا تكتب image_prompt.)" : "",
       data.imageMode === "manual" && data.imagePrompt
