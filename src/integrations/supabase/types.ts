@@ -496,6 +496,347 @@ export type Database = {
           },
         ]
       }
+      employee_evaluations: {
+        Row: {
+          baseline_score: number | null
+          candidate_score: number | null
+          created_at: string
+          details: Json
+          employee_id: string
+          id: string
+          improvement: number | null
+          lesson_id: string
+          safety_passed: boolean
+          sample_size: number
+          workspace_id: string
+        }
+        Insert: {
+          baseline_score?: number | null
+          candidate_score?: number | null
+          created_at?: string
+          details?: Json
+          employee_id: string
+          id?: string
+          improvement?: number | null
+          lesson_id: string
+          safety_passed?: boolean
+          sample_size?: number
+          workspace_id: string
+        }
+        Update: {
+          baseline_score?: number | null
+          candidate_score?: number | null
+          created_at?: string
+          details?: Json
+          employee_id?: string
+          id?: string
+          improvement?: number | null
+          lesson_id?: string
+          safety_passed?: boolean
+          sample_size?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_evaluations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "employee_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_evaluations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_feedback: {
+        Row: {
+          created_at: string
+          edited_text: string | null
+          employee_id: string
+          id: string
+          kind: string
+          metrics: Json
+          original_text: string | null
+          reason: string | null
+          run_id: string | null
+          task_id: string | null
+          weight: number
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          edited_text?: string | null
+          employee_id: string
+          id?: string
+          kind: string
+          metrics?: Json
+          original_text?: string | null
+          reason?: string | null
+          run_id?: string | null
+          task_id?: string | null
+          weight?: number
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          edited_text?: string | null
+          employee_id?: string
+          id?: string
+          kind?: string
+          metrics?: Json
+          original_text?: string | null
+          reason?: string | null
+          run_id?: string | null
+          task_id?: string | null
+          weight?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_feedback_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "employee_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_feedback_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_feedback_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_learning_settings: {
+        Row: {
+          auto_promote_low_risk: boolean
+          created_at: string
+          enabled: boolean
+          experiment_percent: number
+          minimum_evidence: number
+          minimum_improvement: number
+          paused_reason: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          auto_promote_low_risk?: boolean
+          created_at?: string
+          enabled?: boolean
+          experiment_percent?: number
+          minimum_evidence?: number
+          minimum_improvement?: number
+          paused_reason?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          auto_promote_low_risk?: boolean
+          created_at?: string
+          enabled?: boolean
+          experiment_percent?: number
+          minimum_evidence?: number
+          minimum_improvement?: number
+          paused_reason?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_learning_settings_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_lessons: {
+        Row: {
+          activated_at: string | null
+          confidence: number
+          created_at: string
+          employee_id: string
+          evidence: Json
+          evidence_count: number
+          expires_at: string | null
+          failure_count: number
+          id: string
+          instruction: string
+          risk_level: string
+          scope: string
+          source_kind: string
+          status: string
+          success_count: number
+          supersedes_id: string | null
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          confidence?: number
+          created_at?: string
+          employee_id: string
+          evidence?: Json
+          evidence_count?: number
+          expires_at?: string | null
+          failure_count?: number
+          id?: string
+          instruction: string
+          risk_level?: string
+          scope?: string
+          source_kind?: string
+          status?: string
+          success_count?: number
+          supersedes_id?: string | null
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          confidence?: number
+          created_at?: string
+          employee_id?: string
+          evidence?: Json
+          evidence_count?: number
+          expires_at?: string | null
+          failure_count?: number
+          id?: string
+          instruction?: string
+          risk_level?: string
+          scope?: string
+          source_kind?: string
+          status?: string
+          success_count?: number
+          supersedes_id?: string | null
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_lessons_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "employee_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_lessons_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_runs: {
+        Row: {
+          applied_lesson_ids: string[]
+          capability: string | null
+          conversation_id: string | null
+          created_at: string
+          employee_id: string
+          final_output: string
+          id: string
+          message_id: string | null
+          original_output: string
+          outcome: string
+          policy_version: number
+          quality_issues: Json
+          quality_score: number | null
+          request_text: string
+          task_id: string | null
+          updated_at: string
+          was_revised: boolean
+          workspace_id: string
+        }
+        Insert: {
+          applied_lesson_ids?: string[]
+          capability?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          employee_id: string
+          final_output: string
+          id?: string
+          message_id?: string | null
+          original_output: string
+          outcome?: string
+          policy_version?: number
+          quality_issues?: Json
+          quality_score?: number | null
+          request_text: string
+          task_id?: string | null
+          updated_at?: string
+          was_revised?: boolean
+          workspace_id: string
+        }
+        Update: {
+          applied_lesson_ids?: string[]
+          capability?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          employee_id?: string
+          final_output?: string
+          id?: string
+          message_id?: string | null
+          original_output?: string
+          outcome?: string
+          policy_version?: number
+          quality_issues?: Json
+          quality_score?: number | null
+          request_text?: string
+          task_id?: string | null
+          updated_at?: string
+          was_revised?: boolean
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_runs_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_runs_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_runs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_runs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integration_credentials: {
         Row: {
           config: Json
