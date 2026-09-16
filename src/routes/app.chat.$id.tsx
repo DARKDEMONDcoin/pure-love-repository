@@ -921,9 +921,18 @@ function ChatView({
 
   const busy = send.isPending || skillRun.isPending;
 
+  // المستخدم حرّ في التقليب أثناء كتابة الموظف: لا ننزل معه إلا إذا كان أصلاً عند الأسفل.
   useEffect(() => {
+    if (!stickToBottom) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [messages?.length, send.isPending, skillRun.isPending, liveText, liveStep]);
+  }, [messages?.length, send.isPending, skillRun.isPending, liveText, liveStep, stickToBottom]);
+
+  const onColumnScroll = () => {
+    const el = columnRef.current;
+    if (!el) return;
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setStickToBottom(distance < 120);
+  };
 
   // إبقاء التركيز في مربع الكتابة + تمدد تلقائي لارتفاع النص.
   useEffect(() => {
