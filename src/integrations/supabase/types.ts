@@ -935,6 +935,30 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          bucket: string
+          hits: number
+          id: string
+          identifier: string
+          window_start: string
+        }
+        Insert: {
+          bucket: string
+          hits?: number
+          id?: string
+          identifier: string
+          window_start?: string
+        }
+        Update: {
+          bucket?: string
+          hits?: number
+          id?: string
+          identifier?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       serp_cache: {
         Row: {
           cache_key: string
@@ -1352,6 +1376,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bump_rate_limit: {
+        Args: { _bucket: string; _identifier: string; _window_seconds: number }
+        Returns: number
+      }
       owns_workspace: { Args: { _workspace_id: string }; Returns: boolean }
       verify_cron_token: {
         Args: { _name: string; _token: string }
