@@ -47,11 +47,20 @@ export const updateLessonStatus = createServerFn({ method: "POST" })
 
 export const saveLearningFeedback = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ workspaceId: z.string().uuid(), taskId: z.string().uuid(), employeeId: z.string().min(1), kind: z.enum(["edited", "rejected", "note"]), reason: z.string().max(700).nullish(), originalText: z.string().max(20000).nullish(), editedText: z.string().max(20000).nullish() }).parse(input))
+  .inputValidator((input: unknown) => z.object({
+    workspaceId: z.string().uuid(),
+    taskId: z.string().uuid(),
+    employeeId: z.string().min(1),
+    kind: z.enum(["approved", "edited", "rejected", "published", "metric", "note"]),
+    reason: z.string().max(700).nullish(),
+    originalText: z.string().max(20000).nullish(),
+    editedText: z.string().max(20000).nullish(),
+    metrics: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).optional(),
+  }).parse(input))
   .handler(async ({ data, context }) => {
     await owns(context.supabase, data.workspaceId);
     const { recordTaskFeedback, buildLearningCandidates } = await import("./learning.server");
-    await recordTaskFeedback(context.supabase, { workspaceId: data.workspaceId, taskId: data.taskId, employeeId: data.employeeId, kind: data.kind, reason: data.reason ?? null, originalText: data.originalText ?? null, editedText: data.editedText ?? null });
+    await recordTaskFeedback(context.supabase, { workspaceId: data.workspaceId, taskId: data.taskId, employeeId: data.employeeId, kind: data.kind, reason: data.reason ?? null, originalText: data.originalText ?? null, editedText: data.editedText ?? null, metrics: data.metrics ?? {} });
     await buildLearningCandidates(context.supabase, data.workspaceId, data.employeeId);
     return { ok: true };
   });

@@ -9,7 +9,7 @@ const clean = (text: string, max = 500) => text.replace(/\s+/g, " ").trim().slic
 export async function learningBlock(client: Client, workspaceId: string, employeeId: string) {
   const { data: settings } = await client
     .from("employee_learning_settings")
-    .select("enabled")
+    .select("enabled, experiment_percent")
     .eq("workspace_id", workspaceId)
     .maybeSingle();
   if (settings?.enabled === false) return { block: "", lessonIds: [] as string[] };
@@ -19,18 +19,20 @@ export async function learningBlock(client: Client, workspaceId: string, employe
     .select("id, title, instruction, confidence, evidence_count")
     .eq("workspace_id", workspaceId)
     .eq("employee_id", employeeId)
-    .eq("status", "active")
+    .in("status", ["active", "approved"])
     .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
     .order("confidence", { ascending: false })
     .limit(6);
-  if (!data?.length) return { block: "", lessonIds: [] as string[] };
+  const experimentPercent = settings?.experiment_percent ?? 10;
+  const selected = (data ?? []).filter((lesson) => lesson.status === "active" || Math.random() * 100 < experimentPercent);
+  if (!selected.length) return { block: "", lessonIds: [] as string[] };
   return {
     block: [
       "## دروس مثبت أثبتتها نتائج هذه العلامة",
       "طبّقها فقط عندما تلائم الطلب. لا تجعلها تتجاوز طلب المستخدم أو قواعد الأمان والصدق.",
-      ...data.map((lesson, index) => `${index + 1}) ${lesson.instruction}`),
+      ...selected.map((lesson, index) => `${index + 1}) ${lesson.instruction}`),
     ].join("\n"),
-    lessonIds: data.map((lesson) => lesson.id),
+    lessonIds: selected.map((lesson) => lesson.id),
   };
 }
 
@@ -166,7 +168,8 @@ export async function buildLearningCandidates(client: Client, workspaceId: strin
     if (exists) continue;
     const risk = HIGH_RISK.test(group.instruction) ? "high" : "low";
     const confidence = Math.min(0.95, 0.55 + count * 0.08);
-    const status = risk === "low" && settings?.auto_promote_low_risk !== false ? "active" : "approved";
+    // كل درس يبدأ كتجربة صامتة. دورة القياس وحدها تفعّل منخفض المخاطر بعد إثبات التحسن.
+    const status = "approved";
     const { data: lesson } = await client
       .from("employee_lessons")
       .insert({
@@ -190,4 +193,85 @@ export async function buildLearningCandidates(client: Client, workspaceId: strin
     if (status === "active") promoted += 1;
   }
   return { created, promoted };
+}
+
+const average = (values: number[]) => values.length
+  ? values.reduce((sum, value) => sum + value, 0) / values.length
+  : null;
+
+/** يقيس الدروس المرشحة من السجلات الحقيقية، ثم يفعّل النافع ويتراجع عن الضار. */
+export async function runLearningCycle(client: Client, workspaceId: string) {
+  const { data: settings } = await client
+    .from("employee_learning_settings")
+    .select("enabled, auto_promote_low_risk, minimum_evidence, minimum_improvement")
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (settings?.enabled === false) return { created: 0, evaluated: 0, promoted: 0, rolledBack: 0 };
+
+  const { data: employeeRows } = await client
+    .from("employee_runs")
+    .select("employee_id")
+    .eq("workspace_id", workspaceId)
+    .order("created_at", { ascending: false })
+    .limit(1000);
+  const employees = [...new Set((employeeRows ?? []).map((row) => row.employee_id))];
+  let created = 0;
+  for (const employeeId of employees) {
+    const result = await buildLearningCandidates(client, workspaceId, employeeId);
+    created += result.created;
+  }
+
+  const { data: lessons } = await client
+    .from("employee_lessons")
+    .select("id, employee_id, status, risk_level")
+    .eq("workspace_id", workspaceId)
+    .in("status", ["approved", "active"])
+    .limit(200);
+  const minimumEvidence = Math.max(3, settings?.minimum_evidence ?? 3);
+  const minimumImprovement = settings?.minimum_improvement ?? 0.05;
+  let evaluated = 0;
+  let promoted = 0;
+  let rolledBack = 0;
+
+  for (const lesson of lessons ?? []) {
+    const { data: runs } = await client
+      .from("employee_runs")
+      .select("quality_score, outcome, applied_lesson_ids, created_at")
+      .eq("workspace_id", workspaceId)
+      .eq("employee_id", lesson.employee_id)
+      .not("quality_score", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(120);
+    const candidateRows = (runs ?? []).filter((run) => run.applied_lesson_ids.includes(lesson.id));
+    const baselineRows = (runs ?? []).filter((run) => !run.applied_lesson_ids.includes(lesson.id));
+    if (candidateRows.length < minimumEvidence || baselineRows.length < minimumEvidence) continue;
+    const candidateScore = average(candidateRows.slice(0, 30).map((run) => run.quality_score ?? 0));
+    const baselineScore = average(baselineRows.slice(0, 30).map((run) => run.quality_score ?? 0));
+    if (candidateScore === null || baselineScore === null) continue;
+    const improvement = baselineScore > 0 ? (candidateScore - baselineScore) / baselineScore : 0;
+    const rejected = candidateRows.slice(0, 30).some((run) => run.outcome === "rejected");
+    const safetyPassed = !rejected && candidateScore >= 82;
+
+    await client.from("employee_evaluations").insert({
+      workspace_id: workspaceId,
+      employee_id: lesson.employee_id,
+      lesson_id: lesson.id,
+      sample_size: Math.min(30, candidateRows.length),
+      baseline_score: baselineScore,
+      candidate_score: candidateScore,
+      improvement,
+      safety_passed: safetyPassed,
+      details: { source: "measured_runs", rejected } as Json,
+    });
+    evaluated += 1;
+
+    if (lesson.status === "approved" && lesson.risk_level === "low" && settings?.auto_promote_low_risk !== false && safetyPassed && improvement >= minimumImprovement) {
+      await client.from("employee_lessons").update({ status: "active", activated_at: new Date().toISOString() }).eq("id", lesson.id);
+      promoted += 1;
+    } else if (lesson.status === "active" && (!safetyPassed || improvement < -minimumImprovement)) {
+      await client.from("employee_lessons").update({ status: "rolled_back" }).eq("id", lesson.id);
+      rolledBack += 1;
+    }
+  }
+  return { created, evaluated, promoted, rolledBack };
 }
