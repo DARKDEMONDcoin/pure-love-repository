@@ -77,6 +77,11 @@ const goals = [
   { id: "reputation", label: "سمعة وتقييمات أفضل", hint: "تقييمات جوجل والردود على الشكاوى", icon: Star },
   { id: "reports", label: "تقارير تفهمها بسرعة", hint: "ملخص أسبوعي لأداء كل شيء", icon: BarChart3 },
   { id: "brand", label: "هوية وصوت ثابت", hint: "كل المخرجات بنفس النبرة", icon: PenLine },
+  { id: "leads", label: "عملاء محتملون جدد", hint: "اكتشاف عملاء وبيانات تواصل ورسائل أولى", icon: Target },
+  { id: "proposals", label: "عروض أسعار ومقترحات", hint: "مقترحات وعروض جاهزة للإرسال", icon: FileText },
+  { id: "landing", label: "صفحات هبوط تبيع", hint: "صفحات وعروض ترفع نسبة التحويل", icon: LayoutTemplate },
+  { id: "support", label: "دعم ومتابعة بعد البيع", hint: "متابعة الطلبات وحل الشكاوى وتكرار الشراء", icon: LifeBuoy },
+  { id: "local", label: "عملاء من منطقتك", hint: "خرائط جوجل والبحث المحلي والفروع", icon: Globe2 },
 ];
 
 const glassField =
