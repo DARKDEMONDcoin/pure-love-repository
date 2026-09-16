@@ -186,19 +186,6 @@ export async function buildLearningCandidates(client: Client, workspaceId: strin
       .select("id")
       .single();
     if (!lesson) continue;
-    const baseline = 50;
-    const candidate = Math.min(100, baseline + count * 2);
-    await client.from("employee_evaluations").insert({
-      workspace_id: workspaceId,
-      employee_id: employeeId,
-      lesson_id: lesson.id,
-      sample_size: count,
-      baseline_score: baseline,
-      candidate_score: candidate,
-      improvement: candidate - baseline,
-      safety_passed: risk === "low",
-      details: { method: "owner_feedback_repetition", evidence_count: count },
-    });
     created += 1;
     if (status === "active") promoted += 1;
   }

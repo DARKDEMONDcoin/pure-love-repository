@@ -51,7 +51,7 @@ export const saveLearningFeedback = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await owns(context.supabase, data.workspaceId);
     const { recordTaskFeedback, buildLearningCandidates } = await import("./learning.server");
-    await recordTaskFeedback(context.supabase, { workspaceId: data.workspaceId, taskId: data.taskId, employeeId: data.employeeId, kind: data.kind, reason: data.reason, originalText: data.originalText, editedText: data.editedText });
+    await recordTaskFeedback(context.supabase, { workspaceId: data.workspaceId, taskId: data.taskId, employeeId: data.employeeId, kind: data.kind, reason: data.reason ?? null, originalText: data.originalText ?? null, editedText: data.editedText ?? null });
     await buildLearningCandidates(context.supabase, data.workspaceId, data.employeeId);
     return { ok: true };
   });
