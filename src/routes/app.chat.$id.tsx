@@ -1386,6 +1386,22 @@ function ChatView({
             <div ref={endRef} />
           </div>
 
+          {!stickToBottom ? (
+            <button
+              type="button"
+              onClick={() => {
+                setStickToBottom(true);
+                endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              }}
+              className="chat-jump-bottom"
+              aria-label="انزل لأحدث رسالة"
+            >
+              <ChevronDown className="size-4" />
+              أحدث رسالة
+            </button>
+          ) : null}
+
+
           <div className="chat-composer-dock pointer-events-none p-3 sm:p-5">
             <PromptInput
               onSubmit={(message) => submit(message.text || draft)}
