@@ -31250,3 +31250,62 @@ html { scroll-padding-top: 96px; }
   color: hsl(var(--primary));
 }
 
+
+/* ============================================================
+   ملاءمة الشاشات الصغيرة: مقاس نص ومسافات مريحة على الهاتف
+   والتابلت، دون تغيير أي محتوى أو كلام في الصفحات.
+   ============================================================ */
+@media (max-width: 720px) {
+  /* الصفحة الرئيسية: عنوان يناسب عرض الهاتف بلا تراكب مع الشريط الملوّن. */
+  .sahl-hero { min-height: auto; padding: 104px 0 68px; }
+  .sahl-hero-ribbon { inset: -80px -150px auto 30%; height: 430px; }
+  .sahl-hero-layout { padding-top: 148px; }
+  .sahl-hero h1 {
+    max-width: none;
+    margin-top: 26px;
+    font-size: clamp(2.05rem, 8.6vw, 2.95rem);
+    line-height: 1.14;
+    text-wrap: balance;
+  }
+  .sahl-first-claim { margin-top: 18px !important; font-size: 1.05rem; }
+  .sahl-lead { margin-top: 14px !important; font-size: .96rem; line-height: 1.75; }
+  .sahl-hero-copy > small { margin-top: 16px; }
+  .sahl-hero-product { margin-top: 30px; }
+
+  /* الصفحات الداخلية: نفس المنطق للعنوان والمقدمة. */
+  .sahl-page-hero { min-height: auto; padding: 196px 16px 60px; }
+  .sahl-page-ribbon { inset: -130px -160px auto 30%; height: 400px; }
+  .sahl-page-title {
+    max-width: none;
+    margin-top: 18px;
+    font-size: clamp(1.95rem, 8.2vw, 2.75rem);
+    line-height: 1.16;
+  }
+  .sahl-page-lead { margin-top: 16px; font-size: .96rem; line-height: 1.8; }
+  .sahl-page-hero-inner > .sahl-reveal:last-child { margin-top: 22px; }
+  .sahl-member-hero { padding-top: 200px; }
+  .sahl-member-hero > div[aria-hidden]:first-child { inset: -140px -160px auto 30%; height: 410px; }
+
+  /* أقسام الموقع: عناوين ومسافات أقصر تناسب الهاتف. */
+  .sahl-site-page main > section,
+  .sahl-home main > section { padding-block: clamp(2.4rem, 8vw, 3.4rem); }
+  .sahl-site-page :is(.text-6xl, .text-5xl),
+  .sahl-home :is(.text-6xl, .text-5xl) { font-size: 1.95rem; line-height: 1.22; }
+  .sahl-site-page .text-4xl, .sahl-home .text-4xl { font-size: 1.68rem; line-height: 1.26; }
+  .sahl-site-page .text-3xl, .sahl-home .text-3xl { font-size: 1.42rem; line-height: 1.3; }
+  .sahl-site-page .text-2xl, .sahl-home .text-2xl { font-size: 1.22rem; line-height: 1.35; }
+  .sahl-site-page .text-xl, .sahl-home .text-xl { font-size: 1.08rem; }
+
+  /* مساحة العمل: بطاقات وعناوين أصغر قليلاً لتظهر معلومات أكثر. */
+  .sahl-app-theme :is(.text-4xl) { font-size: 1.6rem; line-height: 1.28; }
+  .sahl-app-theme :is(.text-3xl) { font-size: 1.38rem; line-height: 1.32; }
+  .sahl-app-theme :is(.text-2xl) { font-size: 1.2rem; }
+}
+
+@media (max-width: 430px) {
+  .sahl-hero-layout { padding-top: 132px; }
+  .sahl-hero h1 { font-size: clamp(1.9rem, 9vw, 2.5rem); }
+  .sahl-page-hero { padding-top: 178px; }
+  .sahl-page-title { font-size: clamp(1.8rem, 8.6vw, 2.35rem); }
+  .sahl-live-metric { font-size: .76rem; }
+}
