@@ -54,6 +54,7 @@ import { Route as EmployeesIndexRouteImport } from './routes/employees.index'
 import { Route as EmployeesIdRouteImport } from './routes/employees.$id'
 import { Route as UseCasesIndexRouteImport } from './routes/use-cases.index'
 import { Route as UseCasesIdRouteImport } from './routes/use-cases.$id'
+import { Route as ApiPublicLearningCycleRouteImport } from './routes/api/public/learning-cycle'
 import { Route as ApiPublicMorningBriefingRouteImport } from './routes/api/public/morning-briefing'
 import { Route as ApiPublicNourAutomationsRouteImport } from './routes/api/public/nour-automations'
 import { Route as ApiPublicNourWeeklyRouteImport } from './routes/api/public/nour-weekly'
@@ -293,6 +294,11 @@ const UseCasesIdRoute = UseCasesIdRouteImport.update({
   path: '/use-cases/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLearningCycleRoute = ApiPublicLearningCycleRouteImport.update({
+  id: '/api/public/learning-cycle',
+  path: '/api/public/learning-cycle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMorningBriefingRoute =
   ApiPublicMorningBriefingRouteImport.update({
     id: '/api/public/morning-briefing',
@@ -410,6 +416,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/employees/': typeof EmployeesIndexRoute
   '/use-cases/': typeof UseCasesIndexRoute
+  '/api/public/learning-cycle': typeof ApiPublicLearningCycleRoute
   '/api/public/morning-briefing': typeof ApiPublicMorningBriefingRoute
   '/api/public/nour-automations': typeof ApiPublicNourAutomationsRoute
   '/api/public/nour-weekly': typeof ApiPublicNourWeeklyRoute
@@ -469,6 +476,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/employees': typeof EmployeesIndexRoute
   '/use-cases': typeof UseCasesIndexRoute
+  '/api/public/learning-cycle': typeof ApiPublicLearningCycleRoute
   '/api/public/morning-briefing': typeof ApiPublicMorningBriefingRoute
   '/api/public/nour-automations': typeof ApiPublicNourAutomationsRoute
   '/api/public/nour-weekly': typeof ApiPublicNourWeeklyRoute
@@ -530,6 +538,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/employees/': typeof EmployeesIndexRoute
   '/use-cases/': typeof UseCasesIndexRoute
+  '/api/public/learning-cycle': typeof ApiPublicLearningCycleRoute
   '/api/public/morning-briefing': typeof ApiPublicMorningBriefingRoute
   '/api/public/nour-automations': typeof ApiPublicNourAutomationsRoute
   '/api/public/nour-weekly': typeof ApiPublicNourWeeklyRoute
@@ -592,6 +601,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/employees/'
     | '/use-cases/'
+    | '/api/public/learning-cycle'
     | '/api/public/morning-briefing'
     | '/api/public/nour-automations'
     | '/api/public/nour-weekly'
@@ -651,6 +661,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/employees'
     | '/use-cases'
+    | '/api/public/learning-cycle'
     | '/api/public/morning-briefing'
     | '/api/public/nour-automations'
     | '/api/public/nour-weekly'
@@ -711,6 +722,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/employees/'
     | '/use-cases/'
+    | '/api/public/learning-cycle'
     | '/api/public/morning-briefing'
     | '/api/public/nour-automations'
     | '/api/public/nour-weekly'
@@ -756,6 +768,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   EmployeesIndexRoute: typeof EmployeesIndexRoute
   UseCasesIndexRoute: typeof UseCasesIndexRoute
+  ApiPublicLearningCycleRoute: typeof ApiPublicLearningCycleRoute
   ApiPublicMorningBriefingRoute: typeof ApiPublicMorningBriefingRoute
   ApiPublicNourAutomationsRoute: typeof ApiPublicNourAutomationsRoute
   ApiPublicNourWeeklyRoute: typeof ApiPublicNourWeeklyRoute
@@ -1086,6 +1099,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UseCasesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/learning-cycle': {
+      id: '/api/public/learning-cycle'
+      path: '/api/public/learning-cycle'
+      fullPath: '/api/public/learning-cycle'
+      preLoaderRoute: typeof ApiPublicLearningCycleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/morning-briefing': {
       id: '/api/public/morning-briefing'
       path: '/api/public/morning-briefing'
@@ -1254,6 +1274,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   EmployeesIndexRoute: EmployeesIndexRoute,
   UseCasesIndexRoute: UseCasesIndexRoute,
+  ApiPublicLearningCycleRoute: ApiPublicLearningCycleRoute,
   ApiPublicMorningBriefingRoute: ApiPublicMorningBriefingRoute,
   ApiPublicNourAutomationsRoute: ApiPublicNourAutomationsRoute,
   ApiPublicNourWeeklyRoute: ApiPublicNourWeeklyRoute,
