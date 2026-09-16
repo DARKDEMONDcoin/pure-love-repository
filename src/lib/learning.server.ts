@@ -242,9 +242,8 @@ export async function runLearningCycle(client: Client, workspaceId: string) {
     .limit(200);
   const minimumEvidence = Math.max(3, settings?.minimum_evidence ?? 3);
   const configuredImprovement = settings?.minimum_improvement ?? 4;
-  const minimumImprovement = configuredImprovement > 1
-    ? configuredImprovement / 100
-    : configuredImprovement;
+  const minimumImprovement =
+    configuredImprovement > 1 ? configuredImprovement / 100 : configuredImprovement;
   let evaluated = 0;
   let promoted = 0;
   let rolledBack = 0;
