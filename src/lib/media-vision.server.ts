@@ -10,9 +10,18 @@ const GEMINI = "https://generativelanguage.googleapis.com/v1beta/openai/chat/com
 const VISION_LOVABLE = "google/gemini-2.5-flash";
 const VISION_GEMINI = "gemini-3.5-flash-lite";
 
-type Attachment = { url: string; type: "image" | "video"; alt?: string | undefined };
+type Attachment = {
+  url: string;
+  type: "image" | "video" | "file";
+  alt?: string | undefined;
+  mime?: string | undefined;
+  size?: number | undefined;
+};
 
-type Part = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
+type Part =
+  | { type: "text"; text: string }
+  | { type: "image_url"; image_url: { url: string } }
+  | { type: "file"; file: { filename: string; file_data: string } };
 
 async function callVision(
   endpoint: string,
