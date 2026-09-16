@@ -318,31 +318,86 @@ export function MediaStudio({
               <span className="text-[0.65rem] text-muted-foreground">
                 {attachments.length}/{MAX_ATTACHMENTS}
               </span>
-              <button
-                type="button"
-                disabled={
-                  disabled || !workspaceId || uploading > 0 || attachments.length >= MAX_ATTACHMENTS
-                }
-                onClick={() => fileInput.current?.click()}
-                className="ms-auto inline-flex items-center gap-1 rounded-lg bg-foreground px-3 py-1.5 text-[0.68rem] font-bold text-background disabled:opacity-40"
-              >
-                {uploading > 0 ? (
-                  <Loader2 className="size-3 animate-spin" />
-                ) : (
-                  <ImagePlus className="size-3" />
-                )}
-                {uploading > 0 ? `جاري الرفع… ${uploading}` : "اختر صوراً وفيديوهات"}
-              </button>
+              <div className="ms-auto flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={
+                    disabled ||
+                    !workspaceId ||
+                    uploading > 0 ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  onClick={() => fileInput.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-lg bg-foreground px-3 py-1.5 text-[0.68rem] font-bold text-background disabled:opacity-40"
+                >
+                  {uploading > 0 ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <ImagePlus className="size-3" />
+                  )}
+                  {uploading > 0 ? `جاري الرفع… ${uploading}` : "صور وفيديوهات"}
+                </button>
+                <button
+                  type="button"
+                  disabled={
+                    disabled ||
+                    !workspaceId ||
+                    uploading > 0 ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  onClick={() => docInput.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-[0.68rem] font-bold hover:bg-secondary disabled:opacity-40"
+                >
+                  <Paperclip className="size-3" /> ملفات
+                </button>
+                <button
+                  type="button"
+                  disabled={
+                    disabled ||
+                    !workspaceId ||
+                    uploading > 0 ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  onClick={() => cameraInput.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-[0.68rem] font-bold hover:bg-secondary disabled:opacity-40"
+                >
+                  <Camera className="size-3" /> كاميرا
+                </button>
+              </div>
             </div>
             <p className="mt-1.5 text-[0.68rem] text-muted-foreground">
-              حتى ١٠ ملفات مع بعض (صور وفيديوهات)، كل ملف حتى ٥٠ ميجابايت — والموظف يقرأ محتواها
-              ويحلّلها إذا سألته عنها.
+              حتى ١٠ عناصر مع بعض: صور وفيديوهات حتى {humanSize(MAX_BYTES)} لكل ملف، ومستندات
+              وملفات (PDF · نصوص · CSV · JSON · أكواد) حتى {humanSize(MAX_FILE_BYTES)} —
+              والموظف يقرأ محتواها فعلياً وينفّذ عليها ما تطلبه.
             </p>
             <input
               ref={fileInput}
               type="file"
               accept="image/*,video/*"
               multiple
+              className="hidden"
+              onChange={(event) => {
+                const files = Array.from(event.target.files ?? []);
+                event.target.value = "";
+                if (files.length) void uploadFiles(files);
+              }}
+            />
+            <input
+              ref={docInput}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(event) => {
+                const files = Array.from(event.target.files ?? []);
+                event.target.value = "";
+                if (files.length) void uploadFiles(files);
+              }}
+            />
+            <input
+              ref={cameraInput}
+              type="file"
+              accept="image/*"
+              capture="environment"
               className="hidden"
               onChange={(event) => {
                 const files = Array.from(event.target.files ?? []);
