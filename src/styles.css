@@ -31300,3 +31300,23 @@ html { scroll-padding-top: 96px; }
   .sahl-page-title { font-size: clamp(1.8rem, 8.6vw, 2.35rem); }
   .sahl-live-metric { font-size: .76rem; }
 }
+
+/* ============================================================
+   قراءة مريحة على الهاتف: حد أدنى لحجم النص الصغير جدًا
+   وحد أدنى لمساحة اللمس — بلا تغيير في التصميم أو المحتوى.
+   ============================================================ */
+@media (max-width: 720px) {
+  [class*="text-[0.6"],
+  [class*="text-[0.7"],
+  [class*="text-[9px]"],
+  [class*="text-[10px]"],
+  [class*="text-[11px]"] { font-size: 0.72rem; }
+  .sahl-home footer a,
+  .sahl-site-page footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.4rem;
+  }
+  .sahl-site-page main button,
+  .sahl-home main button { min-height: 2.25rem; }
+}
