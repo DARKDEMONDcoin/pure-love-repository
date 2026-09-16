@@ -394,16 +394,8 @@ type WorkTool = {
   id: string;
   title: string;
   description: string;
-  to:
-    | "/app/"
-    | "/app/tasks"
-    | "/app/autopilot"
-    | "/app/calendar"
-    | "/app/automations"
-    | "/app/queue"
-    | "/app/approvals"
-    | "/app/proposals"
-    | "/app/decisions";
+  /** مسار داخلي يُعرض داخل المحادثة عبر إطار مدمج. */
+  to: string;
   icon: typeof ListChecks;
   sonnyOnly?: boolean;
 };
@@ -475,6 +467,17 @@ const WORK_TOOLS: WorkTool[] = [
     to: "/app/decisions",
     icon: ScrollText,
   },
+];
+
+/** بقية أقسام المنصة — تُفتح كذلك داخل المحادثة عند ذكر رابطها. */
+const ALL_APP_TOOLS: WorkTool[] = [
+  { id: "integrations", title: "التكاملات", description: "اربط حساباتك", to: "/app/integrations", icon: PlugZap },
+  { id: "brain", title: "عقل العلامة", description: "ذاكرة علامتك", to: "/app/brain", icon: BookOpenText },
+  { id: "reports", title: "التقارير", description: "أرقامك الحقيقية", to: "/app/reports", icon: ScrollText },
+  { id: "rankings", title: "تتبّع الترتيب", description: "ترتيبك في Google", to: "/app/rankings", icon: Search },
+  { id: "settings", title: "الإعدادات", description: "بيانات علامتك", to: "/app/settings", icon: SlidersHorizontal },
+  { id: "learning", title: "تطور الفريق", description: "كيف يتحسن موظفوك", to: "/app/learning", icon: Sparkles },
+  { id: "discovery", title: "الاكتشاف", description: "فرص جديدة", to: "/app/discovery", icon: Bot },
 ];
 
 const EMPLOYEE_COPY: Record<string, { prompts: string[]; greetings: string[] }> = {
