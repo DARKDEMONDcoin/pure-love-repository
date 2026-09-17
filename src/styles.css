@@ -44082,6 +44082,15 @@ html {
   justify-content: space-between;
   font-size: 0.75rem;
 }
+.post-inline-calendar-head button { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 0.5rem; }
+.post-inline-calendar-head button:hover { background: var(--secondary); }
+.post-calendar-weekdays,
+.post-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; }
+.post-calendar-weekdays { margin-top: 0.6rem; color: var(--muted-foreground); font-size: 0.6rem; font-weight: 800; text-align: center; }
+.post-calendar-day { position: relative; display: grid; min-height: 2.7rem; place-items: center; border: 1px solid var(--border); border-radius: 0.45rem; font-size: 0.68rem; }
+.post-calendar-day:hover,
+.post-calendar-day.is-selected { border-color: var(--foreground); background: var(--secondary); }
+.post-calendar-day > span { position: absolute; inset-block-end: 0.15rem; inset-inline-end: 0.2rem; min-width: 1rem; border-radius: 999px; background: var(--foreground); color: var(--background); font-size: 0.55rem; line-height: 1rem; }
 .post-inline-calendar-list {
   margin-top: 0.6rem;
   display: grid;

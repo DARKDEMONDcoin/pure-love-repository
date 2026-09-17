@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   CalendarDays,
   CalendarClock,
+  ChevronLeft,
+  ChevronRight,
   Clapperboard,
   Loader2,
   Send,
@@ -173,6 +175,11 @@ export function PublishPanel({
   const [repeatCount, setRepeatCount] = useState(6);
   const [repeatDays, setRepeatDays] = useState<number[]>([1, 3, 5]);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [busy, setBusy] = useState<"now" | "later" | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
@@ -249,6 +256,36 @@ export function PublishPanel({
     setSlots(next);
     setNote(`جهّزنا ${next.length.toLocaleString("ar-EG")} موعداً ويمكنك تعديل أي موعد قبل الحفظ.`);
   };
+
+  const calendarDays = useMemo(() => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const leading = new Date(year, month, 1).getDay();
+    const count = new Date(year, month + 1, 0).getDate();
+    return [
+      ...Array.from({ length: leading }, () => null),
+      ...Array.from({ length: count }, (_, index) => new Date(year, month, index + 1)),
+    ];
+  }, [calendarMonth]);
+  const dateKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const calendarEntries = useMemo(
+    () => [
+      ...(socialPosts ?? []).map((post) => ({
+        id: post.id,
+        at: new Date(post.scheduled_at),
+        provider: post.provider,
+        status: post.status,
+      })),
+      ...slots.map((slot, index) => ({
+        id: `draft-${index}`,
+        at: new Date(slot),
+        provider: active[0] ?? "instagram",
+        status: "draft",
+      })),
+    ],
+    [socialPosts, slots, active],
+  );
 
   const onFiles = async (files: FileList | null) => {
     const list = Array.from(files ?? []);
@@ -826,30 +863,25 @@ export function PublishPanel({
         {calendarOpen ? (
           <div className="post-inline-calendar">
             <div className="post-inline-calendar-head">
-              <strong>المنشورات الحالية</strong>
-              <span>{(socialPosts ?? []).length.toLocaleString("ar-EG")}</span>
+              <button type="button" onClick={() => setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1))} aria-label="الشهر السابق"><ChevronRight className="size-4" /></button>
+              <strong>{calendarMonth.toLocaleDateString("ar-EG", { month: "long", year: "numeric" })}</strong>
+              <button type="button" onClick={() => setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1))} aria-label="الشهر التالي"><ChevronLeft className="size-4" /></button>
             </div>
-            <div className="post-inline-calendar-list">
-              {(socialPosts ?? []).slice(0, 12).map((post) => (
-                <div key={post.id} className="post-inline-calendar-item">
-                  <AppIcon name={post.provider} className="size-4" />
-                  <span>
-                    {new Date(post.scheduled_at).toLocaleString("ar-EG", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </span>
-                  <small>
-                    {post.status === "published"
-                      ? "منشور"
-                      : post.status === "failed"
-                        ? "فشل"
-                        : "مجدول"}
-                  </small>
-                </div>
-              ))}
-              {!socialPosts?.length ? <p>لا توجد منشورات في التقويم بعد.</p> : null}
+            <div className="post-calendar-weekdays">{WEEKDAYS.map((day) => <span key={day}>{day.slice(0, 2)}</span>)}</div>
+            <div className="post-calendar-grid">
+              {calendarDays.map((day, index) => {
+                if (!day) return <span key={`empty-${index}`} />;
+                const key = dateKey(day);
+                const entries = calendarEntries.filter((entry) => !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === key);
+                return (
+                  <button key={key} type="button" className={`post-calendar-day ${selectedDay === key ? "is-selected" : ""}`} onClick={() => setSelectedDay((value) => value === key ? null : key)}>
+                    <b>{day.getDate().toLocaleString("ar-EG")}</b>
+                    {entries.length ? <span>{entries.length.toLocaleString("ar-EG")}</span> : null}
+                  </button>
+                );
+              })}
             </div>
+            {selectedDay ? <div className="post-inline-calendar-list">{calendarEntries.filter((entry) => !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === selectedDay).map((entry) => <div key={entry.id} className="post-inline-calendar-item"><AppIcon name={entry.provider} className="size-4" /><span>{entry.at.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" })}</span><small>{entry.status === "published" ? "منشور" : entry.status === "failed" ? "فشل" : entry.status === "draft" ? "قيد الإعداد" : "مجدول"}</small></div>)}</div> : null}
             <Link to="/app/calendar" className="post-calendar-link">
               افتح صفحة التقويم لإدارة كل المحتوى لاحقاً
             </Link>
