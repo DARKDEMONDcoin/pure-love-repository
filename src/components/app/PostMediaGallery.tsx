@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Expand, ImageOff, Trash2, X } from "lucide-react";
 
@@ -23,10 +23,13 @@ export function PostMediaGallery({ media, onRemove, onError }: Props) {
     if (index >= media.length) setIndex(Math.max(0, media.length - 1));
   }, [index, media.length]);
 
-  const move = (direction: number) => {
-    if (media.length < 2) return;
-    setIndex((value) => (value + direction + media.length) % media.length);
-  };
+  const move = useCallback(
+    (direction: number) => {
+      if (media.length < 2) return;
+      setIndex((value) => (value + direction + media.length) % media.length);
+    },
+    [media.length],
+  );
 
   useEffect(() => {
     if (!viewer) return;
@@ -41,7 +44,7 @@ export function PostMediaGallery({ media, onRemove, onError }: Props) {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [viewer, media.length]);
+  }, [viewer, move]);
 
   const swipeStart = (x: number) => {
     touchX.current = x;

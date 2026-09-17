@@ -44,7 +44,7 @@ type BestTimes = {
 const WEEKDAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
 /** يلتقط أول صورة داخل المخرج (رابط مباشر أو صيغة ماركداون). */
-export function imageFromOutput(text: string | null | undefined): string | null {
+function imageFromOutput(text: string | null | undefined): string | null {
   if (!text) return null;
   const md = /!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/.exec(text);
   if (md?.[1]) return md[1];
