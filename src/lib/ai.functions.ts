@@ -315,6 +315,13 @@ export async function runEmployeeTurn(
       country?: string | null;
     };
 
+    // منتجات العلامة من ملفها — تُستخدم لتعبئة أي فراغ نائب في المخرج بحقيقة.
+    const brandProducts = ((): string[] => {
+      const p = ws.profile as Record<string, unknown> | null | undefined;
+      const raw = p && typeof p === "object" ? p["products"] : null;
+      return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === "string") : [];
+    })();
+
     // وسائط المستخدم تُحفظ داخل نص رسالته لتظهر في المحادثة وتبقى في السجل.
     const attachments = data.attachments ?? [];
     const attachmentsMarkdown = attachments
@@ -953,7 +960,7 @@ export async function runEmployeeTurn(
       }
     }
 
-    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null);
+    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null, brandProducts);
     reply = sanitizeActionClaims(reply, connected);
     // منع التكرار: أحياناً يعيد النموذج نفس الفقرة مرتين (ملخص + مخرج) — نُبقي أول ظهور فقط.
     reply = dedupeParagraphs(reply);
@@ -991,9 +998,9 @@ export async function runEmployeeTurn(
     }
 
     // بعد حَكَم الجودة أيضاً: لا يخرج أي فراغ نائب إلى المستخدم.
-    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null);
+    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null, brandProducts);
     for (const d of deliverables) {
-      d.body = fillPlaceholders(d.body ?? "", workspace.name, ws.website ?? null);
+      d.body = fillPlaceholders(d.body ?? "", workspace.name, ws.website ?? null, brandProducts);
     }
 
     const footers = toolBlocks.map((t) => t.footer).filter(Boolean);
