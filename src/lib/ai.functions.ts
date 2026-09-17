@@ -979,7 +979,7 @@ export async function runEmployeeTurn(
     // بعد حَكَم الجودة أيضاً: لا يخرج أي فراغ نائب إلى المستخدم.
     reply = fillPlaceholders(reply, workspace.name, ws.website ?? null);
     for (const d of deliverables) {
-      d.body = fillPlaceholders(d.body, workspace.name, ws.website ?? null);
+      d.body = fillPlaceholders(d.body ?? "", workspace.name, ws.website ?? null);
     }
 
     const footers = toolBlocks.map((t) => t.footer).filter(Boolean);
