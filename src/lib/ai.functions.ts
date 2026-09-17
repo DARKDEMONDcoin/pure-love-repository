@@ -976,6 +976,12 @@ export async function runEmployeeTurn(
       reply = verdict.output;
     }
 
+    // بعد حَكَم الجودة أيضاً: لا يخرج أي فراغ نائب إلى المستخدم.
+    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null);
+    for (const d of deliverables) {
+      d.body = fillPlaceholders(d.body, workspace.name, ws.website ?? null);
+    }
+
     const footers = toolBlocks.map((t) => t.footer).filter(Boolean);
     if (footers.length) reply = `${reply.trim()}\n\n> ${footers.join(" · ")}`;
 
