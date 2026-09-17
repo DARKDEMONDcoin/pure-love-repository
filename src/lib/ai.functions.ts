@@ -190,14 +190,8 @@ export function fillPlaceholders(
       if (linkRe.test(inner)) return website ?? "الرابط في البايو";
       if (/^[\d٠-٩]+$/.test(inner.trim())) return inner.trim();
       if (listRe.test(inner) && list) return list;
-      if (
-        /(يحدد|يحدّد|اذكر|املأ|أدخل|المالك|يُرجى|يرجى|تأكيد|بانتظار|بحسب|حسب|المدينة|السوق|موعد|توقيت|عدد|قائمة|تفاصيل|قدرات|خصائص|ميزات)/.test(
-          inner,
-        )
-      ) {
-        return DROP;
-      }
-      return whole;
+      // أي فراغ نائب آخر لا حقيقة تقابله: يسقط مع سطره كاملاً.
+      return DROP;
     },
   );
   return replaced
