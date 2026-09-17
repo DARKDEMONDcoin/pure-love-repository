@@ -172,17 +172,25 @@ export function fillPlaceholders(text: string, brand: string, website?: string |
   const linkRe = /(الرابط|رابط|الموقع|اللينك)/;
   const compact = (s: string) => s.replace(/[ \t]{2,}/g, " ").replace(/ ([،.!؟])/g, "$1");
   return compact(
-    text.replace(/\[([^[\]\n]{1,80})\]/g, (whole, inner: string) => {
-      // روابط ماركداون الحقيقية [نص](رابط) لا تُلمس — نتعرّف عليها بغياب طلب التعبئة.
-      if (/^https?:/.test(inner)) return whole;
-      if (nameRe.test(inner)) return brand;
-      if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
-      if (linkRe.test(inner)) return website ?? "الرابط في البايو";
-      if (/(يحدد|يحدّد|اذكر|املأ|أدخل|من قبل المالك|بحسب|حسب|قائمة|تفاصيل|قدرات|المدينة|السوق)/.test(inner)) {
-        return "";
-      }
-      return whole;
-    }),
+    text.replace(
+      /\[([^[\]\n]{1,80})\](\()?/g,
+      (whole, inner: string, paren: string | undefined) => {
+        // روابط ماركداون الحقيقية [نص](رابط) لا تُلمس إطلاقاً.
+        if (paren) return whole;
+        if (/^https?:/.test(inner)) return whole;
+        if (nameRe.test(inner)) return brand;
+        if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
+        if (linkRe.test(inner)) return website ?? "الرابط في البايو";
+        if (
+          /(يحدد|يحدّد|اذكر|املأ|أدخل|من قبل المالك|بحسب|حسب|قائمة|تفاصيل|قدرات|المدينة|السوق)/.test(
+            inner,
+          )
+        ) {
+          return "";
+        }
+        return whole;
+      },
+    ),
   )
     .replace(/^[\s•\-–]*$/gm, "")
     .replace(/\n{3,}/g, "\n\n");
