@@ -214,9 +214,16 @@ export async function collectSiteText(
     }
   });
 
+  let text = chunks.join("\n\n").slice(0, 24_000);
+  // موقع يعتمد على جافاسكريبت: نكمل بنسخة مُصيَّرة بدل الفشل
+  if (text.split(/\s+/).filter(Boolean).length < 60) {
+    const rendered = await fetchRenderedText(home);
+    if (rendered.length > 200) text = [text, rendered].filter(Boolean).join("\n\n");
+  }
+
   return {
     urls,
-    text: chunks.join("\n\n").slice(0, 24_000),
+    text: text.slice(0, 24_000),
     headings: [...new Set(headings)].slice(0, 40),
     taglines: [...new Set(taglines)].slice(0, 8),
   };
