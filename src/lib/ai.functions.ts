@@ -162,6 +162,32 @@ export const askEmployeeInput = z.object({
 /** الموظفون الذين تُولَّد لهم صورة فعلية عند وجود وصف بصري في الرد. */
 const VISUAL_EMPLOYEES = new Set(["dana", "sonny", "nour"]);
 
+/**
+ * شبكة أمان أخيرة ضد الفراغات النائبة: أي قوس مربّع يطلب من المستخدم تعبئة
+ * اسم العلامة أو رابطها يُستبدل بالحقيقة، وأي فراغ آخر يُحذف بلا أثر في النص.
+ */
+export function fillPlaceholders(text: string, brand: string, website?: string | null): string {
+  if (!text.includes("[")) return text;
+  const nameRe = /اسم\s*(المنصة|العلامة|الشركة|المتجر|البراند|النشاط|المشروع)/;
+  const linkRe = /(الرابط|رابط|الموقع|اللينك)/;
+  const compact = (s: string) => s.replace(/[ \t]{2,}/g, " ").replace(/ ([،.!؟])/g, "$1");
+  return compact(
+    text.replace(/\[([^[\]\n]{1,80})\]/g, (whole, inner: string) => {
+      // روابط ماركداون الحقيقية [نص](رابط) لا تُلمس — نتعرّف عليها بغياب طلب التعبئة.
+      if (/^https?:/.test(inner)) return whole;
+      if (nameRe.test(inner)) return brand;
+      if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
+      if (linkRe.test(inner)) return website ?? "الرابط في البايو";
+      if (/(يحدد|يحدّد|اذكر|املأ|أدخل|من قبل المالك|بحسب|حسب|قائمة|تفاصيل|قدرات|المدينة|السوق)/.test(inner)) {
+        return "";
+      }
+      return whole;
+    }),
+  )
+    .replace(/^[\s•\-–]*$/gm, "")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
 /** حدث تقدّم حقيقي يُبثّ للمستخدم أثناء تنفيذ الطلب. */
 export type TurnEvent =
   { type: "step"; label: string } | { type: "delta"; text: string } | { type: "reset" };
