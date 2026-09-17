@@ -2,25 +2,29 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  CalendarDays,
   CalendarClock,
+  ChevronLeft,
+  ChevronRight,
+  Clapperboard,
   Loader2,
   Send,
-  Link2,
   Sparkles,
   ImagePlus,
-  ImageOff,
   Pencil,
   Plus,
   Trash2,
   Film,
   Wand2,
-  X,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { ConnectNow } from "@/components/app/ConnectNow";
+import { PostMediaGallery, type PostMedia } from "@/components/app/PostMediaGallery";
+import { ReelStudio } from "@/components/app/ReelStudio";
 
 import { AppIcon, appLabel } from "@/components/site/AppIcon";
 import { PostQuality } from "@/components/app/PostQuality";
-import { useConnectedAccounts, useWorkspace } from "@/lib/data";
+import { useConnectedAccounts, useSocialPosts, useWorkspace } from "@/lib/data";
 import { adaptForProvider, bestTimeFor, extractPostText } from "@/lib/post-format";
 import { PUBLISHABLE, requestedPublishTargets, providerLabel } from "@/lib/platforms";
 import {
@@ -42,7 +46,7 @@ type BestTimes = {
 const WEEKDAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
 /** يلتقط أول صورة داخل المخرج (رابط مباشر أو صيغة ماركداون). */
-export function imageFromOutput(text: string | null | undefined): string | null {
+function imageFromOutput(text: string | null | undefined): string | null {
   if (!text) return null;
   const md = /!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/.exec(text);
   if (md?.[1]) return md[1];
@@ -70,9 +74,10 @@ type Props = {
   request?: string | null;
   body: string;
   onPublished?: () => void;
+  defaultOpen?: boolean;
 };
 
-type Media = { url: string; kind: "image" | "video"; label: string };
+type Media = PostMedia & { label: string };
 
 /**
  * لوحة النشر: تحترم المنصة التي طلبها المستخدم (لا تبدّلها بغيرها صامتةً)، وتترك له
@@ -87,11 +92,15 @@ export function PublishPanel({
   request,
   body,
   onPublished,
+  defaultOpen = false,
 }: Props) {
   const qc = useQueryClient();
   const upload = useServerFn(uploadSocialMedia);
+  const publishNow = useServerFn(publishSocialNow);
+  const schedulePost = useServerFn(scheduleSocialPost);
   const saveFeedback = useServerFn(saveLearningFeedback);
   const { data: accounts, isLoading } = useConnectedAccounts(workspaceId);
+  const { data: socialPosts } = useSocialPosts(workspaceId);
   const { data: workspace } = useWorkspace();
 
   const connected = useMemo(
@@ -162,11 +171,20 @@ export function PublishPanel({
   const [slots, setSlots] = useState<string[]>(() => [
     localInputValue(new Date(Date.now() + 3_600_000)),
   ]);
+  const [scheduleMode, setScheduleMode] = useState<"single" | "repeat">("single");
+  const [repeatCount, setRepeatCount] = useState(6);
+  const [repeatDays, setRepeatDays] = useState<number[]>([1, 3, 5]);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [busy, setBusy] = useState<"now" | "later" | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
   // لوحة النشر اختيارية تماماً: لا تفتح إلا إذا أراد المستخدم نشر هذا الرد.
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
 
   // أفضل وقت حقيقي محسوب من جمهور المستخدم/سجلّه.
   const askBestTimes = useServerFn(bestPostingTimes);
@@ -220,6 +238,54 @@ export function PublishPanel({
         i === index ? localInputValue(new Date(new Date(v).getTime() + days * 86_400_000)) : v,
       ),
     );
+
+  const buildRepeatedSlots = () => {
+    const first = new Date(slots[0] ?? Date.now() + 3_600_000);
+    if (Number.isNaN(first.getTime()) || !repeatDays.length) {
+      setNote("اختر موعد بداية ويوماً واحداً على الأقل.");
+      return;
+    }
+    const next: string[] = [];
+    const cursor = new Date(first);
+    while (next.length < Math.min(60, repeatCount)) {
+      if (repeatDays.includes(cursor.getDay()) && cursor.getTime() > Date.now()) {
+        next.push(localInputValue(cursor));
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    setSlots(next);
+    setNote(`جهّزنا ${next.length.toLocaleString("ar-EG")} موعداً ويمكنك تعديل أي موعد قبل الحفظ.`);
+  };
+
+  const calendarDays = useMemo(() => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const leading = new Date(year, month, 1).getDay();
+    const count = new Date(year, month + 1, 0).getDate();
+    return [
+      ...Array.from({ length: leading }, () => null),
+      ...Array.from({ length: count }, (_, index) => new Date(year, month, index + 1)),
+    ];
+  }, [calendarMonth]);
+  const dateKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const calendarEntries = useMemo(
+    () => [
+      ...(socialPosts ?? []).map((post) => ({
+        id: post.id,
+        at: new Date(post.scheduled_at),
+        provider: post.provider,
+        status: post.status,
+      })),
+      ...slots.map((slot, index) => ({
+        id: `draft-${index}`,
+        at: new Date(slot),
+        provider: active[0] ?? "instagram",
+        status: "draft",
+      })),
+    ],
+    [socialPosts, slots, active],
+  );
 
   const onFiles = async (files: FileList | null) => {
     const list = Array.from(files ?? []);
@@ -351,8 +417,8 @@ export function PublishPanel({
         };
 
         try {
-          if (at) await scheduleSocialPost({ data: { ...base, scheduledAt: at.toISOString() } });
-          else await publishSocialNow({ data: base });
+          if (at) await schedulePost({ data: { ...base, scheduledAt: at.toISOString() } });
+          else await publishNow({ data: base });
           ok.push(
             at
               ? `${appLabel(provider)} (${at.toLocaleString("ar-EG", { dateStyle: "short", timeStyle: "short" })})`
@@ -459,6 +525,16 @@ export function PublishPanel({
           إخفاء
         </button>
       </div>
+      <div className="post-publisher-media-first">
+        <PostMediaGallery
+          media={media}
+          onRemove={dropMedia}
+          onError={(url) => {
+            dropMedia(url);
+            setNote("أُزيلت وسيطة تعذّر تحميلها. يمكنك رفع بديل أو توليد صورة جديدة.");
+          }}
+        />
+      </div>
       {/* المنصات: كل منصات النشر المدعومة كخيارات — والمطلوب صراحةً مُبرَز */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-bold text-muted-foreground">انشر على</span>
@@ -562,48 +638,6 @@ export function PublishPanel({
           ) : null}
         </div>
 
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {media.map((item) => (
-            <div
-              key={item.url}
-              className="group relative overflow-hidden rounded-xl border border-border bg-card"
-            >
-              {item.kind === "image" ? (
-                <img
-                  src={item.url}
-                  alt=""
-                  className="h-20 w-20 object-cover"
-                  loading="lazy"
-                  onError={() => {
-                    dropMedia(item.url);
-                    setNote(
-                      "أُزيلت صورة لا يمكن تحميلها — ولّد صورة جديدة أو ارفع واحدة من جهازك.",
-                    );
-                  }}
-                />
-              ) : (
-                <video src={item.url} className="h-20 w-20 object-cover" muted playsInline />
-              )}
-              <span className="absolute inset-x-0 bottom-0 truncate bg-foreground/70 px-1 py-0.5 text-[10px] text-background">
-                {item.kind === "video" ? "فيديو" : item.label}
-              </span>
-              <button
-                type="button"
-                onClick={() => dropMedia(item.url)}
-                aria-label="إزالة هذه الوسيطة"
-                className="absolute end-1 top-1 grid size-6 place-items-center rounded-full bg-foreground/80 text-background opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-              >
-                <X className="size-3.5" />
-              </button>
-            </div>
-          ))}
-          {!media.length ? (
-            <div className="flex h-20 w-20 items-center justify-center rounded-xl border border-dashed border-border text-muted-foreground">
-              <ImageOff className="size-5" />
-            </div>
-          ) : null}
-        </div>
-
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
@@ -662,6 +696,14 @@ export function PublishPanel({
             className="hidden"
             onChange={(e) => void onFiles(e.target.files)}
           />
+          <button
+            type="button"
+            disabled
+            title="سيُربط مزود توليد الفيديو قريباً"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold opacity-60"
+          >
+            <Clapperboard className="size-3.5" /> فيديو بالذكاء الاصطناعي · قريباً
+          </button>
         </div>
 
         {aiOpen ? (
@@ -731,6 +773,17 @@ export function PublishPanel({
             الصورة الأولى.
           </p>
         ) : null}
+        {media.filter((item) => item.kind === "image").length >= 2 ? (
+          <div className="mt-3">
+            <ReelStudio
+              workspaceId={workspaceId}
+              images={media.filter((item) => item.kind === "image").map((item) => item.url)}
+              aspect={aiAspect}
+              attached={media.map((item) => item.url)}
+              onAttach={(url) => addMedia([{ url, kind: "video", label: "ريلز من صورك" }])}
+            />
+          </div>
+        ) : null}
         {active.includes("instagram") && !media.length ? (
           <p className="mt-2 text-xs text-muted-foreground">
             إنستجرام يتطلّب صورة أو فيديو — ولّد صورة أو ارفع من جهازك.
@@ -740,9 +793,157 @@ export function PublishPanel({
 
       {/* المواعيد */}
       <div className="mt-4">
-        <span className="text-xs font-bold text-muted-foreground">
-          مواعيد الجدولة (اختياري — اختر اليوم والساعة والدقيقة)
-        </span>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs font-bold text-muted-foreground">الجدولة</span>
+          <button
+            type="button"
+            onClick={() => setCalendarOpen((value) => !value)}
+            className="inline-flex items-center gap-1.5 text-xs font-bold hover:underline"
+          >
+            <CalendarDays className="size-3.5" /> {calendarOpen ? "إخفاء التقويم" : "عرض التقويم"}
+          </button>
+        </div>
+        <div className="mt-2 inline-flex rounded-lg border border-border bg-card p-1">
+          {(["single", "repeat"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setScheduleMode(mode)}
+              className={`rounded-md px-3 py-1.5 text-xs font-bold ${scheduleMode === mode ? "bg-foreground text-background" : "text-muted-foreground"}`}
+            >
+              {mode === "single" ? "موعد أو مواعيد" : "تكرار حسب الأيام"}
+            </button>
+          ))}
+        </div>
+        {scheduleMode === "repeat" ? (
+          <div className="mt-3 rounded-xl border border-border bg-card/60 p-3">
+            <div className="flex flex-wrap items-end gap-3">
+              <label className="text-xs font-bold text-muted-foreground">
+                عدد مرات النشر
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  value={repeatCount}
+                  onChange={(event) =>
+                    setRepeatCount(Math.max(1, Math.min(60, Number(event.target.value) || 1)))
+                  }
+                  className="mt-1 block w-24 rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                />
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {WEEKDAYS.map((day, dayIndex) => (
+                  <button
+                    key={day}
+                    type="button"
+                    aria-pressed={repeatDays.includes(dayIndex)}
+                    onClick={() =>
+                      setRepeatDays((days) =>
+                        days.includes(dayIndex)
+                          ? days.filter((item) => item !== dayIndex)
+                          : [...days, dayIndex],
+                      )
+                    }
+                    className={`rounded-full border px-2.5 py-1.5 text-[11px] font-bold ${repeatDays.includes(dayIndex) ? "border-foreground bg-foreground text-background" : "border-border"}`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={buildRepeatedSlots}
+                className="rounded-lg border border-border px-3 py-2 text-xs font-bold hover:bg-secondary"
+              >
+                إنشاء المواعيد
+              </button>
+            </div>
+          </div>
+        ) : null}
+        {calendarOpen ? (
+          <div className="post-inline-calendar">
+            <div className="post-inline-calendar-head">
+              <button
+                type="button"
+                onClick={() =>
+                  setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1))
+                }
+                aria-label="الشهر السابق"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+              <strong>
+                {calendarMonth.toLocaleDateString("ar-EG", { month: "long", year: "numeric" })}
+              </strong>
+              <button
+                type="button"
+                onClick={() =>
+                  setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1))
+                }
+                aria-label="الشهر التالي"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+            </div>
+            <div className="post-calendar-weekdays">
+              {WEEKDAYS.map((day) => (
+                <span key={day}>{day.slice(0, 2)}</span>
+              ))}
+            </div>
+            <div className="post-calendar-grid">
+              {calendarDays.map((day, index) => {
+                if (!day) return <span key={`empty-${index}`} />;
+                const key = dateKey(day);
+                const entries = calendarEntries.filter(
+                  (entry) => !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === key,
+                );
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`post-calendar-day ${selectedDay === key ? "is-selected" : ""}`}
+                    onClick={() => setSelectedDay((value) => (value === key ? null : key))}
+                  >
+                    <b>{day.getDate().toLocaleString("ar-EG")}</b>
+                    {entries.length ? <span>{entries.length.toLocaleString("ar-EG")}</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedDay ? (
+              <div className="post-inline-calendar-list">
+                {calendarEntries
+                  .filter(
+                    (entry) =>
+                      !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === selectedDay,
+                  )
+                  .map((entry) => (
+                    <div key={entry.id} className="post-inline-calendar-item">
+                      <AppIcon name={entry.provider} className="size-4" />
+                      <span>
+                        {entry.at.toLocaleTimeString("ar-EG", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      <small>
+                        {entry.status === "published"
+                          ? "منشور"
+                          : entry.status === "failed"
+                            ? "فشل"
+                            : entry.status === "draft"
+                              ? "قيد الإعداد"
+                              : "مجدول"}
+                      </small>
+                    </div>
+                  ))}
+              </div>
+            ) : null}
+            <Link to="/app/calendar" className="post-calendar-link">
+              افتح صفحة التقويم لإدارة كل المحتوى لاحقاً
+            </Link>
+          </div>
+        ) : null}
         <div className="mt-2 space-y-3">
           {slots.map((s, i) => {
             const [datePart = "", timePart = "00:00"] = s.split("T");
@@ -851,7 +1052,7 @@ export function PublishPanel({
               </div>
             );
           })}
-          {slots.length < 10 ? (
+          {slots.length < 60 ? (
             <button
               type="button"
               onClick={() =>

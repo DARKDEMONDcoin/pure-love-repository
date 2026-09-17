@@ -23,6 +23,32 @@ async function assertOwner(
   return supabaseAdmin;
 }
 
+async function assertConnected(
+  admin: Awaited<ReturnType<typeof assertOwner>>,
+  workspaceId: string,
+  provider: string,
+) {
+  const { data: account } = await admin
+    .from("pipedream_accounts")
+    .select("id")
+    .eq("workspace_id", workspaceId)
+    .eq("provider", provider)
+    .eq("status", "connected")
+    .order("connected_at", { ascending: false })
+    .limit(1);
+  let connected = Boolean(account?.length);
+  if (!connected && (provider === "facebook" || provider === "instagram")) {
+    const { data: meta } = await admin
+      .from("meta_connections")
+      .select("id")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "connected")
+      .limit(1);
+    connected = Boolean(meta?.length);
+  }
+  if (!connected) throw new Error("هذه المنصة غير مربوطة بعد — اربطها ثم أعد المحاولة.");
+}
+
 const scheduleInput = z.object({
   workspaceId: z.string().uuid(),
   employeeId: z.string().min(1).max(40).default("sonny"),
@@ -97,30 +123,9 @@ export const scheduleSocialPost = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => scheduleInput.parse(input))
   .handler(async ({ data, context }) => {
     const admin = await assertOwner(context.supabase, data.workspaceId);
-
-    // لا نجدول على منصة غير مربوطة — نفشل مبكراً برسالة واضحة بدل فشل صامت وقت النشر.
-    const { data: account } = await admin
-      .from("pipedream_accounts")
-      .select("id")
-      .eq("workspace_id", data.workspaceId)
-      .eq("provider", data.provider)
-      .eq("status", "connected")
-      .order("connected_at", { ascending: false })
-      .limit(1);
-    // فيسبوك/إنستجرام قد يكونان مربوطين مباشرةً عبر ميتا بدل Pipedream — كلاهما يكفي للجدولة.
-    let connected = Boolean(account?.length);
-    if (!connected && (data.provider === "facebook" || data.provider === "instagram")) {
-      const { data: meta } = await admin
-        .from("meta_connections")
-        .select("id")
-        .eq("workspace_id", data.workspaceId)
-        .eq("status", "connected")
-        .limit(1);
-      connected = Boolean(meta?.length);
-    }
-    if (!connected) {
-      throw new Error("هذه المنصة غير مربوطة بعد — اربطها من صفحة التكاملات ثم أعد الجدولة.");
-    }
+    await assertConnected(admin, data.workspaceId, data.provider);
+    if (new Date(data.scheduledAt).getTime() <= Date.now())
+      throw new Error("اختر موعداً قادماً للجدولة.");
 
     const { data: row, error } = await admin
       .from("social_posts")
@@ -148,6 +153,7 @@ export const publishSocialNow = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => scheduleInput.omit({ scheduledAt: true }).parse(input))
   .handler(async ({ data, context }) => {
     const admin = await assertOwner(context.supabase, data.workspaceId);
+    await assertConnected(admin, data.workspaceId, data.provider);
     const { data: row, error } = await admin
       .from("social_posts")
       .insert({
