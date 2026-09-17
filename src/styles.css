@@ -31703,3 +31703,65 @@ html { scroll-padding-top: 96px; }
   .post-card-grid { grid-template-columns: 1fr; }
   .post-card-body { font-size: 0.8rem; }
 }
+
+/* ===== معرض المنشور: وسائط أولاً، تقليب ولمس، ومعاينة كاملة ===== */
+.post-publisher-media-first { margin: -0.25rem -0.25rem 1rem; }
+.post-media-gallery { width: 100%; }
+.post-media-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--secondary);
+  touch-action: pan-y;
+}
+.post-media-stage > img,
+.post-media-stage > video { width: 100%; height: 100%; object-fit: contain; background: var(--secondary); }
+.post-media-expand,
+.post-media-delete,
+.post-media-close,
+.post-media-next,
+.post-media-prev { position: absolute; z-index: 3; box-shadow: var(--shadow-card); }
+.post-media-expand { inset-block-start: 0.75rem; inset-inline-start: 0.75rem; }
+.post-media-delete { inset-block-start: 0.75rem; inset-inline-end: 0.75rem; }
+.post-media-next { inset-inline-end: 0.75rem; inset-block-start: 50%; transform: translateY(-50%); }
+.post-media-prev { inset-inline-start: 0.75rem; inset-block-start: 50%; transform: translateY(-50%); }
+.post-media-count {
+  position: absolute;
+  inset-block-end: 0.75rem;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--foreground) 78%, transparent);
+  color: var(--background);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  direction: ltr;
+}
+.post-media-strip { display: flex; gap: 0.4rem; margin-top: 0.5rem; overflow-x: auto; padding-block-end: 0.25rem; scrollbar-width: thin; }
+.post-media-thumb { flex: 0 0 3.5rem; overflow: hidden; border: 2px solid transparent; border-radius: 0.5rem; opacity: 0.65; }
+.post-media-thumb.is-active { border-color: var(--foreground); opacity: 1; }
+.post-media-thumb img,
+.post-media-thumb video { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.post-media-empty { display: grid; min-height: 11rem; place-items: center; align-content: center; gap: 0.6rem; border: 1px dashed var(--border); border-radius: 0.75rem; color: var(--muted-foreground); font-size: 0.75rem; font-weight: 700; }
+.post-media-lightbox { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: clamp(0.75rem, 3vw, 2rem); background: color-mix(in oklab, var(--foreground) 92%, transparent); }
+.post-media-lightbox .post-media-stage.is-fullscreen { width: min(100%, 90rem); height: calc(100dvh - 2rem); aspect-ratio: auto; border: 0; background: transparent; }
+.post-media-lightbox .post-media-stage > img,
+.post-media-lightbox .post-media-stage > video { object-fit: contain; background: transparent; }
+.post-media-close { inset-block-start: max(0.75rem, env(safe-area-inset-top)); inset-inline-end: max(0.75rem, env(safe-area-inset-right)); }
+.post-inline-calendar { margin-top: 0.75rem; border: 1px solid var(--border); border-radius: 0.75rem; background: var(--card); padding: 0.75rem; }
+.post-inline-calendar-head { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; }
+.post-inline-calendar-list { margin-top: 0.6rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 0.4rem; }
+.post-inline-calendar-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.4rem; border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem; font-size: 0.68rem; }
+.post-inline-calendar-item small { color: var(--muted-foreground); }
+.post-calendar-link { display: inline-flex; margin-top: 0.7rem; font-size: 0.7rem; font-weight: 800; text-decoration: underline; text-underline-offset: 0.2rem; }
+@media (max-width: 480px) {
+  .post-media-stage { aspect-ratio: 1 / 1; }
+  .post-media-next, .post-media-prev { width: 2rem; height: 2rem; }
+  .post-media-thumb { flex-basis: 3rem; }
+}

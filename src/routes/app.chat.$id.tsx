@@ -1203,7 +1203,6 @@ function ChatView({
                           )
                         ) : null}
                         {!isUser &&
-                        id === "sonny" &&
                         workspace &&
                         !m.body.includes("(/app/tasks)") &&
                         askedForPublishableOutput(lastUserBefore(arr, idx)) &&

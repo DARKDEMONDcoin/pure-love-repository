@@ -7,16 +7,13 @@ import {
   Clapperboard,
   Loader2,
   Send,
-  Link2,
   Sparkles,
   ImagePlus,
-  ImageOff,
   Pencil,
   Plus,
   Trash2,
   Film,
   Wand2,
-  X,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { ConnectNow } from "@/components/app/ConnectNow";
