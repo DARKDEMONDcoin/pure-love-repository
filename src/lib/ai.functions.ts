@@ -194,16 +194,18 @@ export function fillPlaceholders(
       return DROP;
     },
   );
-  return replaced
-    .split("\n")
-    .filter((line) => !line.includes(DROP))
-    .join("\n")
-    .replace(/\(\s*[،,؛-]*\s*\)/g, "")
-    .replace(/[ \t]{2,}/g, " ")
-    .replace(/ ([،.!؟])/g, "$1")
-    // سطر انتهى بنقطتين لأن قائمته سقطت: نحوّله إلى جملة مكتملة.
-    .replace(/[:：]\s*(?=\n\s*\n|\n?$)/g, ".")
-    .replace(/\n{3,}/g, "\n\n");
+  return (
+    replaced
+      .split("\n")
+      .filter((line) => !line.includes(DROP))
+      .join("\n")
+      .replace(/\(\s*[،,؛-]*\s*\)/g, "")
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/ ([،.!؟])/g, "$1")
+      // سطر انتهى بنقطتين لأن قائمته سقطت: نحوّله إلى جملة مكتملة.
+      .replace(/[:：]\s*(?=\n\s*\n|\n?$)/g, ".")
+      .replace(/\n{3,}/g, "\n\n")
+  );
 }
 
 /** حدث تقدّم حقيقي يُبثّ للمستخدم أثناء تنفيذ الطلب. */
