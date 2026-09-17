@@ -45,12 +45,9 @@ export const extractBrandVoice = createServerFn({ method: "POST" })
       urls = site.urls;
       headings = site.headings;
       taglines = site.taglines;
-      text = [site.text, data.samples ?? ""].filter(Boolean).join("\n\n");
-      if (!site.text && !data.samples) {
-        throw new Error(
-          "تعذّر قراءة الموقع (قد يكون محميًا أو يعتمد على جافاسكريبت بالكامل). الصق بعض النصوص من موقعك أو حساباتك بدلًا من ذلك.",
-        );
-      }
+      text = [site.text, headings.join("\n"), taglines.join("\n"), data.samples ?? ""]
+        .filter(Boolean)
+        .join("\n\n");
     }
 
     // آخر شبكة أمان: نستعين بما هو مخزون في عقل العلامة (ملف العلامة، الملاحظات، المستندات)
