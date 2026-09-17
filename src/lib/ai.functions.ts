@@ -181,8 +181,10 @@ export function fillPlaceholders(text: string, brand: string, website?: string |
         if (nameRe.test(inner)) return brand;
         if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
         if (linkRe.test(inner)) return website ?? "الرابط في البايو";
+        // رقم داخل قوس: نُبقي الرقم بلا قوس بدل أن يبدو فراغاً.
+        if (/^[\d٠-٩]+$/.test(inner.trim())) return inner.trim();
         if (
-          /(يحدد|يحدّد|اذكر|املأ|أدخل|من قبل المالك|بحسب|حسب|قائمة|تفاصيل|قدرات|المدينة|السوق)/.test(
+          /(يحدد|يحدّد|اذكر|املأ|أدخل|المالك|يُرجى|يرجى|تأكيد|بانتظار|بحسب|حسب|قائمة|تفاصيل|قدرات|المدينة|السوق|موعد|توقيت|عدد)/.test(
             inner,
           )
         ) {
@@ -192,6 +194,7 @@ export function fillPlaceholders(text: string, brand: string, website?: string |
       },
     ),
   )
+    .replace(/\(\s*[،,؛-]*\s*\)/g, "")
     .replace(/^[\s•\-–]*$/gm, "")
     .replace(/\n{3,}/g, "\n\n");
 }
