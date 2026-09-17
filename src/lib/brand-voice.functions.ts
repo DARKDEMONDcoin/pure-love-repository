@@ -45,16 +45,30 @@ export const extractBrandVoice = createServerFn({ method: "POST" })
       urls = site.urls;
       headings = site.headings;
       taglines = site.taglines;
-      text = [site.text, data.samples ?? ""].filter(Boolean).join("\n\n");
-      if (!site.text && !data.samples) {
-        throw new Error(
-          "تعذّر قراءة الموقع (قد يكون محميًا أو يعتمد على جافاسكريبت بالكامل). الصق بعض النصوص من موقعك أو حساباتك بدلًا من ذلك.",
-        );
-      }
+      text = [site.text, headings.join("\n"), taglines.join("\n"), data.samples ?? ""]
+        .filter(Boolean)
+        .join("\n\n");
     }
 
-    if (text.trim().split(/\s+/).length < 40) {
-      throw new Error("النص قليل جدًا لاستخراج صوت موثوق — نحتاج ٤٠ كلمة على الأقل.");
+    // آخر شبكة أمان: نستعين بما هو مخزون في عقل العلامة (ملف العلامة، الملاحظات، المستندات)
+    if (text.trim().split(/\s+/).filter(Boolean).length < 40) {
+      const { data: items } = await supabase
+        .from("brain_items")
+        .select("title, body")
+        .eq("workspace_id", workspace.id)
+        .order("created_at", { ascending: false })
+        .limit(12);
+      const fromBrain = (items ?? [])
+        .map((i) => [i.title, i.body].filter(Boolean).join("\n"))
+        .join("\n\n")
+        .slice(0, 16_000);
+      text = [text, fromBrain].filter(Boolean).join("\n\n");
+    }
+
+    if (text.trim().split(/\s+/).filter(Boolean).length < 40) {
+      throw new Error(
+        "لم نجد نصًا كافيًا لموقعك (قد يعتمد على جافاسكريبت بالكامل) ولا في عقل العلامة — الصق ٣ منشورات أو فقرات من موقعك في خيار «من نصوص ألصقها».",
+      );
     }
 
     const stats = analyzeStyle(text, taglines);

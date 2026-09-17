@@ -150,12 +150,43 @@ function fallbackText(html: string): string {
     .trim();
 }
 
+/**
+ * كثير من المواقع الحديثة تُبنى بجافاسكريبت بالكامل، فالـHTML الخام يكاد يكون فارغاً.
+ * في هذه الحالة نقرأ نسخة نصية مُصيَّرة من خدمة قارئ عامة قبل أن نستسلم.
+ */
+async function fetchRenderedText(url: string): Promise<string> {
+  try {
+    const res = await fetch(`https://r.jina.ai/${url}`, {
+      headers: { "User-Agent": UA, Accept: "text/plain" },
+      signal: timeout(20_000),
+    });
+    if (!res.ok) return "";
+    const raw = await res.text();
+    return raw
+      .replace(/^Title:.*$/m, "")
+      .replace(/^URL Source:.*$/m, "")
+      .replace(/^Markdown Content:\s*/m, "")
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+      .replace(/[ \t]+/g, " ")
+      .trim()
+      .slice(0, 16_000);
+  } catch {
+    return "";
+  }
+}
+
 export async function collectSiteText(
   rawUrl: string,
 ): Promise<{ urls: string[]; text: string; headings: string[]; taglines: string[] }> {
   const home = normalizeUrl(rawUrl);
   const homeHtml = await fetchHtml(home);
-  if (!homeHtml) return { urls: [], text: "", headings: [], taglines: [] };
+  if (!homeHtml) {
+    const rendered = await fetchRenderedText(home);
+    return rendered.length > 200
+      ? { urls: [home], text: rendered, headings: [], taglines: [] }
+      : { urls: [], text: "", headings: [], taglines: [] };
+  }
 
   const links = pickInternalLinks(homeHtml, home, 5);
   const pages = await Promise.all(links.map((l) => fetchHtml(l)));
@@ -183,9 +214,16 @@ export async function collectSiteText(
     }
   });
 
+  let text = chunks.join("\n\n").slice(0, 24_000);
+  // موقع يعتمد على جافاسكريبت: نكمل بنسخة مُصيَّرة بدل الفشل
+  if (text.split(/\s+/).filter(Boolean).length < 60) {
+    const rendered = await fetchRenderedText(home);
+    if (rendered.length > 200) text = [text, rendered].filter(Boolean).join("\n\n");
+  }
+
   return {
     urls,
-    text: chunks.join("\n\n").slice(0, 24_000),
+    text: text.slice(0, 24_000),
     headings: [...new Set(headings)].slice(0, 40),
     taglines: [...new Set(taglines)].slice(0, 8),
   };

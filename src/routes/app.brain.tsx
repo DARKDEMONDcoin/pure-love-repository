@@ -153,9 +153,9 @@ function BrainPage() {
           </form>
 
           {isLoading ? (
-            <p className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
               <BrandLoader size="sm" />
-            </p>
+            </div>
           ) : (
             <ul className="mt-5 space-y-3">
               {list.map((item) => {
