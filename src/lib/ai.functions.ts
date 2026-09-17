@@ -163,39 +163,50 @@ export const askEmployeeInput = z.object({
 const VISUAL_EMPLOYEES = new Set(["dana", "sonny", "nour"]);
 
 /**
- * شبكة أمان أخيرة ضد الفراغات النائبة: أي قوس مربّع يطلب من المستخدم تعبئة
- * اسم العلامة أو رابطها يُستبدل بالحقيقة، وأي فراغ آخر يُحذف بلا أثر في النص.
+ * شبكة أمان أخيرة ضد الفراغات النائبة: القوس الذي يطلب اسم العلامة أو رابطها أو
+ * قائمة خدماتها يُستبدل بالحقيقة من ملف العلامة، وما لا حقيقة له يُحذف مع سطره
+ * كاملاً حتى لا يبقى سطر مبتور أو نقطة معلّقة في المخرج.
  */
-export function fillPlaceholders(text: string, brand: string, website?: string | null): string {
+export function fillPlaceholders(
+  text: string,
+  brand: string,
+  website?: string | null,
+  products?: string[],
+): string {
   if (!text.includes("[")) return text;
+  const DROP = "\u0000";
   const nameRe = /اسم\s*(المنصة|العلامة|الشركة|المتجر|البراند|النشاط|المشروع)/;
   const linkRe = /(الرابط|رابط|الموقع|اللينك)/;
-  const compact = (s: string) => s.replace(/[ \t]{2,}/g, " ").replace(/ ([،.!؟])/g, "$1");
-  return compact(
-    text.replace(
-      /\[([^[\]\n]{1,80})\](\()?/g,
-      (whole, inner: string, paren: string | undefined) => {
-        // روابط ماركداون الحقيقية [نص](رابط) لا تُلمس إطلاقاً.
-        if (paren) return whole;
-        if (/^https?:/.test(inner)) return whole;
-        if (nameRe.test(inner)) return brand;
-        if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
-        if (linkRe.test(inner)) return website ?? "الرابط في البايو";
-        // رقم داخل قوس: نُبقي الرقم بلا قوس بدل أن يبدو فراغاً.
-        if (/^[\d٠-٩]+$/.test(inner.trim())) return inner.trim();
-        if (
-          /(يحدد|يحدّد|اذكر|املأ|أدخل|المالك|يُرجى|يرجى|تأكيد|بانتظار|بحسب|حسب|قائمة|تفاصيل|قدرات|المدينة|السوق|موعد|توقيت|عدد)/.test(
-            inner,
-          )
-        ) {
-          return "";
-        }
-        return whole;
-      },
-    ),
-  )
+  const listRe = /(قائمة|تفاصيل|قدرات|خصائص|ميزات|منتجات|خدمات)/;
+  const list = (products ?? []).filter(Boolean).slice(0, 6).join("، ");
+  const replaced = text.replace(
+    /\[([^[\]\n]{1,120})\](\()?/g,
+    (whole, inner: string, paren: string | undefined) => {
+      // روابط ماركداون الحقيقية [نص](رابط) لا تُلمس إطلاقاً.
+      if (paren) return whole;
+      if (/^https?:/.test(inner)) return whole;
+      if (nameRe.test(inner)) return brand;
+      if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
+      if (linkRe.test(inner)) return website ?? "الرابط في البايو";
+      if (/^[\d٠-٩]+$/.test(inner.trim())) return inner.trim();
+      if (listRe.test(inner) && list) return list;
+      if (
+        /(يحدد|يحدّد|اذكر|املأ|أدخل|المالك|يُرجى|يرجى|تأكيد|بانتظار|بحسب|حسب|المدينة|السوق|موعد|توقيت|عدد|قائمة|تفاصيل|قدرات|خصائص|ميزات)/.test(
+          inner,
+        )
+      ) {
+        return DROP;
+      }
+      return whole;
+    },
+  );
+  return replaced
+    .split("\n")
+    .filter((line) => !line.includes(DROP))
+    .join("\n")
     .replace(/\(\s*[،,؛-]*\s*\)/g, "")
-    .replace(/^[\s•\-–]*$/gm, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/ ([،.!؟])/g, "$1")
     .replace(/\n{3,}/g, "\n\n");
 }
 
