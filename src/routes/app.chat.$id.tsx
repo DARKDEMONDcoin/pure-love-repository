@@ -1210,7 +1210,7 @@ function ChatView({
                         looksPostable(m.body) ? (
                           <PostCards
                             workspaceId={workspace.id}
-                            employeeId="sonny"
+                            employeeId={id}
                             taskId={savedTask}
                             channel={
                               requestedPublishTargets(lastUserBefore(arr, idx))[0] ?? "instagram"
