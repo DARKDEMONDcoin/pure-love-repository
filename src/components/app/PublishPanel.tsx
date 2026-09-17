@@ -863,25 +863,82 @@ export function PublishPanel({
         {calendarOpen ? (
           <div className="post-inline-calendar">
             <div className="post-inline-calendar-head">
-              <button type="button" onClick={() => setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1))} aria-label="الشهر السابق"><ChevronRight className="size-4" /></button>
-              <strong>{calendarMonth.toLocaleDateString("ar-EG", { month: "long", year: "numeric" })}</strong>
-              <button type="button" onClick={() => setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1))} aria-label="الشهر التالي"><ChevronLeft className="size-4" /></button>
+              <button
+                type="button"
+                onClick={() =>
+                  setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() - 1, 1))
+                }
+                aria-label="الشهر السابق"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+              <strong>
+                {calendarMonth.toLocaleDateString("ar-EG", { month: "long", year: "numeric" })}
+              </strong>
+              <button
+                type="button"
+                onClick={() =>
+                  setCalendarMonth((date) => new Date(date.getFullYear(), date.getMonth() + 1, 1))
+                }
+                aria-label="الشهر التالي"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
             </div>
-            <div className="post-calendar-weekdays">{WEEKDAYS.map((day) => <span key={day}>{day.slice(0, 2)}</span>)}</div>
+            <div className="post-calendar-weekdays">
+              {WEEKDAYS.map((day) => (
+                <span key={day}>{day.slice(0, 2)}</span>
+              ))}
+            </div>
             <div className="post-calendar-grid">
               {calendarDays.map((day, index) => {
                 if (!day) return <span key={`empty-${index}`} />;
                 const key = dateKey(day);
-                const entries = calendarEntries.filter((entry) => !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === key);
+                const entries = calendarEntries.filter(
+                  (entry) => !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === key,
+                );
                 return (
-                  <button key={key} type="button" className={`post-calendar-day ${selectedDay === key ? "is-selected" : ""}`} onClick={() => setSelectedDay((value) => value === key ? null : key)}>
+                  <button
+                    key={key}
+                    type="button"
+                    className={`post-calendar-day ${selectedDay === key ? "is-selected" : ""}`}
+                    onClick={() => setSelectedDay((value) => (value === key ? null : key))}
+                  >
                     <b>{day.getDate().toLocaleString("ar-EG")}</b>
                     {entries.length ? <span>{entries.length.toLocaleString("ar-EG")}</span> : null}
                   </button>
                 );
               })}
             </div>
-            {selectedDay ? <div className="post-inline-calendar-list">{calendarEntries.filter((entry) => !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === selectedDay).map((entry) => <div key={entry.id} className="post-inline-calendar-item"><AppIcon name={entry.provider} className="size-4" /><span>{entry.at.toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" })}</span><small>{entry.status === "published" ? "منشور" : entry.status === "failed" ? "فشل" : entry.status === "draft" ? "قيد الإعداد" : "مجدول"}</small></div>)}</div> : null}
+            {selectedDay ? (
+              <div className="post-inline-calendar-list">
+                {calendarEntries
+                  .filter(
+                    (entry) =>
+                      !Number.isNaN(entry.at.getTime()) && dateKey(entry.at) === selectedDay,
+                  )
+                  .map((entry) => (
+                    <div key={entry.id} className="post-inline-calendar-item">
+                      <AppIcon name={entry.provider} className="size-4" />
+                      <span>
+                        {entry.at.toLocaleTimeString("ar-EG", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      <small>
+                        {entry.status === "published"
+                          ? "منشور"
+                          : entry.status === "failed"
+                            ? "فشل"
+                            : entry.status === "draft"
+                              ? "قيد الإعداد"
+                              : "مجدول"}
+                      </small>
+                    </div>
+                  ))}
+              </div>
+            ) : null}
             <Link to="/app/calendar" className="post-calendar-link">
               افتح صفحة التقويم لإدارة كل المحتوى لاحقاً
             </Link>
