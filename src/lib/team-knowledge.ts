@@ -237,6 +237,8 @@ export function businessProfileBlock(
       ? ((p[k] as unknown[]).filter((x) => typeof x === "string").slice(0, 8) as string[])
       : [];
   const rows = [
+    str("name") ? `- اسم العلامة كما يُكتب حرفياً في كل مخرج: ${str("name")}` : "",
+    str("industry") ? `- المجال: ${str("industry")}` : "",
     website ? `- الموقع: ${website}` : "",
     country ? `- الدولة الرئيسية: ${country}` : "",
     str("summary") ? `- ملخص النشاط: ${str("summary")}` : "",
