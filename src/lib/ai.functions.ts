@@ -906,6 +906,7 @@ export async function runEmployeeTurn(
     }
 
     reply = fillPlaceholders(reply, workspace.name, ws.website ?? null);
+    reply = sanitizeActionClaims(reply, connected);
     // منع التكرار: أحياناً يعيد النموذج نفس الفقرة مرتين (ملخص + مخرج) — نُبقي أول ظهور فقط.
     reply = dedupeParagraphs(reply);
 
