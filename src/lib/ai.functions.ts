@@ -162,6 +162,52 @@ export const askEmployeeInput = z.object({
 /** الموظفون الذين تُولَّد لهم صورة فعلية عند وجود وصف بصري في الرد. */
 const VISUAL_EMPLOYEES = new Set(["dana", "sonny", "nour"]);
 
+/**
+ * شبكة أمان أخيرة ضد الفراغات النائبة: القوس الذي يطلب اسم العلامة أو رابطها أو
+ * قائمة خدماتها يُستبدل بالحقيقة من ملف العلامة، وما لا حقيقة له يُحذف مع سطره
+ * كاملاً حتى لا يبقى سطر مبتور أو نقطة معلّقة في المخرج.
+ */
+export function fillPlaceholders(
+  text: string,
+  brand: string,
+  website?: string | null,
+  products?: string[],
+): string {
+  if (!text.includes("[")) return text;
+  const DROP = "\u0000";
+  const nameRe = /اسم\s*(المنصة|العلامة|الشركة|المتجر|البراند|النشاط|المشروع)/;
+  const linkRe = /(الرابط|رابط|الموقع|اللينك)/;
+  const listRe = /(قائمة|تفاصيل|قدرات|خصائص|ميزات|منتجات|خدمات)/;
+  const list = (products ?? []).filter(Boolean).slice(0, 6).join("، ");
+  const replaced = text.replace(
+    /\[([^[\]\n]{1,120})\](\()?/g,
+    (whole, inner: string, paren: string | undefined) => {
+      // روابط ماركداون الحقيقية [نص](رابط) لا تُلمس إطلاقاً.
+      if (paren) return whole;
+      if (/^https?:/.test(inner)) return whole;
+      if (nameRe.test(inner)) return brand;
+      if (/^وسم/.test(inner.trim())) return `#${brand.replace(/\s+/g, "_")}`;
+      if (linkRe.test(inner)) return website ?? "الرابط في البايو";
+      if (/^[\d٠-٩]+$/.test(inner.trim())) return inner.trim();
+      if (listRe.test(inner) && list) return list;
+      // أي فراغ نائب آخر لا حقيقة تقابله: يسقط مع سطره كاملاً.
+      return DROP;
+    },
+  );
+  return (
+    replaced
+      .split("\n")
+      .filter((line) => !line.includes(DROP))
+      .join("\n")
+      .replace(/\(\s*[،,؛-]*\s*\)/g, "")
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/ ([،.!؟])/g, "$1")
+      // سطر انتهى بنقطتين لأن قائمته سقطت: نحوّله إلى جملة مكتملة.
+      .replace(/[:：]\s*(?=\n\s*\n|\n?$)/g, ".")
+      .replace(/\n{3,}/g, "\n\n")
+  );
+}
+
 /** حدث تقدّم حقيقي يُبثّ للمستخدم أثناء تنفيذ الطلب. */
 export type TurnEvent =
   { type: "step"; label: string } | { type: "delta"; text: string } | { type: "reset" };
@@ -266,6 +312,13 @@ export async function runEmployeeTurn(
       website?: string | null;
       country?: string | null;
     };
+
+    // منتجات العلامة من ملفها — تُستخدم لتعبئة أي فراغ نائب في المخرج بحقيقة.
+    const brandProducts = ((): string[] => {
+      const p = ws.profile as Record<string, unknown> | null | undefined;
+      const raw = p && typeof p === "object" ? p["products"] : null;
+      return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === "string") : [];
+    })();
 
     // وسائط المستخدم تُحفظ داخل نص رسالته لتظهر في المحادثة وتبقى في السجل.
     const attachments = data.attachments ?? [];
@@ -905,6 +958,7 @@ export async function runEmployeeTurn(
       }
     }
 
+    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null, brandProducts);
     reply = sanitizeActionClaims(reply, connected);
     // منع التكرار: أحياناً يعيد النموذج نفس الفقرة مرتين (ملخص + مخرج) — نُبقي أول ظهور فقط.
     reply = dedupeParagraphs(reply);
@@ -939,6 +993,12 @@ export async function runEmployeeTurn(
         deliverables[0]!.body = verdict.output;
       }
       reply = verdict.output;
+    }
+
+    // بعد حَكَم الجودة أيضاً: لا يخرج أي فراغ نائب إلى المستخدم.
+    reply = fillPlaceholders(reply, workspace.name, ws.website ?? null, brandProducts);
+    for (const d of deliverables) {
+      d.body = fillPlaceholders(d.body ?? "", workspace.name, ws.website ?? null, brandProducts);
     }
 
     const footers = toolBlocks.map((t) => t.footer).filter(Boolean);
