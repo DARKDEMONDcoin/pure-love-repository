@@ -758,13 +758,22 @@ export function PublishPanel({
       <div className="mt-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-xs font-bold text-muted-foreground">الجدولة</span>
-          <button type="button" onClick={() => setCalendarOpen((value) => !value)} className="inline-flex items-center gap-1.5 text-xs font-bold hover:underline">
+          <button
+            type="button"
+            onClick={() => setCalendarOpen((value) => !value)}
+            className="inline-flex items-center gap-1.5 text-xs font-bold hover:underline"
+          >
             <CalendarDays className="size-3.5" /> {calendarOpen ? "إخفاء التقويم" : "عرض التقويم"}
           </button>
         </div>
         <div className="mt-2 inline-flex rounded-lg border border-border bg-card p-1">
           {(["single", "repeat"] as const).map((mode) => (
-            <button key={mode} type="button" onClick={() => setScheduleMode(mode)} className={`rounded-md px-3 py-1.5 text-xs font-bold ${scheduleMode === mode ? "bg-foreground text-background" : "text-muted-foreground"}`}>
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setScheduleMode(mode)}
+              className={`rounded-md px-3 py-1.5 text-xs font-bold ${scheduleMode === mode ? "bg-foreground text-background" : "text-muted-foreground"}`}
+            >
               {mode === "single" ? "موعد أو مواعيد" : "تكرار حسب الأيام"}
             </button>
           ))}
@@ -772,32 +781,78 @@ export function PublishPanel({
         {scheduleMode === "repeat" ? (
           <div className="mt-3 rounded-xl border border-border bg-card/60 p-3">
             <div className="flex flex-wrap items-end gap-3">
-              <label className="text-xs font-bold text-muted-foreground">عدد مرات النشر
-                <input type="number" min={1} max={60} value={repeatCount} onChange={(event) => setRepeatCount(Math.max(1, Math.min(60, Number(event.target.value) || 1)))} className="mt-1 block w-24 rounded-lg border border-border bg-background px-3 py-2 text-foreground" />
+              <label className="text-xs font-bold text-muted-foreground">
+                عدد مرات النشر
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  value={repeatCount}
+                  onChange={(event) =>
+                    setRepeatCount(Math.max(1, Math.min(60, Number(event.target.value) || 1)))
+                  }
+                  className="mt-1 block w-24 rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                />
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {WEEKDAYS.map((day, dayIndex) => (
-                  <button key={day} type="button" aria-pressed={repeatDays.includes(dayIndex)} onClick={() => setRepeatDays((days) => days.includes(dayIndex) ? days.filter((item) => item !== dayIndex) : [...days, dayIndex])} className={`rounded-full border px-2.5 py-1.5 text-[11px] font-bold ${repeatDays.includes(dayIndex) ? "border-foreground bg-foreground text-background" : "border-border"}`}>{day}</button>
+                  <button
+                    key={day}
+                    type="button"
+                    aria-pressed={repeatDays.includes(dayIndex)}
+                    onClick={() =>
+                      setRepeatDays((days) =>
+                        days.includes(dayIndex)
+                          ? days.filter((item) => item !== dayIndex)
+                          : [...days, dayIndex],
+                      )
+                    }
+                    className={`rounded-full border px-2.5 py-1.5 text-[11px] font-bold ${repeatDays.includes(dayIndex) ? "border-foreground bg-foreground text-background" : "border-border"}`}
+                  >
+                    {day}
+                  </button>
                 ))}
               </div>
-              <button type="button" onClick={buildRepeatedSlots} className="rounded-lg border border-border px-3 py-2 text-xs font-bold hover:bg-secondary">إنشاء المواعيد</button>
+              <button
+                type="button"
+                onClick={buildRepeatedSlots}
+                className="rounded-lg border border-border px-3 py-2 text-xs font-bold hover:bg-secondary"
+              >
+                إنشاء المواعيد
+              </button>
             </div>
           </div>
         ) : null}
         {calendarOpen ? (
           <div className="post-inline-calendar">
-            <div className="post-inline-calendar-head"><strong>المنشورات الحالية</strong><span>{(socialPosts ?? []).length.toLocaleString("ar-EG")}</span></div>
+            <div className="post-inline-calendar-head">
+              <strong>المنشورات الحالية</strong>
+              <span>{(socialPosts ?? []).length.toLocaleString("ar-EG")}</span>
+            </div>
             <div className="post-inline-calendar-list">
               {(socialPosts ?? []).slice(0, 12).map((post) => (
                 <div key={post.id} className="post-inline-calendar-item">
                   <AppIcon name={post.provider} className="size-4" />
-                  <span>{new Date(post.scheduled_at).toLocaleString("ar-EG", { dateStyle: "medium", timeStyle: "short" })}</span>
-                  <small>{post.status === "published" ? "منشور" : post.status === "failed" ? "فشل" : "مجدول"}</small>
+                  <span>
+                    {new Date(post.scheduled_at).toLocaleString("ar-EG", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </span>
+                  <small>
+                    {post.status === "published"
+                      ? "منشور"
+                      : post.status === "failed"
+                        ? "فشل"
+                        : "مجدول"}
+                  </small>
                 </div>
               ))}
               {!socialPosts?.length ? <p>لا توجد منشورات في التقويم بعد.</p> : null}
             </div>
-            <Link to="/app/calendar" className="post-calendar-link">افتح صفحة التقويم لإدارة كل المحتوى لاحقاً</Link>
+            <Link to="/app/calendar" className="post-calendar-link">
+              افتح صفحة التقويم لإدارة كل المحتوى لاحقاً
+            </Link>
           </div>
         ) : null}
         <div className="mt-2 space-y-3">

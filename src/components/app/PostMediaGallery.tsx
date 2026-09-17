@@ -108,11 +108,31 @@ export function PostMediaGallery({ media, onRemove, onError }: Props) {
       ) : null}
       {media.length > 1 ? (
         <>
-          <Button type="button" variant="secondary" size="icon" className="post-media-next" onClick={() => move(1)} aria-label="الوسيطة التالية"><ChevronLeft /></Button>
-          <Button type="button" variant="secondary" size="icon" className="post-media-prev" onClick={() => move(-1)} aria-label="الوسيطة السابقة"><ChevronRight /></Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className="post-media-next"
+            onClick={() => move(1)}
+            aria-label="الوسيطة التالية"
+          >
+            <ChevronLeft />
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className="post-media-prev"
+            onClick={() => move(-1)}
+            aria-label="الوسيطة السابقة"
+          >
+            <ChevronRight />
+          </Button>
         </>
       ) : null}
-      <span className="post-media-count">{index + 1} / {media.length}</span>
+      <span className="post-media-count">
+        {index + 1} / {media.length}
+      </span>
     </div>
   );
 
@@ -131,7 +151,11 @@ export function PostMediaGallery({ media, onRemove, onError }: Props) {
                 className={cn("post-media-thumb", itemIndex === index && "is-active")}
                 onClick={() => setIndex(itemIndex)}
               >
-                {item.kind === "image" ? <img src={item.url} alt="" loading="lazy" /> : <video src={item.url} muted preload="metadata" />}
+                {item.kind === "image" ? (
+                  <img src={item.url} alt="" loading="lazy" />
+                ) : (
+                  <video src={item.url} muted preload="metadata" />
+                )}
               </button>
             ))}
           </div>
@@ -139,8 +163,22 @@ export function PostMediaGallery({ media, onRemove, onError }: Props) {
       </div>
       {viewer && typeof document !== "undefined"
         ? createPortal(
-            <div className="post-media-lightbox" role="dialog" aria-modal="true" aria-label="معاينة الوسائط كاملة">
-              <Button type="button" variant="secondary" size="icon" className="post-media-close" onClick={() => setViewer(false)} aria-label="إغلاق المعاينة"><X /></Button>
+            <div
+              className="post-media-lightbox"
+              role="dialog"
+              aria-modal="true"
+              aria-label="معاينة الوسائط كاملة"
+            >
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                className="post-media-close"
+                onClick={() => setViewer(false)}
+                aria-label="إغلاق المعاينة"
+              >
+                <X />
+              </Button>
               {stage(true)}
             </div>,
             document.body,
